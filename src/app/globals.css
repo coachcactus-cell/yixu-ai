@@ -1,0 +1,268 @@
+@import "tailwindcss";
+
+:root {
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-text: #1a1a1a;
+  --color-text-secondary: #888888;
+  --color-accent: #c9a84c;
+  --color-accent-dark: #a88830;
+  --color-accent-light: #f5eed9;
+  --color-gold: #c9a84c;
+  --color-gold-light: #fdf8ed;
+  --color-border: #e8e8e8;
+  --color-danger: #c0392b;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", "Hiragino Sans GB", "STHeiti", "SimHei", sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  overscroll-behavior: none;
+}
+
+/* 宋體用於標題和裝飾性文字 */
+.font-song {
+  font-family: "Noto Serif SC", "STSong", "SimSun", "Songti SC", "PMingLiU", serif;
+}
+
+/* Mobile-first scrollbar */
+::-webkit-scrollbar {
+  width: 0;
+}
+
+/* Bottom Tab Bar */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 0.5px solid var(--color-border);
+  padding-bottom: var(--safe-bottom);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: calc(56px + var(--safe-bottom));
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 12px;
+  color: #aaaaaa;
+  transition: color 0.2s;
+  font-size: 10px;
+  min-width: 56px;
+}
+
+.tab-item.active {
+  color: var(--color-accent);
+}
+
+.tab-item svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Page Container */
+.page-container {
+  padding-bottom: calc(80px + var(--safe-bottom));
+  min-height: 100vh;
+}
+
+/* Cards */
+.card {
+  background: var(--color-surface);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 12px 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 0.5px solid var(--color-border);
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, #c9a84c, #b8943a);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary:active {
+  opacity: 0.85;
+  transform: scale(0.97);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-accent);
+  border: 1.5px solid var(--color-accent);
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-outline:active {
+  background: var(--color-gold-light);
+}
+
+/* Chat Bubbles */
+.chat-bubble {
+  max-width: 85%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.chat-bubble.user {
+  background: linear-gradient(135deg, #c9a84c, #b8943a);
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 6px;
+}
+
+.chat-bubble.ai {
+  background: #f7f7f7;
+  color: var(--color-text);
+  align-self: flex-start;
+  border-bottom-left-radius: 6px;
+}
+
+/* Input */
+.chat-input {
+  background: #f5f5f5;
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+  padding: 10px 16px;
+  font-size: 15px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.chat-input:focus {
+  border-color: var(--color-accent);
+  background: white;
+}
+
+/* Timer Badge */
+.timer-badge {
+  background: var(--color-gold-light);
+  color: var(--color-accent-dark);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Section Header */
+.section-header {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 20px 16px 8px;
+  font-family: "Noto Serif SC", "STSong", "Songti SC", serif;
+}
+
+/* Practice Card */
+.practice-card {
+  background: var(--color-surface);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 0.5px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
+}
+
+/* Progress */
+.progress-bar {
+  height: 6px;
+  background: #e8e8e8;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent), #d4b85c);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.typing-dot {
+  animation: pulse-dot 1.4s infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Gold accent line */
+.accent-line {
+  height: 3px;
+  width: 40px;
+  background: linear-gradient(90deg, var(--color-accent), #d4b85c);
+  border-radius: 2px;
+}
+
+/* Gold tag */
+.gold-tag {
+  background: var(--color-gold-light);
+  color: var(--color-accent-dark);
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
