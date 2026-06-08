@@ -5,6 +5,10 @@ export const metadata: Metadata = {
   title: "亦须AI — Cactus AI",
   description: "Sino-NLP 中华身心语言学 × 传统经学 × 行为心理学 — 你的随身疗愈修行伙伴",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon-32.png",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export const viewport: Viewport = {
