@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心弦易理 · 現代身心諮詢系統</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1A1A1A;
+            --accent-gold: #D4AF37;
+            --text-main: #E0E0E0;
+            --text-muted: #A0A0A0;
+            --border-color: #2C2C2C;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        header h1 {
+            color: var(--accent-gold);
+            font-size: 24px;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .module-box {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .double-inputs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        input[type="tel"], input[type="number"] {
+            flex: 1;
+            background: #222;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--accent-gold);
+        }
+
+        button {
+            background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7);
+            color: #121212;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 5px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .theme-grid::-webkit-scrollbar {
+            width: 5px;
+        }
+        .theme-grid::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .theme-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #222;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-item:hover {
+            border-color: var(--accent-gold);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .theme-item.active {
+            border-color: var(--accent-gold);
+            background: rgba(212, 175, 55, 0.15);
+        }
+
+        .theme-item input[type="radio"] {
+            margin-right: 12px;
+            accent-color: var(--accent-gold);
+            transform: scale(1.2);
+        }
+
+        .theme-label {
+            font-size: 15px;
+            color: var(--text-main);
+        }
+
+        .ritual-container {
+            display: none;
+            margin-top: 15px;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .report-panel {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.03);
+            border: 1px dashed var(--accent-gold);
+            border-radius: 12px;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .report-header {
+            font-size: 16px;
+            color: var(--accent-gold);
+            font-weight: bold;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding-bottom: 8px;
+        }
+
+        .report-content {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #D8D8D8;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1>心弦易理</h1>
+        <p>Sino-NLP 現代易學與身心重塑系統</p>
+    </header>
+
+    <div class="section-title">📅 入口一：手機號碼 · 問季度能量總綱</div>
+    <div class="module-box">
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">輸入手機號碼，鎖定本季核心身心格局：</p>
+        <div class="input-group">
+            <input type="tel" id="user-phone" placeholder="例如：19924633003">
+            <button onclick="generateModuleA()">解鎖總綱</button>
+        </div>
+    </div>
+
+    <div class="section-title">🎲 入口二：雙組數字 · 天天問事當下指引</div>
+    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">請先選擇你想諮詢的日常課題：</p>
+    
+    <div class="theme-grid" id="theme-menu"></div>
+
+    <div class="ritual-container" id="ritual-box">
+        <p style="font-size: 13px; color: var(--accent-gold); margin-bottom: 8px;">請屏息靜氣，憑直覺注入兩組任意數字：</p>
+        <div class="double-inputs">
+            <input type="number" id="num-one" placeholder="第一組數（如: 88）">
+            <input type="number" id="num-two" placeholder="第二組數（如: 92）">
+        </div>
+        <button style="width: 100%;" onclick="generateModuleB()">注入直覺 · 呼喚心弦指引</button>
+    </div>
+
+    <div class="report-panel" id="report-box">
+        <div class="report-header" id="report-title">專屬身心轉化報告</div>
+        <div class="report-content" id="report-text"></div>
+    </div>
+</div>
+
+<script>
+    const initialThemes = [
+        { id: 1, icon: "💼", text: "事業財富 ── 尋找破局先機" },
+        { id: 2, icon: "🌹", text: "情感流動 ── 解碼親密關係" },
+        { id: 3, icon: "🩺", text: "身心健康 ── 能量平衡調理" },
+        { id: 4, icon: "🧘", text: "內心恐懼 ── 打破迷茫焦慮" },
+        { id: 5, icon: "🤝", text: "人際磁場 ── 小人貴人應對" },
+        { id: 6, icon: "👑", text: "自我價值 ── 配得感與自信" },
+        { id: 7, icon: "🧭", text: "重大決策 ── 當下進退抉擇" },
+        { id: 8, icon: "👨‍👩‍👧‍👦", text: "原生家庭 ── 和解與心靈重塑" },
+        { id: 9, icon: "🎯", text: "天命大願 ── 生涯意義探索" },
+        { id: 10, icon: "☕", text: "當下點心 ── 每日一禪轉化" }
+    ];
+
+    // 易經八卦標準對應（0-7餘數優化）
+    const guaNames = ["坤為地", "乾為天", "兌為澤", "離為火", "震為雷", "巽為風", "坎為水", "艮為山"];
+    let selectedTheme = null;
+
+    function renderThemes() {
+        const menu = document.getElementById('theme-menu');
+        menu.innerHTML = initialThemes.map(t => `
+            <div class="theme-item" id="item-${t.id}" onclick="selectTheme(${t.id}, '${t.text}')">
+                <input type="radio" name="theme-radio" id="radio-${t.id}">
+                <span class="theme-label">${t.icon} ${t.text}</span>
+            </div>
+        `).join('');
+    }
+
+    function selectTheme(id, text) {
+        selectedTheme = text;
+        document.querySelectorAll('.theme-item').forEach(el => el.classList.remove('active'));
+        document.getElementById(`item-${id}`).classList.add('active');
+        document.getElementById(`radio-${id}`).checked = true;
+
+        document.getElementById('ritual-box').style.display = 'block';
+        document.getElementById('report-box').style.display = 'none';
+    }
+
+    function generateModuleA() {
+        const phone = document.getElementById('user-phone').value;
+        if(!phone) { alert("請先輸入號碼。"); return; }
+        
+        const reportBox = document.getElementById('report-box');
+        document.getElementById('report-title').innerText = "🔮 季能量 · 當季身心總綱格局";
+        document.getElementById('report-text').innerText = `【格局解析】：基於手機號碼鎖定，本季觸發「山天大畜」之象。\n\n【核心卡點】：目前外在資源完全充足，核心障礙卡在【信念 / 價值觀層級】。大腦神經元存在防禦規條，容易因過度謹慎而錯失顯化良機。\n\n【點心轉化法】：練習呼吸放鬆法，在吸氣時默念「自愛」，呼氣時放下外在評判，突破防禦。`;
+        reportBox.style.display = 'block';
+    }
+
+    // 模組 B：雙組數字 + 時空動態起卦核心運算
+    function generateModuleB() {
+        const val1 = document.getElementById('num-one').value;
+        const val2 = document.getElementById('num-two').value;
+        
+        if(!val1 || !val2) { alert("請填寫兩組任意數字以完成起卦儀式。"); return; }
+
+        // 防呆淨化機制：防止小數與負數干擾運算
+        const n1 = Math.abs(Math.floor(Number(val1)));
+        const n2 = Math.abs(Math.floor(Number(val2)));
+
+        // 獲取當前用戶整點時間 (0-23)
+        const currentHour = new Date().getHours(); 
+        
+        // 梅花易數標準取餘公式
+        let upperGuaIndex = n1 % 8;
+        let lowerGuaIndex = n2 % 8;
+        let dongYao = (n1 + n2 + currentHour) % 6;
+        if(dongYao === 0) dongYao = 6; 
+
+        const upperGua = guaNames[upperGuaIndex];
+        const lowerGua = guaNames[lowerGuaIndex];
+
+        const reportBox = document.getElementById('report-box');
+        document.getElementById('report-title').innerText = "📝 天天問事 · Sino-NLP 雙組數時空指引";
+
+        // 咬合《點心》心法與理解層次卡點輸出
+        let interpretation = `【諮詢課題】：${selectedTheme}\n`;
+        interpretation += `【時空密碼】：上卦 [${upperGua}] / 下卦 [${lowerGua}] / 動在 [第 ${dongYao} 爻]\n\n`;
+
+        if(dongYao === 1 || dongYao === 4) {
+            interpretation += `【NLP理解層次卡點】：環境與行為層次\n【心靈重塑】：目前你在此課題下面對的卡點，主要是外在環境的雜音影響了你的日常行為節奏。請調動你的【自信】心法。穩住核心，中庸應對，外在環境只是暫時的鏡子。\n【日常功課】：執行格物致知，每日記下三件令你感到有掌控感與配得感的事情。`;
+        } else if(dongYao === 2 || dongYao === 5) {
+            interpretation += `【NLP理解層次卡點】：能力與身分認同層次\n【心靈重塑】：你在這個課題上產生了潛意識的防禦與自我懷疑。核心需要修復【自愛】與【自尊】。你本自具足，不需要向外在證明任何價值。\n【日常功課】：配合「呼吸放鬆法」，每次感到卡頓焦慮時閉眼三分鐘，專注於吸氣自愛、呼氣放鬆。`;
+        } else {
+            interpretation += `【NLP理解層次卡點】：精神、信念與天命大願層次\n【心靈重塑】：此動爻代表你正面臨一個生命軌道或思考盲區的轉折點。突破這個精神層面的規條約束，將會直接提升你的身心統合滿意度。\n【日常功課】：放下大腦的防禦規條，容許自己以最自然的狀態去體驗當下能量的流動。`;
+        }
+
+        document.getElementById('report-text').innerText = interpretation;
+        reportBox.style.display = 'block';
+    }
+
+    renderThemes();
+</script>
+</body>
+</html>

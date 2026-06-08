@@ -1,13 +1,17 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Send, Clock, Sparkles, ArrowRight } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Send, Clock, Sparkles, ArrowRight, Trash2 } from "lucide-react";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
 }
+
+const STORAGE_KEY = "yixu-chat-history";
+const MAX_HISTORY = 50;
+const TIMER_STORAGE_KEY = "yixu-timer-left";
 
 const WELCOME_MESSAGE: Message = {
   id: "welcome",
@@ -16,12 +20,54 @@ const WELCOME_MESSAGE: Message = {
     "你好，我是亦须AI 🙏\n\n修行路上，有什么困扰你？\n\n你可以随意问，我用传统经学及Sino-NLP，多维角度陪你聊。",
 };
 
-const SUGGESTIONS = [
-  { icon: "💭", text: "我最近心好乱，怎么办？" },
-  { icon: "🧘", text: "怎样可以放下执念？" },
-  { icon: "🌿", text: "工作压力大，有什么方法？" },
-  { icon: "❤️", text: "和家人关系紧张，怎么处理？" },
-];
+/* ── 智慧建議輪替：按時段動態切換 ── */
+function getSmartSuggestions(): { icon: string; text: string }[] {
+  const hour = new Date().getHours();
+  const dayOfWeek = new Date().getDay(); // 0=日, 1-6
+
+  // 深夜 22-6
+  if (hour < 6) {
+    return [
+      { icon: "🌙", text: "睡不着，怎么办？" },
+      { icon: "💫", text: "夜深人静，想聊聊吗？" },
+      { icon: "😮‍💨", text: "怎样放下今天的烦恼？" },
+      { icon: "🕯️", text: "如何让心安静下来？" },
+    ];
+  }
+
+  // 早晨 6-12
+  if (hour < 12) {
+    const morningSuggestions = [
+      { icon: "☀️", text: "今天想做什么修行？" },
+      { icon: "🧘", text: "怎样开始一天的静心？" },
+      { icon: "🌅", text: "早上醒来心很乱，怎么办？" },
+      { icon: "✨", text: "今天该怎样调整自己的状态？" },
+    ];
+    // 週末加一條特別
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      morningSuggestions[3] = { icon: "🌿", text: "周末怎样真正休息充电？" };
+    }
+    return morningSuggestions;
+  }
+
+  // 下午 12-18
+  if (hour < 18) {
+    return [
+      { icon: "💼", text: "工作中如何保持觉察？" },
+      { icon: "🌊", text: "怎样在忙碌中修行？" },
+      { icon: "😤", text: "和同事有摩擦，怎么化解？" },
+      { icon: "🎯", text: "怎样在压力中保持从容？" },
+    ];
+  }
+
+  // 晚間 18-22
+  return [
+    { icon: "🌆", text: "今天有什么放不下的？" },
+    { icon: "💭", text: "怎样安顿情绪入睡？" },
+    { icon: "❤️", text: "和家人关系紧张，怎么处理？" },
+    { icon: "🧘", text: "怎样可以放下执念？" },
+  ];
+}
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -31,6 +77,47 @@ function getGreeting(): string {
   return "晚上好 ✨";
 }
 
+/* ── localStorage 工具函數 ── */
+function loadHistory(): Message[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.slice(-MAX_HISTORY);
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(messages: Message[]) {
+  if (typeof window === "undefined") return;
+  try {
+    const toSave = messages.slice(-MAX_HISTORY);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+  } catch { /* quota exceeded, ignore */ }
+}
+
+function loadTimerLeft(): number {
+  if (typeof window === "undefined") return 900;
+  try {
+    const saved = localStorage.getItem(TIMER_STORAGE_KEY);
+    if (!saved) return 900;
+    const val = parseInt(saved, 10);
+    return isNaN(val) ? 900 : Math.max(0, val);
+  } catch {
+    return 900;
+  }
+}
+
+function saveTimerLeft(seconds: number) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(TIMER_STORAGE_KEY, String(seconds));
+  } catch { /* ignore */ }
+}
+
 export default function ChatPage() {
   const [started, setStarted] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -38,6 +125,31 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [timerLeft, setTimerLeft] = useState(900);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // 頁面載入時恢復歷史
+  useEffect(() => {
+    const saved = loadHistory();
+    const savedTimer = loadTimerLeft();
+    if (saved.length > 0) {
+      setMessages(saved);
+      setStarted(true);
+      setTimerLeft(savedTimer);
+    }
+  }, []);
+
+  // 對話變化時自動保存
+  useEffect(() => {
+    if (messages.length > 0) {
+      saveHistory(messages);
+    }
+  }, [messages]);
+
+  // 計時器變化時保存
+  useEffect(() => {
+    if (started && timerLeft > 0) {
+      saveTimerLeft(timerLeft);
+    }
+  }, [timerLeft, started]);
 
   // Countdown timer
   useEffect(() => {
@@ -53,10 +165,20 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleStart = () => {
+  const handleStart = useCallback(() => {
     setStarted(true);
+    const history = loadHistory();
+    if (history.length > 0) {
+      setMessages(history);
+    } else {
+      setMessages([WELCOME_MESSAGE]);
+    }
+  }, []);
+
+  const clearHistory = useCallback(() => {
     setMessages([WELCOME_MESSAGE]);
-  };
+    saveHistory([WELCOME_MESSAGE]);
+  }, []);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -73,7 +195,8 @@ export default function ChatPage() {
       content: input.trim(),
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
     setInput("");
     setIsLoading(true);
 
@@ -128,6 +251,8 @@ export default function ChatPage() {
       handleSend();
     }
   };
+
+  const smartSuggestions = getSmartSuggestions();
 
   // ─── LANDING SCREEN ────────────────────────────────
   if (!started) {
@@ -207,13 +332,13 @@ export default function ChatPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#c9a84c]/40 flex-shrink-0 bg-[#fdf8ed]">
-                <img
-                  src="/cartoon-head.png"
-                  alt="亦须先生"
-                  className="w-full h-full object-cover"
-                  style={{ objectPosition: "50% 15%" }}
-                />
-              </div>
+              <img
+                src="/cartoon-head.png"
+                alt="亦须先生"
+                className="w-full h-full object-cover"
+                style={{ objectPosition: "50% 15%" }}
+              />
+            </div>
             <div>
               <h1 className="text-lg font-black font-song tracking-wide">
                 <span className="text-[#c9a84c]">亦须</span><span className="text-[#8a9bae]">AI</span>
@@ -221,9 +346,20 @@ export default function ChatPage() {
               <p className="text-xs text-[#888888]">Sino-NLP 疗愈对话</p>
             </div>
           </div>
-          <div className="timer-badge">
-            <Clock size={14} />
-            <span>{timerLeft > 0 ? `今日剩余 ${formatTime(timerLeft)}` : "今日限额已用完"}</span>
+          <div className="flex items-center gap-2">
+            {messages.length > 1 && (
+              <button
+                onClick={clearHistory}
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[#cccccc] hover:text-[#888888] active:bg-[#f5f5f5] transition-colors"
+                title="清除对话记录"
+              >
+                <Trash2 size={15} />
+              </button>
+            )}
+            <div className="timer-badge">
+              <Clock size={14} />
+              <span>{timerLeft > 0 ? `今日剩余 ${formatTime(timerLeft)}` : "今日限额已用完"}</span>
+            </div>
           </div>
         </div>
       </header>
@@ -262,12 +398,12 @@ export default function ChatPage() {
           </div>
         )}
 
-        {/* Suggestions */}
+        {/* Smart Suggestions — 按時段動態 */}
         {messages.length === 1 && (
           <div className="mt-4 space-y-2">
             <p className="text-xs text-[#999999] px-1 font-medium">试着问：</p>
             <div className="grid grid-cols-2 gap-2">
-              {SUGGESTIONS.map((s, i) => (
+              {smartSuggestions.map((s, i) => (
                 <button
                   key={i}
                   onClick={() => handleSuggestionClick(s.text)}
