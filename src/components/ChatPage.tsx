@@ -126,15 +126,10 @@ export default function ChatPage() {
   const [timerLeft, setTimerLeft] = useState(900);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // 頁面載入時恢復歷史
+  // 頁面載入時恢復計時器（不跳過 landing page）
   useEffect(() => {
-    const saved = loadHistory();
     const savedTimer = loadTimerLeft();
-    if (saved.length > 0) {
-      setMessages(saved);
-      setStarted(true);
-      setTimerLeft(savedTimer);
-    }
+    setTimerLeft(savedTimer);
   }, []);
 
   // 對話變化時自動保存
