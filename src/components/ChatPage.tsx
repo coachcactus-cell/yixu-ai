@@ -126,40 +126,53 @@ export default function ChatPage() {
   const [timerLeft, setTimerLeft] = useState(900);
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
+  const [speechLang, setSpeechLang] = useState<"zh-CN" | "zh-HK">("zh-HK");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
 
-  // 語音辨識初始化
+  // 語音辨識初始化（雙語支援：粵語+普通話）
   useEffect(() => {
     if (typeof window === "undefined") return;
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
       setSpeechSupported(true);
-      const recognition = new SpeechRecognition();
-      recognition.lang = "zh-CN";
-      recognition.interimResults = true;
-      recognition.continuous = false;
-      recognition.maxAlternatives = 1;
-
-      recognition.onresult = (event: any) => {
-        let transcript = "";
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          transcript += event.results[i][0].transcript;
-        }
-        setInput(transcript);
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
-      recognition.onerror = () => {
-        setIsListening(false);
-      };
-
-      recognitionRef.current = recognition;
     }
   }, []);
+
+  // 每次切換語言重建 recognition 實例
+  useEffect(() => {
+    if (!speechSupported) return;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = speechLang;
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (event: any) => {
+      let transcript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setInput(transcript);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.onerror = (event: any) => {
+      setIsListening(false);
+      // 如果是 network 錯誤，可能係大陸環境 webkitSpeechRecognition 用唔到
+      if (event.error === "network" || event.error === "not-allowed" || event.error === "service-not-allowed") {
+        setSpeechSupported(false);
+      }
+    };
+
+    recognitionRef.current = recognition;
+  }, [speechLang, speechSupported]);
 
   const toggleListening = useCallback(() => {
     if (!recognitionRef.current) return;
@@ -167,8 +180,13 @@ export default function ChatPage() {
       recognitionRef.current.stop();
       setIsListening(false);
     } else {
-      recognitionRef.current.start();
-      setIsListening(true);
+      // 嘗試啟動，失敗則標記不支援
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch {
+        setSpeechSupported(false);
+      }
     }
   }, [isListening]);
 
@@ -499,11 +517,25 @@ export default function ChatPage() {
             <Send size={18} className="text-white" />
           </button>
         </div>
-        {isListening && (
-          <p className="text-xs text-[#c9a84c] mt-1.5 text-center font-medium">
-            🎤 正在聆听，请说话...
-          </p>
-        )}
+        {/* 語言切換 + 狀態提示 */}
+        <div className="flex items-center justify-between mt-1.5">
+          <div className="flex items-center gap-1">
+            {speechSupported && (
+              <button
+                onClick={() => setSpeechLang(speechLang === "zh-HK" ? "zh-CN" : "zh-HK")}
+                className="text-xs text-[#999999] hover:text-[#c9a84c] transition-colors px-2 py-0.5 rounded-full border border-[#e8e8e8]"
+                title="切換語音辨識語言"
+              >
+                {speechLang === "zh-HK" ? "粵語 🎤" : "普通話 🎤"}
+              </button>
+            )}
+          </div>
+          {isListening && (
+            <p className="text-xs text-[#c9a84c] font-medium">
+              🎤 正在聆听...
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
