@@ -274,7 +274,7 @@ export default function ChatPage() {
                 <h1 className="text-lg font-black font-song tracking-wide">
                   <span className="text-[#c9a84c]">亦须</span><span className="text-[#8a9bae]">AI</span>
                 </h1>
-                <p className="text-xs text-[#888888]">Cactus AI</p>
+                <p className="text-sm text-[#666666]">Cactus AI</p>
               </div>
             </div>
           </div>
@@ -302,7 +302,7 @@ export default function ChatPage() {
           <h2 className="text-xl font-bold text-[#1a1a1a] font-song mb-2 text-center">
             修行路上，有我陪你
           </h2>
-          <p className="text-sm text-[#888888] mb-10 text-center max-w-xs leading-relaxed">
+          <p className="text-sm text-[#666666] mb-10 text-center max-w-xs leading-relaxed">
             传统经学 × Sino-NLP<br />多维角度，聊聊你的困扰
           </p>
 
@@ -316,7 +316,7 @@ export default function ChatPage() {
           </button>
 
           {/* Footer hint */}
-          <p className="mt-6 text-xs text-[#cccccc]">
+          <p className="mt-6 text-sm text-[#999999]">
             点击上方按钮，开始与亦须先生对话
           </p>
         </div>
@@ -343,14 +343,14 @@ export default function ChatPage() {
               <h1 className="text-lg font-black font-song tracking-wide">
                 <span className="text-[#c9a84c]">亦须</span><span className="text-[#8a9bae]">AI</span>
               </h1>
-              <p className="text-xs text-[#888888]">Sino-NLP 疗愈对话</p>
+              <p className="text-sm text-[#666666]">Sino-NLP 疗愈对话</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {messages.length > 1 && (
               <button
                 onClick={clearHistory}
-                className="w-7 h-7 rounded-full flex items-center justify-center text-[#cccccc] hover:text-[#888888] active:bg-[#f5f5f5] transition-colors"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[#999999] hover:text-[#666666] active:bg-[#f5f5f5] transition-colors"
                 title="清除对话记录"
               >
                 <Trash2 size={15} />
@@ -401,7 +401,7 @@ export default function ChatPage() {
         {/* Smart Suggestions — 按時段動態 */}
         {messages.length === 1 && (
           <div className="mt-4 space-y-2">
-            <p className="text-xs text-[#999999] px-1 font-medium">试着问：</p>
+            <p className="text-sm text-[#777777] px-1 font-medium">试着问：</p>
             <div className="grid grid-cols-2 gap-2">
               {smartSuggestions.map((s, i) => (
                 <button
@@ -410,7 +410,7 @@ export default function ChatPage() {
                   className="text-left px-3 py-3 rounded-xl bg-white border border-[#eeece8] hover:border-[#c9a84c] hover:bg-[#fdfaf2] transition-all active:scale-[0.98]"
                 >
                   <span className="text-base">{s.icon}</span>
-                  <p className="text-xs text-[#333333] mt-1 leading-snug font-medium">{s.text}</p>
+                  <p className="text-sm text-[#333333] mt-1 leading-snug font-medium">{s.text}</p>
                 </button>
               ))}
             </div>

@@ -52,7 +52,7 @@ export default function AssessmentPage() {
 
   // 如果進入脈輪測評流程，全屏接管
   if (view === "chakra-quiz") {
-    return <ChakraAssessmentPage />;
+    return <ChakraAssessmentPage onBack={handleBackToList} />;
   }
 
   return (
@@ -60,7 +60,7 @@ export default function AssessmentPage() {
       {/* Header */}
       <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
         <h1 className="text-xl font-bold text-[#1a1a1a] font-song">測評中心</h1>
-        <p className="text-sm text-[#888888] mt-1">深入了解自己，從測評開始</p>
+        <p className="text-sm text-[#666666] mt-1">深入了解自己，從測評開始</p>
       </header>
 
       <div className="flex-1 px-4 pb-20">
@@ -75,7 +75,7 @@ export default function AssessmentPage() {
             <Users size={20} />
             <span className="text-sm font-medium">已有 1,286+ 人通過測評更了解自己</span>
           </div>
-          <p className="text-xs opacity-80">
+          <p className="text-sm opacity-80">
             每個測評都由亦須先生親自設計，基於 Sino-NLP 體系與中華經學智慧
           </p>
         </div>
@@ -101,12 +101,12 @@ export default function AssessmentPage() {
                     <div className="flex items-center gap-2">
                       <h3 className="font-semibold text-[#1a1a1a]">{a.title}</h3>
                       {!a.available && (
-                        <Lock size={14} className="text-[#cccccc] flex-shrink-0" />
+                        <Lock size={14} className="text-[#999999] flex-shrink-0" />
                       )}
                     </div>
-                    <p className="text-sm text-[#888888] mt-1">{a.desc}</p>
+                    <p className="text-sm text-[#666666] mt-1">{a.desc}</p>
                     <div className="flex items-center justify-between mt-3">
-                      <span className="text-xs text-[#888888]">{a.count}</span>
+                      <span className="text-sm text-[#777777]">{a.count}</span>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-bold text-[#c9a84c]">
                           {a.available ? "免費測評" : a.price}

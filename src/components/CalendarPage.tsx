@@ -83,7 +83,7 @@ export default function CalendarPage() {
                 {p.unlocked ? (
                   <CheckCircle2 size={20} className="text-[#c9a84c]" />
                 ) : (
-                  <Lock size={16} className="text-[#cccccc]" />
+                  <Lock size={16} className="text-[#999999]" />
                 )}
               </div>
               <p className="text-sm text-[#888888] mt-2 leading-relaxed">
@@ -100,7 +100,7 @@ export default function CalendarPage() {
 
         {/* Coming Soon */}
         <div className="mt-6 card text-center">
-          <BookOpen size={24} className="mx-auto text-[#cccccc] mb-2" />
+          <BookOpen size={24} className="mx-auto text-[#999999] mb-2" />
           <p className="text-sm text-[#888888]">
             更多经学修行模块即将推出
             <br />

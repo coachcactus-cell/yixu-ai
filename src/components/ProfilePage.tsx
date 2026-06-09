@@ -105,7 +105,7 @@ export default function ProfilePage() {
                   ))}
                 </ul>
                 {plan.save && (
-                  <p className="text-xs text-[#888888] mb-2">{plan.save}</p>
+                  <p className="text-sm text-[#666666] mb-2">{plan.save}</p>
                 )}
                 <button className="w-full btn-primary">立即订阅</button>
               </div>
@@ -118,15 +118,15 @@ export default function ProfilePage() {
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <p className="text-2xl font-bold text-[#c9a84c] font-song">0</p>
-              <p className="text-xs text-[#888888] mt-1">收藏对话</p>
+              <p className="text-sm text-[#666666] mt-1">收藏对话</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-[#c9a84c] font-song">0</p>
-              <p className="text-xs text-[#888888] mt-1">完成练习</p>
+              <p className="text-sm text-[#666666] mt-1">完成练习</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-[#c9a84c] font-song">0</p>
-              <p className="text-xs text-[#888888] mt-1">测评记录</p>
+              <p className="text-sm text-[#666666] mt-1">测评记录</p>
             </div>
           </div>
         </div>
@@ -149,9 +149,9 @@ export default function ProfilePage() {
               </div>
               <div className="flex items-center gap-2">
                 {item.badge && (
-                  <span className="text-xs text-[#888888]">{item.badge}</span>
+                  <span className="text-sm text-[#666666]">{item.badge}</span>
                 )}
-                <ChevronRight size={16} className="text-[#cccccc]" />
+                <ChevronRight size={16} className="text-[#999999]" />
               </div>
             </button>
           ))}
@@ -159,10 +159,10 @@ export default function ProfilePage() {
 
         {/* Footer */}
         <div className="mt-8 text-center pb-4">
-          <p className="text-xs text-[#cccccc] font-song">
+          <p className="text-xs text-[#999999] font-song">
             YIXU HEALING · 亦须疗愈
           </p>
-          <p className="text-xs text-[#cccccc] mt-1">
+          <p className="text-xs text-[#999999] mt-1">
             Sino-NLP 中华身心语言学 © 2026
           </p>
         </div>

@@ -16,13 +16,20 @@ import {
 type Stage = "intro" | "quiz" | "result";
 
 // ─── 子組件：介紹頁 ───
-function ChakraIntro({ onStart }: { onStart: () => void }) {
+function ChakraIntro({ onStart, onBack }: { onStart: () => void; onBack: () => void }) {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
       <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
-        <h1 className="text-xl font-bold text-[#1a1a1a] font-song">七脈輪能量測評</h1>
-        <p className="text-sm text-[#888888] mt-1">基於古印度脈輪體系，56 題深度檢測</p>
+        <div className="flex items-center gap-2">
+          <button onClick={onBack} className="text-[#c9a84c]">
+            <ChevronLeft size={22} />
+          </button>
+          <div>
+            <h1 className="text-xl font-bold text-[#1a1a1a] font-song">七脈輪能量測評</h1>
+            <p className="text-sm text-[#666666] mt-0.5">基於古印度脈輪體系，56 題深度檢測</p>
+          </div>
+        </div>
       </header>
 
       <div className="flex-1 px-4 pb-32">
@@ -43,7 +50,7 @@ function ChakraIntro({ onStart }: { onStart: () => void }) {
                   style={{ background: `linear-gradient(135deg, ${c.gradient[0]}, ${c.gradient[1]})` }}
                 />
                 <span className="text-sm font-medium text-[#1a1a1a]">{c.nameZh}</span>
-                <span className="text-[11px] text-[#aaaaaa]">{c.sanskrit}</span>
+                <span className="text-sm text-[#999999]">{c.sanskrit}</span>
               </div>
             ))}
           </div>
@@ -77,10 +84,10 @@ function ChakraIntro({ onStart }: { onStart: () => void }) {
 
         {/* 金句 */}
         <div className="mt-4 px-2 py-4 text-center">
-          <p className="text-sm text-[#888888] italic font-song leading-relaxed">
+          <p className="text-sm text-[#999999] italic font-song leading-relaxed">
             「身體是靈魂的廟宇，脈輪是能量的門戶。」
           </p>
-          <p className="text-xs text-[#aaaaaa] mt-1">—— 古印度瑜伽智慧</p>
+          <p className="text-sm text-[#999999] mt-1">—— 古印度瑜伽智慧</p>
         </div>
       </div>
 
@@ -145,7 +152,7 @@ function ChakraQuiz({
         <div className="flex items-center gap-2 mb-2">
           <Sparkles size={18} className="text-[#c9a84c]" />
           <span className="text-sm font-semibold text-[#1a1a1a]">脈輪測評</span>
-          <span className="ml-auto text-xs text-[#888888]">
+          <span className="ml-auto text-sm text-[#666666]">
             {answeredCount}/{TOTAL_QUESTIONS}
           </span>
         </div>
@@ -213,12 +220,12 @@ function ChakraQuiz({
             }}
           />
           <span className="font-semibold text-[#1a1a1a]">{currentChakraData.nameZh}</span>
-          <span className="text-xs text-[#888888]">{currentChakraData.sanskrit}</span>
-          <span className="ml-auto text-xs text-[#888888]">
+          <span className="text-xs text-[#777777]">{currentChakraData.sanskrit}</span>
+          <span className="ml-auto text-sm text-[#666666]">
             {currentAnswered}/{currentTotal} 題
           </span>
         </div>
-        <p className="text-xs text-[#888888] mt-1.5">{currentChakraData.description}</p>
+        <p className="text-sm text-[#666666] mt-1.5">{currentChakraData.description}</p>
       </div>
 
       {/* 題目列表 */}
@@ -236,13 +243,13 @@ function ChakraQuiz({
                   boxShadow: isAnswered ? "0 1px 4px rgba(201,168,76,0.08)" : "none",
                 }}
               >
-                <p className="mb-3 text-sm font-medium leading-relaxed text-[#1a1a1a]">
+                <p className="mb-3 text-base font-medium leading-relaxed text-[#1a1a1a]">
                   <span className="text-[#c9a84c] font-bold mr-1.5">{q.id}.</span>
                   {q.text}
                 </p>
                 {/* 5 級評分 */}
                 <div className="flex items-center gap-1.5">
-                  <span className="shrink-0 text-[10px] text-[#aaaaaa] w-10 text-right">
+                  <span className="shrink-0 text-xs text-[#777777] w-10 text-right">
                     完全沒有
                   </span>
                   <div className="flex flex-1 justify-center gap-2">
@@ -265,11 +272,11 @@ function ChakraQuiz({
                             }}
                           >
                             {checked ? (
-                              <span className="text-[10px] font-bold text-white">
+                              <span className="text-[11px] font-bold text-white">
                                 {SCORE_LABELS[idx]}
                               </span>
                             ) : (
-                              <span className="text-[10px] text-[#cccccc]">
+                              <span className="text-[11px] text-[#999999]">
                                 {idx + 1}
                               </span>
                             )}
@@ -278,7 +285,7 @@ function ChakraQuiz({
                       );
                     })}
                   </div>
-                  <span className="shrink-0 text-[10px] text-[#aaaaaa] w-10 text-left">
+                  <span className="shrink-0 text-xs text-[#777777] w-10 text-left">
                     感覺強烈
                   </span>
                 </div>
@@ -291,7 +298,7 @@ function ChakraQuiz({
       {/* 底部固定提交欄 */}
       <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-[#e8e8e8] bg-white/95 backdrop-blur-md px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
         {!allAnswered && (
-          <p className="mb-2 text-center text-xs text-[#888888]">
+          <p className="mb-2 text-center text-sm text-[#666666]">
             已完成 {answeredCount}/{TOTAL_QUESTIONS} 題
             {currentChakra < CHAKRAS.length - 1 && currentAnswered === currentTotal && (
               <span className="text-[#c9a84c] ml-1">— 可滑動至下一脈輪 ↑</span>
@@ -355,7 +362,7 @@ function ChakraResultView({
     return (
       <div className="flex min-h-screen items-center justify-center bg-white px-4">
         <div className="text-center">
-          <p className="mb-4 text-sm text-[#888888]">未找到測驗結果，請先完成測驗。</p>
+          <p className="mb-4 text-base text-[#666666]">未找到測驗結果，請先完成測驗。</p>
           <button onClick={onRestart} className="btn-primary">
             前往測驗
           </button>
@@ -378,11 +385,11 @@ function ChakraResultView({
         {/* 標題區 */}
         <div className="text-center mb-2">
           <h1 className="text-2xl font-bold text-[#1a1a1a] font-song">你的脈輪能量分析</h1>
-          <p className="text-xs text-[#888888] mt-1.5">{testDate}</p>
+          <p className="text-sm text-[#666666] mt-1.5">{testDate}</p>
         </div>
 
         {/* 圖例 */}
-        <div className="flex items-center justify-center gap-3 mb-5 text-xs">
+        <div className="flex items-center justify-center gap-3 mb-5 text-sm">
           <span style={{ color: statusColorMap.low }}>● 不活躍</span>
           <span style={{ color: statusColorMap.mid }}>● 適度活躍</span>
           <span style={{ color: statusColorMap.high }}>● 過度活躍</span>
@@ -406,10 +413,10 @@ function ChakraResultView({
                       }}
                     />
                     <span className="text-sm font-semibold text-[#1a1a1a]">{r.chakra.nameZh}</span>
-                    <span className="text-[10px] text-[#aaaaaa]">{r.chakra.sanskrit}</span>
+                    <span className="text-xs text-[#999999]">{r.chakra.sanskrit}</span>
                   </div>
                   <span
-                    className="rounded-full px-2 py-0.5 text-[10px] font-medium"
+                    className="rounded-full px-2 py-0.5 text-xs font-medium"
                     style={{
                       backgroundColor: statusBgMap[r.status.level],
                       color: statusColorMap[r.status.level],
@@ -432,8 +439,8 @@ function ChakraResultView({
                 </div>
 
                 <div className="flex items-end justify-between">
-                  <p className="text-[11px] text-[#888888]">{r.chakra.description}</p>
-                  <span className="text-[11px] font-semibold tabular-nums" style={{ color: r.chakra.color }}>
+                  <p className="text-sm text-[#666666]">{r.chakra.description}</p>
+                  <span className="text-sm font-semibold tabular-nums" style={{ color: r.chakra.color }}>
                     {r.percentage}%
                   </span>
                 </div>
@@ -447,10 +454,10 @@ function ChakraResultView({
           <div className="text-center mb-3">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c9a84c15] mb-2">
               <Sparkles size={14} className="text-[#c9a84c]" />
-              <span className="text-xs font-semibold text-[#c9a84c]">解鎖完整分析</span>
+              <span className="text-sm font-semibold text-[#c9a84c]">解鎖完整分析</span>
             </div>
             <h3 className="text-lg font-bold text-[#1a1a1a] font-song">獲取深度脈輪解讀</h3>
-            <p className="text-sm text-[#888888] mt-1">
+            <p className="text-sm text-[#666666] mt-1">
               了解每個脈輪的深層含義，獲得專屬冥想指引
             </p>
           </div>
@@ -471,7 +478,7 @@ function ChakraResultView({
 
           <div className="text-center mb-3">
             <span className="text-2xl font-bold text-[#c9a84c]">¥9.90</span>
-            <span className="text-xs text-[#888888] ml-1">/ 永久解鎖</span>
+            <span className="text-sm text-[#666666] ml-1">/ 永久解鎖</span>
           </div>
 
           <button
@@ -489,7 +496,7 @@ function ChakraResultView({
         <div className="mt-4 mb-2 text-center">
           <button
             onClick={onRestart}
-            className="text-sm text-[#888888] underline underline-offset-4"
+            className="text-sm text-[#999999] underline underline-offset-4"
           >
             重新測評
           </button>
@@ -539,7 +546,7 @@ function ChakraResultView({
               </button>
               <button
                 onClick={() => setShowPaywall(false)}
-                className="w-full text-sm text-[#888888] py-2"
+                className="w-full text-base text-[#666666] py-2"
               >
                 稍後再說
               </button>
@@ -552,7 +559,7 @@ function ChakraResultView({
 }
 
 // ─── 主組件：狀態機管理 ───
-export default function ChakraAssessmentPage() {
+export default function ChakraAssessmentPage({ onBack }: { onBack?: () => void }) {
   const [stage, setStage] = useState<Stage>("intro");
   const [results, setResults] = useState<ChakraResult[]>([]);
 
@@ -572,9 +579,15 @@ export default function ChakraAssessmentPage() {
     setStage("intro");
   }, []);
 
+  const handleBack = useCallback(() => {
+    if (onBack) {
+      onBack();
+    }
+  }, [onBack]);
+
   return (
     <>
-      {stage === "intro" && <ChakraIntro onStart={handleStart} />}
+      {stage === "intro" && <ChakraIntro onStart={handleStart} onBack={handleBack} />}
       {stage === "quiz" && <ChakraQuiz onComplete={handleComplete} />}
       {stage === "result" && <ChakraResultView results={results} onRestart={handleRestart} />}
     </>
