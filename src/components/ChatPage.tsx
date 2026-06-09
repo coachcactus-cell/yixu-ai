@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Clock, Sparkles, ArrowRight, Trash2, Mic, MicOff } from "lucide-react";
+import { Send, Clock, Sparkles, ArrowRight, Trash2, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 
 interface Message {
   id: string;
@@ -127,8 +127,46 @@ export default function ChatPage() {
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
   const [speechLang, setSpeechLang] = useState<"zh-CN" | "zh-HK">("zh-HK");
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+
+  // TTS 朗讀（瀏覽器原生 SpeechSynthesis，$0）
+  const speakMessage = useCallback((text: string, id: string) => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+
+    if (speakingId === id) {
+      setSpeakingId(null);
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = speechLang;
+    utterance.rate = 0.95; // 稍慢，更適合療癒對話
+    utterance.pitch = 1.0;
+
+    // 揀一把好聽嘅聲
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = voices.find(v => v.lang.startsWith("zh-HK") || v.lang.startsWith("zh-CN") || v.lang.startsWith("zh-TW"));
+    if (preferred) utterance.voice = preferred;
+
+    utterance.onend = () => setSpeakingId(null);
+    utterance.onerror = () => setSpeakingId(null);
+
+    setSpeakingId(id);
+    window.speechSynthesis.speak(utterance);
+  }, [speakingId, speechLang]);
+
+  // 預載 voices（Safari/Chrome 需要異步加載）
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+  }, []);
 
   // 語音辨識初始化（雙語支援：粵語+普通話）
   useEffect(() => {
@@ -437,6 +475,28 @@ export default function ChatPage() {
             )}
             <div className={`chat-bubble ${msg.role === "user" ? "user" : "ai"}`}>
               <p className="whitespace-pre-wrap">{msg.content}</p>
+              {msg.role === "assistant" && (
+                <button
+                  onClick={() => speakMessage(msg.content, msg.id)}
+                  className={`mt-1.5 flex items-center gap-1 text-xs transition-colors ${
+                    speakingId === msg.id
+                      ? "text-[#c9a84c] font-medium"
+                      : "text-[#999999] hover:text-[#c9a84c]"
+                  }`}
+                >
+                  {speakingId === msg.id ? (
+                    <>
+                      <VolumeX size={13} />
+                      停止朗读
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 size={13} />
+                      朗读
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           </div>
         ))}
