@@ -361,10 +361,9 @@ export default function ChatPage() {
             <div className="flex items-center gap-2">
               <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#c9a84c]/40 flex-shrink-0 bg-[#fdf8ed]">
                 <img
-                  src="/cartoon-head.png"
+                  src="/app-avatar.png"
                   alt="亦须先生"
                   className="w-full h-full object-cover"
-                  style={{ objectPosition: "50% 15%" }}
                 />
               </div>
               <div>
@@ -430,10 +429,9 @@ export default function ChatPage() {
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#c9a84c]/40 flex-shrink-0 bg-[#fdf8ed]">
               <img
-                src="/cartoon-head.png"
+                src="/app-avatar.png"
                 alt="亦须先生"
                 className="w-full h-full object-cover"
-                style={{ objectPosition: "50% 15%" }}
               />
             </div>
             <div>
@@ -469,8 +467,12 @@ export default function ChatPage() {
             className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in-up`}
           >
             {msg.role === "assistant" && (
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#c9a84c] to-[#a88830] flex items-center justify-center mr-2 mt-1 flex-shrink-0">
-                <Sparkles size={14} className="text-white" />
+              <div className="w-7 h-7 rounded-full overflow-hidden border border-[#c9a84c]/30 mr-2 mt-1 flex-shrink-0 bg-[#fdf8ed]">
+                <img
+                  src="/app-avatar.png"
+                  alt="亦须先生"
+                  className="w-full h-full object-cover"
+                />
               </div>
             )}
             <div className={`chat-bubble ${msg.role === "user" ? "user" : "ai"}`}>
@@ -504,8 +506,12 @@ export default function ChatPage() {
         {/* Loading indicator */}
         {isLoading && (
           <div className="flex justify-start animate-fade-in-up">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#c9a84c] to-[#a88830] flex items-center justify-center mr-2 mt-1 flex-shrink-0">
-              <Sparkles size={14} className="text-white" />
+            <div className="w-7 h-7 rounded-full overflow-hidden border border-[#c9a84c]/30 mr-2 mt-1 flex-shrink-0 bg-[#fdf8ed]">
+              <img
+                src="/app-avatar.png"
+                alt="亦须先生"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="chat-bubble ai">
               <div className="flex gap-1.5">

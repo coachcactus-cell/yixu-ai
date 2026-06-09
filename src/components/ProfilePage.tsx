@@ -46,7 +46,7 @@ export default function ProfilePage() {
           <div className="flex items-center gap-3">
             <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[#c9a84c] flex items-center justify-center bg-[#fdf8ed]">
               <img
-                src="/cartoon-formal.jpg"
+                src="/app-avatar.png"
                 alt="亦须先生"
                 className="w-full h-full object-cover"
               />
@@ -165,6 +165,19 @@ export default function ProfilePage() {
           <p className="text-xs text-[#999999] mt-1">
             Sino-NLP 中华身心语言学 © 2026
           </p>
+        </div>
+
+        {/* 报名联系卡片 */}
+        <div className="mt-3 card bg-gradient-to-br from-[#fdf8ed] to-[#fefaf0] border border-[#c9a84c]/20">
+          <div className="text-center py-2">
+            <p className="text-sm font-bold text-[#c9a84c] font-song mb-1">🙏 报名咨询</p>
+            <p className="text-xs text-[#666666] mb-2">报名直接找先生</p>
+            <div className="inline-flex items-center gap-2 bg-white rounded-full px-4 py-2 border border-[#c9a84c]/30">
+              <span className="text-base">💬</span>
+              <span className="text-lg font-bold text-[#1a1a1a] font-mono tracking-wider">859022196</span>
+            </div>
+            <p className="text-xs text-[#999999] mt-2">微信扫码 / 搜索号码添加</p>
+          </div>
         </div>
       </div>
     </div>
