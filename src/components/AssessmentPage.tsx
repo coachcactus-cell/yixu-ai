@@ -39,16 +39,22 @@ const ASSESSMENTS = [
   },
 ];
 
-export default function AssessmentPage() {
+export default function AssessmentPage({
+  onFullscreenChange,
+}: {
+  onFullscreenChange?: (fullscreen: boolean) => void;
+}) {
   const [view, setView] = useState<ViewMode>("list");
 
   const handleStartChakra = useCallback(() => {
     setView("chakra-quiz");
-  }, []);
+    onFullscreenChange?.(true);
+  }, [onFullscreenChange]);
 
   const handleBackToList = useCallback(() => {
     setView("list");
-  }, []);
+    onFullscreenChange?.(false);
+  }, [onFullscreenChange]);
 
   // 如果進入脈輪測評流程，全屏接管
   if (view === "chakra-quiz") {
@@ -63,7 +69,7 @@ export default function AssessmentPage() {
         <p className="text-sm text-[#666666] mt-1">深入了解自己，從測評開始</p>
       </header>
 
-      <div className="flex-1 px-4 pb-20">
+      <div className="flex-1 px-4 pb-24">
         {/* Banner */}
         <div
           className="mt-4 rounded-xl p-4 text-white"

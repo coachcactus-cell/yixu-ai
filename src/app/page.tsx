@@ -18,6 +18,7 @@ const TABS = [
 
 export default function AppPage() {
   const [activeTab, setActiveTab] = useState("home");
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   return (
     <div className="page-container">
@@ -25,10 +26,13 @@ export default function AppPage() {
       {activeTab === "home" && <ChatPage />}
       {activeTab === "yijing" && <YijingPage />}
       {activeTab === "calendar" && <CalendarPage />}
-      {activeTab === "assessment" && <AssessmentPage />}
+      {activeTab === "assessment" && (
+        <AssessmentPage onFullscreenChange={setIsFullscreen} />
+      )}
       {activeTab === "profile" && <ProfilePage />}
 
-      {/* Bottom Tab Bar */}
+      {/* Bottom Tab Bar — 全屏模式隱藏 */}
+      {!isFullscreen && (
       <nav className="tab-bar">
         {TABS.map((tab) => {
           const Icon = tab.icon;
@@ -45,6 +49,7 @@ export default function AppPage() {
           );
         })}
       </nav>
+      )}
     </div>
   );
 }
