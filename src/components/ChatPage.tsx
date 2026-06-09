@@ -288,12 +288,12 @@ export default function ChatPage() {
           </p>
 
           {/* Large Cartoon Avatar — casual shirt with iPad */}
-          <div className="relative mb-10">
-            <div className="absolute inset-0 w-64 h-64 mx-auto rounded-full bg-gradient-to-b from-[#fdf8ed]/80 via-[#fdf8ed]/40 to-transparent" />
+          <div className="relative mb-10 flex justify-center">
+            <div className="absolute w-48 h-80 mx-auto rounded-full bg-gradient-to-b from-[#fdf8ed]/80 via-[#fdf8ed]/40 to-transparent" />
             <img
-              src="/cartoon-casual.png?v=3"
-              alt="亦须先生"
-              className="relative w-56 h-56 object-contain mx-auto drop-shadow-xl"
+              src="/cartoon-casual.png?v=4"
+              alt="亦须先生全身像"
+              className="relative w-44 h-auto object-contain mx-auto drop-shadow-xl"
               style={{ filter: "drop-shadow(0 8px 24px rgba(201,168,76,0.2))" }}
             />
           </div>
