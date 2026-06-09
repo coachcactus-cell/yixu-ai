@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Clock, Sparkles, ArrowRight, Trash2 } from "lucide-react";
+import { Send, Clock, Sparkles, ArrowRight, Trash2, Mic, MicOff } from "lucide-react";
 
 interface Message {
   id: string;
@@ -124,7 +124,53 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [timerLeft, setTimerLeft] = useState(900);
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
+
+  // 語音辨識初始化
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      setSpeechSupported(true);
+      const recognition = new SpeechRecognition();
+      recognition.lang = "zh-CN";
+      recognition.interimResults = true;
+      recognition.continuous = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = (event: any) => {
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        setInput(transcript);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.onerror = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+    }
+  }, []);
+
+  const toggleListening = useCallback(() => {
+    if (!recognitionRef.current) return;
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  }, [isListening]);
 
   // 頁面載入時恢復計時器（不跳過 landing page）
   useEffect(() => {
@@ -418,12 +464,30 @@ export default function ChatPage() {
       {/* Input Area */}
       <div className="sticky bottom-0 bg-white/95 backdrop-blur-md px-4 py-3 border-t border-[#e8e8e8]">
         <div className="flex items-center gap-2">
+          {/* 麥克風按鈕 */}
+          {speechSupported && timerLeft > 0 && (
+            <button
+              onClick={toggleListening}
+              className={`w-11 h-11 rounded-full flex items-center justify-center transition-all flex-shrink-0 ${
+                isListening
+                  ? "bg-red-500 shadow-lg shadow-red-500/30 animate-pulse"
+                  : "bg-[#f5f5f5] hover:bg-[#eeece8] active:scale-95"
+              }`}
+              title={isListening ? "停止语音输入" : "语音输入"}
+            >
+              {isListening ? (
+                <MicOff size={18} className="text-white" />
+              ) : (
+                <Mic size={18} className="text-[#c9a84c]" />
+              )}
+            </button>
+          )}
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={timerLeft > 0 ? "说出你的困扰..." : "今日对话限额已用完"}
+            placeholder={isListening ? "正在聆听..." : timerLeft > 0 ? "说出你的困扰..." : "今日对话限额已用完"}
             disabled={timerLeft <= 0}
             className="chat-input flex-1"
           />
@@ -435,6 +499,11 @@ export default function ChatPage() {
             <Send size={18} className="text-white" />
           </button>
         </div>
+        {isListening && (
+          <p className="text-xs text-[#c9a84c] mt-1.5 text-center font-medium">
+            🎤 正在聆听，请说话...
+          </p>
+        )}
       </div>
     </div>
   );
