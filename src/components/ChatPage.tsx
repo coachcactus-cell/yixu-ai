@@ -128,8 +128,12 @@ export default function ChatPage() {
   const [speechSupported, setSpeechSupported] = useState(false);
   const [speechLang, setSpeechLang] = useState<"zh-CN" | "zh-HK">("zh-HK");
   const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState(false); // WhatsApp 式按住錄音
+  const [recordingSupported, setRecordingSupported] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   // TTS 朗讀（瀏覽器原生 SpeechSynthesis，$0）
   const speakMessage = useCallback((text: string, id: string) => {
@@ -168,6 +172,171 @@ export default function ChatPage() {
     }
   }, []);
 
+  // MediaRecorder 支援檢測（WhatsApp 式錄音）
+  useEffect(() => {
+    if (typeof window !== "undefined" && navigator.mediaDevices?.getUserMedia) {
+      setRecordingSupported(true);
+    }
+  }, []);
+
+  // WhatsApp 式按住錄音邏輯
+  const startRecording = useCallback(async () => {
+    if (!recordingSupported) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+          ? "audio/webm;codecs=opus"
+          : "audio/webm",
+      });
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        // 停止所有音軌
+        stream.getTracks().forEach((t) => t.stop());
+        // 如果 Web Speech 冇結果，用 Whisper fallback（此處暫留）
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+
+      // 同時啟動 Web Speech Recognition
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.start();
+          setIsListening(true);
+        } catch { /* recognition may already be started */ }
+      }
+    } catch (e) {
+      console.log("Recording start failed:", e);
+      setRecordingSupported(false);
+    }
+  }, [recordingSupported]);
+
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+      mediaRecorderRef.current.stop();
+    }
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch { /* ignore */ }
+    }
+    setIsRecording(false);
+    setIsListening(false);
+
+    // 錄音結束後，如果有 recognition 結果，自動 send
+    setTimeout(() => {
+      const transcript = (recognitionRef.current as any)?._lastTranscript;
+      if (transcript && transcript.trim()) {
+        setInput(transcript);
+        // 標記自動發送
+        (window as any).__yixuAutoSend = transcript.trim();
+      }
+    }, 300);
+  }, []);
+
+  // 抽出 send 邏輯，方便 handleSend 同錄音 auto-send 共用
+  const doSend = useCallback(async (text: string) => {
+    if (!text.trim() || isLoading || timerLeft <= 0) return;
+
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: text.trim(),
+    };
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
+    setInput("");
+    setIsLoading(true);
+
+    const aiId = (Date.now() + 1).toString();
+    setMessages((prev) => [...prev, { id: aiId, role: "assistant", content: "" }]);
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: updatedMessages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      });
+
+      if (!response.ok) throw new Error("API error");
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("No stream");
+
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let fullContent = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed || !trimmed.startsWith("data:")) continue;
+          const data = trimmed.slice(5).trim();
+          if (data === "[DONE]") continue;
+          try {
+            const parsed = JSON.parse(data);
+            if (parsed.content) {
+              fullContent += parsed.content;
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === aiId ? { ...m, content: fullContent } : m
+                )
+              );
+            }
+          } catch {}
+        }
+      }
+
+      if (!fullContent) {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === aiId
+              ? { ...m, content: generateMockResponse(text.trim()) }
+              : m
+          )
+        );
+      }
+    } catch {
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === aiId
+            ? { ...m, content: generateMockResponse(text.trim()) }
+            : m
+        )
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [messages, isLoading, timerLeft]);
+
+  // 錄音自動 send effect（必須在 doSend 定義之後）
+  useEffect(() => {
+    const autoSend = (window as any).__yixuAutoSend;
+    if (autoSend && input === autoSend && !isLoading && timerLeft > 0) {
+      delete (window as any).__yixuAutoSend;
+      setTimeout(() => {
+        doSend(autoSend);
+      }, 200);
+    }
+  }, [input, doSend, isLoading, timerLeft]);
+
   // 語音辨識初始化（雙語支援：粵語+普通話）
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -199,6 +368,8 @@ export default function ChatPage() {
           transcript += event.results[i][0].transcript;
         }
         setInput(transcript);
+        // Store latest transcript for auto-send on recording end
+        (recognition as any)._lastTranscript = transcript;
       };
 
       recognition.onend = () => {
@@ -314,106 +485,8 @@ export default function ChatPage() {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading || timerLeft <= 0) return;
-
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: input.trim(),
-    };
-
-    const updatedMessages = [...messages, userMsg];
-    setMessages(updatedMessages);
-    setInput("");
-    setIsLoading(true);
-
-    // 預先創建一個空的 AI 消息，準備逐字填充
-    const aiId = (Date.now() + 1).toString();
-    const placeholderMsg: Message = {
-      id: aiId,
-      role: "assistant",
-      content: "",
-    };
-    setMessages((prev) => [...prev, placeholderMsg]);
-
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [...messages, userMsg].map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("API error");
-      }
-
-      // 讀取 SSE stream
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error("No stream");
-
-      const decoder = new TextDecoder();
-      let buffer = "";
-      let fullContent = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
-
-        for (const line of lines) {
-          const trimmed = line.trim();
-          if (!trimmed || !trimmed.startsWith("data:")) continue;
-          const data = trimmed.slice(5).trim();
-          if (data === "[DONE]") continue;
-
-          try {
-            const parsed = JSON.parse(data);
-            if (parsed.content) {
-              fullContent += parsed.content;
-              // 逐字更新 AI 消息內容（打字機效果）
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === aiId ? { ...m, content: fullContent } : m
-                )
-              );
-            }
-          } catch {
-            // skip unparseable
-          }
-        }
-      }
-
-      // 如果 stream 完咗但冇內容，fallback
-      if (!fullContent) {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === aiId
-              ? { ...m, content: generateMockResponse(input.trim()) }
-              : m
-          )
-        );
-      }
-    } catch {
-      // API 失敗時 fallback mock
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === aiId
-            ? { ...m, content: generateMockResponse(input.trim()) }
-            : m
-        )
-      );
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSend = () => {
+    doSend(input);
   };
 
   const handleSuggestionClick = (text: string) => {
@@ -626,22 +699,22 @@ export default function ChatPage() {
       {/* Input Area */}
       <div className="sticky bottom-0 bg-white/95 backdrop-blur-md px-4 py-3 border-t border-[#e8e8e8]">
         <div className="flex items-center gap-2">
-          {/* 麥克風按鈕 */}
-          {speechSupported && timerLeft > 0 && (
+          {/* WhatsApp 式按住錄音掣 */}
+          {recordingSupported && timerLeft > 0 && (
             <button
-              onClick={toggleListening}
-              className={`w-11 h-11 rounded-full flex items-center justify-center transition-all flex-shrink-0 ${
-                isListening
-                  ? "bg-red-500 shadow-lg shadow-red-500/30 animate-pulse"
+              onMouseDown={startRecording}
+              onMouseUp={stopRecording}
+              onMouseLeave={stopRecording}
+              onTouchStart={startRecording}
+              onTouchEnd={stopRecording}
+              className={`w-11 h-11 rounded-full flex items-center justify-center transition-all flex-shrink-0 select-none ${
+                isRecording
+                  ? "bg-red-500 shadow-lg shadow-red-500/30 scale-110"
                   : "bg-[#f5f5f5] hover:bg-[#eeece8] active:scale-95"
               }`}
-              title={isListening ? "停止语音输入" : "语音输入"}
+              title="按住录音，松开发送"
             >
-              {isListening ? (
-                <MicOff size={18} className="text-white" />
-              ) : (
-                <Mic size={18} className="text-[#c9a84c]" />
-              )}
+              <Mic size={18} className={isRecording ? "text-white" : "text-[#c9a84c]"} />
             </button>
           )}
           <input
@@ -649,7 +722,15 @@ export default function ChatPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={isListening ? "正在聆听..." : timerLeft > 0 ? "说出你的困扰..." : "今日对话限额已用完"}
+            placeholder={
+              isRecording
+                ? "🎤 正在录音，松开发送..."
+                : isListening
+                ? "正在聆听..."
+                : timerLeft > 0
+                ? "说出你的困扰..."
+                : "今日对话限额已用完"
+            }
             disabled={timerLeft <= 0}
             className="chat-input flex-1"
           />
@@ -661,10 +742,10 @@ export default function ChatPage() {
             <Send size={18} className="text-white" />
           </button>
         </div>
-        {/* 語言切換 + 狀態提示 */}
+        {/* 語言切換 + 錄音狀態 */}
         <div className="flex items-center justify-between mt-1.5">
           <div className="flex items-center gap-1">
-            {speechSupported && (
+            {recordingSupported && (
               <button
                 onClick={() => setSpeechLang(speechLang === "zh-HK" ? "zh-CN" : "zh-HK")}
                 className="text-xs text-[#999999] hover:text-[#c9a84c] transition-colors px-2 py-0.5 rounded-full border border-[#e8e8e8]"
@@ -674,7 +755,12 @@ export default function ChatPage() {
               </button>
             )}
           </div>
-          {isListening && (
+          {isRecording && (
+            <p className="text-xs text-red-500 font-medium animate-pulse">
+              🔴 录音中，松开发送...
+            </p>
+          )}
+          {isListening && !isRecording && (
             <p className="text-xs text-[#c9a84c] font-medium">
               🎤 正在聆听...
             </p>
