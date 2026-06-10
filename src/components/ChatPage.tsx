@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Clock, Sparkles, ArrowRight, Trash2, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
+import { Send, Clock, Sparkles, ArrowRight, Trash2, Volume2, VolumeX } from "lucide-react";
 
 interface Message {
   id: string;
@@ -699,38 +699,12 @@ export default function ChatPage() {
       {/* Input Area */}
       <div className="sticky bottom-0 bg-white/95 backdrop-blur-md px-4 py-3 border-t border-[#e8e8e8]">
         <div className="flex items-center gap-2">
-          {/* WhatsApp 式按住錄音掣 */}
-          {recordingSupported && timerLeft > 0 && (
-            <button
-              onMouseDown={startRecording}
-              onMouseUp={stopRecording}
-              onMouseLeave={stopRecording}
-              onTouchStart={startRecording}
-              onTouchEnd={stopRecording}
-              className={`w-11 h-11 rounded-full flex items-center justify-center transition-all flex-shrink-0 select-none ${
-                isRecording
-                  ? "bg-red-500 shadow-lg shadow-red-500/30 scale-110"
-                  : "bg-[#f5f5f5] hover:bg-[#eeece8] active:scale-95"
-              }`}
-              title="按住录音，松开发送"
-            >
-              <Mic size={18} className={isRecording ? "text-white" : "text-[#c9a84c]"} />
-            </button>
-          )}
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={
-              isRecording
-                ? "🎤 正在录音，松开发送..."
-                : isListening
-                ? "正在聆听..."
-                : timerLeft > 0
-                ? "说出你的困扰..."
-                : "今日对话限额已用完"
-            }
+            placeholder={timerLeft > 0 ? "说出你的困扰..." : "今日对话限额已用完"}
             disabled={timerLeft <= 0}
             className="chat-input flex-1"
           />
@@ -743,29 +717,6 @@ export default function ChatPage() {
           </button>
         </div>
         {/* 語言切換 + 錄音狀態 */}
-        <div className="flex items-center justify-between mt-1.5">
-          <div className="flex items-center gap-1">
-            {recordingSupported && (
-              <button
-                onClick={() => setSpeechLang(speechLang === "zh-HK" ? "zh-CN" : "zh-HK")}
-                className="text-xs text-[#999999] hover:text-[#c9a84c] transition-colors px-2 py-0.5 rounded-full border border-[#e8e8e8]"
-                title="切換語音辨識語言"
-              >
-                {speechLang === "zh-HK" ? "粵語 🎤" : "普通話 🎤"}
-              </button>
-            )}
-          </div>
-          {isRecording && (
-            <p className="text-xs text-red-500 font-medium animate-pulse">
-              🔴 录音中，松开发送...
-            </p>
-          )}
-          {isListening && !isRecording && (
-            <p className="text-xs text-[#c9a84c] font-medium">
-              🎤 正在聆听...
-            </p>
-          )}
-        </div>
       </div>
     </div>
   );
