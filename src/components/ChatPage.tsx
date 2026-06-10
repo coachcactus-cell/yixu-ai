@@ -181,49 +181,80 @@ export default function ChatPage() {
   useEffect(() => {
     if (!speechSupported) return;
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
+    if (!SpeechRecognition) {
+      setSpeechSupported(false);
+      return;
+    }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = speechLang;
-    recognition.interimResults = true;
-    recognition.continuous = false;
-    recognition.maxAlternatives = 1;
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = speechLang;
+      recognition.interimResults = true;
+      recognition.continuous = true; // 改為 continuous 避免手機自動結束
+      recognition.maxAlternatives = 1;
 
-    recognition.onresult = (event: any) => {
-      let transcript = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        transcript += event.results[i][0].transcript;
-      }
-      setInput(transcript);
-    };
+      recognition.onresult = (event: any) => {
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        setInput(transcript);
+      };
 
-    recognition.onend = () => {
-      setIsListening(false);
-    };
+      recognition.onend = () => {
+        setIsListening(false);
+      };
 
-    recognition.onerror = (event: any) => {
-      setIsListening(false);
-      // 如果是 network 錯誤，可能係大陸環境 webkitSpeechRecognition 用唔到
-      if (event.error === "network" || event.error === "not-allowed" || event.error === "service-not-allowed") {
-        setSpeechSupported(false);
-      }
-    };
+      recognition.onerror = (event: any) => {
+        console.log("Speech error:", event.error);
+        setIsListening(false);
+        // 手機常見 error: aborted, network, not-allowed
+        if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+          setSpeechSupported(false);
+        }
+        // aborted 係正常（用戶停止/切換），唔使禁用
+      };
 
-    recognitionRef.current = recognition;
+      recognitionRef.current = recognition;
+    } catch {
+      setSpeechSupported(false);
+    }
   }, [speechLang, speechSupported]);
 
   const toggleListening = useCallback(() => {
-    if (!recognitionRef.current) return;
+    const recognition = recognitionRef.current;
+    if (!recognition) {
+      setSpeechSupported(false);
+      return;
+    }
     if (isListening) {
-      recognitionRef.current.stop();
+      recognition.stop();
       setIsListening(false);
     } else {
-      // 嘗試啟動，失敗則標記不支援
+      // 手機需要用戶手勢後先可以 start
       try {
-        recognitionRef.current.start();
+        recognition.start();
         setIsListening(true);
-      } catch {
-        setSpeechSupported(false);
+      } catch (e: any) {
+        console.log("Speech start failed:", e);
+        // iOS 有時會報 already started，試 stop 再 start
+        if (e.name === "InvalidStateError") {
+          try {
+            recognition.stop();
+            setTimeout(() => {
+              try {
+                recognition.start();
+                setIsListening(true);
+              } catch {
+                setSpeechSupported(false);
+              }
+            }, 100);
+          } catch {
+            setSpeechSupported(false);
+          }
+        } else {
+          setSpeechSupported(false);
+        }
       }
     }
   }, [isListening]);
@@ -297,6 +328,15 @@ export default function ChatPage() {
     setInput("");
     setIsLoading(true);
 
+    // 預先創建一個空的 AI 消息，準備逐字填充
+    const aiId = (Date.now() + 1).toString();
+    const placeholderMsg: Message = {
+      id: aiId,
+      role: "assistant",
+      content: "",
+    };
+    setMessages((prev) => [...prev, placeholderMsg]);
+
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -309,30 +349,68 @@ export default function ChatPage() {
         }),
       });
 
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error("API error");
+      }
 
-      if (data.error) {
-        const aiMsg: Message = {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          content: generateMockResponse(input.trim()),
-        };
-        setMessages((prev) => [...prev, aiMsg]);
-      } else {
-        const aiMsg: Message = {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          content: data.content,
-        };
-        setMessages((prev) => [...prev, aiMsg]);
+      // 讀取 SSE stream
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("No stream");
+
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let fullContent = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed || !trimmed.startsWith("data:")) continue;
+          const data = trimmed.slice(5).trim();
+          if (data === "[DONE]") continue;
+
+          try {
+            const parsed = JSON.parse(data);
+            if (parsed.content) {
+              fullContent += parsed.content;
+              // 逐字更新 AI 消息內容（打字機效果）
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === aiId ? { ...m, content: fullContent } : m
+                )
+              );
+            }
+          } catch {
+            // skip unparseable
+          }
+        }
+      }
+
+      // 如果 stream 完咗但冇內容，fallback
+      if (!fullContent) {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === aiId
+              ? { ...m, content: generateMockResponse(input.trim()) }
+              : m
+          )
+        );
       }
     } catch {
-      const aiMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: generateMockResponse(input.trim()),
-      };
-      setMessages((prev) => [...prev, aiMsg]);
+      // API 失敗時 fallback mock
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === aiId
+            ? { ...m, content: generateMockResponse(input.trim()) }
+            : m
+        )
+      );
     } finally {
       setIsLoading(false);
     }
