@@ -174,7 +174,7 @@ export default function ChatPage() {
 
   // MediaRecorder 支援檢測（WhatsApp 式錄音）
   useEffect(() => {
-    if (typeof window !== "undefined" && navigator.mediaDevices?.getUserMedia) {
+    if (typeof window !== "undefined" && navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === "function") {
       setRecordingSupported(true);
     }
   }, []);

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Brain, Heart, Sparkles, Users, ArrowRight, Lock } from "lucide-react";
+import { Brain, Heart, Sparkles, Users, ArrowRight, Lock, Hexagon } from "lucide-react";
 import ChakraAssessmentPage from "@/components/ChakraAssessmentPage";
+import EnneagramPage from "@/components/EnneagramPage";
 
-type ViewMode = "list" | "chakra-quiz";
+type ViewMode = "list" | "chakra-quiz" | "enneagram-quiz";
 
 const ASSESSMENTS = [
   {
@@ -14,6 +15,16 @@ const ASSESSMENTS = [
     icon: Sparkles,
     price: "¥9.90",
     count: "1,286+ 人已測",
+    available: true,
+    color: "#c9a84c",
+  },
+  {
+    id: "enneagram",
+    title: "九型人格测试",
+    desc: "126 题精准定位你的核心型号 + Wing 翼型",
+    icon: Hexagon,
+    price: "免费",
+    count: "1,500+ 人已测",
     available: true,
     color: "#c9a84c",
   },
@@ -51,6 +62,11 @@ export default function AssessmentPage({
     onFullscreenChange?.(true);
   }, [onFullscreenChange]);
 
+  const handleStartEnneagram = useCallback(() => {
+    setView("enneagram-quiz");
+    onFullscreenChange?.(true);
+  }, [onFullscreenChange]);
+
   const handleBackToList = useCallback(() => {
     setView("list");
     onFullscreenChange?.(false);
@@ -59,6 +75,11 @@ export default function AssessmentPage({
   // 如果進入脈輪測評流程，全屏接管
   if (view === "chakra-quiz") {
     return <ChakraAssessmentPage onBack={handleBackToList} />;
+  }
+
+  // 如果進入九型人格測評流程，全屏接管
+  if (view === "enneagram-quiz") {
+    return <EnneagramPage onBack={handleBackToList} />;
   }
 
   return (
@@ -120,7 +141,7 @@ export default function AssessmentPage({
                         {a.available ? (
                           <button
                             className="btn-primary text-sm py-2 px-4"
-                            onClick={handleStartChakra}
+                            onClick={a.id === "enneagram" ? handleStartEnneagram : handleStartChakra}
                           >
                             開始測評
                             <ArrowRight size={14} />
