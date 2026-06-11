@@ -462,7 +462,7 @@ export default function YijingPage() {
         <div className="flex items-center gap-2">
           <Compass size={22} className="text-[#c9a84c]" />
           <div>
-            <h1 className="text-xl font-bold text-[#1a1a1a] font-song">点卦问事</h1>
+            <h1 className="text-xl font-bold text-[#1a1a1a] font-song">掛住心掛卦</h1>
             <p className="text-sm text-[#666666] mt-1">
               梅花易数 × Sino-NLP 理解层次
             </p>
@@ -475,7 +475,7 @@ export default function YijingPage() {
         <div className="card bg-gradient-to-br from-[#c9a84c]/5 to-[#fdf8ed] border-[#c9a84c]/20 mt-4">
           <div className="flex items-center gap-2 mb-2">
             <Sparkles size={18} className="text-[#c9a84c]" />
-            <span className="text-sm font-semibold text-[#c9a84c]">点卦问事</span>
+            <span className="text-sm font-semibold text-[#c9a84c]">掛住心掛卦</span>
           </div>
           <p className="text-sm text-[#666666] leading-relaxed">
             以梅花易数先天八卦起卦，结合Sino-NLP理解层次模型，将易经384爻辞智慧转化为现代身心指引。两个入口，两种问法。
