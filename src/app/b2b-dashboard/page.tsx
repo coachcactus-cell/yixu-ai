@@ -34,8 +34,20 @@ export default function B2BDashboardPage() {
       if (data.success) {
         setStats(data.stats);
         setLoggedIn(true);
+      } else {
+        // 即使 API 唔返數據，超級管理員碼都放行
+        if (cid === "yixu-founder") {
+          setStats({ totalAssessments: 0, byType: { enneagram: 0, chakra: 0, yijing: 0 }, lastActivity: 0 });
+          setLoggedIn(true);
+        }
       }
-    } catch { /* ignore */ }
+    } catch {
+      // API fail 但超級管理員碼都放行
+      if (cid === "yixu-founder") {
+        setStats({ totalAssessments: 0, byType: { enneagram: 0, chakra: 0, yijing: 0 }, lastActivity: 0 });
+        setLoggedIn(true);
+      }
+    }
     setLoading(false);
   };
 

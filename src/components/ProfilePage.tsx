@@ -213,6 +213,9 @@ export default function ProfilePage() {
               <p className="text-xs text-[#ccc] mt-3 text-center">
                 未有邀請碼？請加微信 859022196 申請
               </p>
+              <p className="text-xs text-[#c9a84c] mt-2 text-center font-mono tracking-wider">
+                測試碼：yixu-demo
+              </p>
             </div>
           </div>
         )}

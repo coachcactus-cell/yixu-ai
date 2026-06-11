@@ -33,9 +33,41 @@ export interface AssessmentRecord {
   createdAt: number;
 }
 
+// ── 超級管理員（寫死，不受 deploy 影響）──
+const SUPER_ADMIN = {
+  id: "yixu-founder",
+  wechatId: "859022196",
+  companyName: "YIXU HEALING 總部",
+  plan: "pro" as const,
+  trialStart: 0,
+  trialEnd: 9999999999999,
+  subscriptionEnd: 9999999999999,
+  features: { enneagram: true, chakra: true, yijing: true, tarot: true },
+  createdAt: 0,
+  status: "active" as const,
+};
+
+// ── 預設演示客戶（寫死，方便測試）──
+const DEMO_CLIENT = {
+  id: "yixu-demo",
+  wechatId: "demo",
+  companyName: "演示公司",
+  plan: "trial" as const,
+  trialStart: Date.now(),
+  trialEnd: Date.now() + 7 * 24 * 60 * 60 * 1000,
+  subscriptionEnd: 0,
+  features: { enneagram: true, chakra: true, yijing: true, tarot: false },
+  createdAt: Date.now(),
+  status: "active" as const,
+};
+
 // ── In-Memory Store (開發用) ──
 const clients = new Map<string, B2BClient>();
 const records: AssessmentRecord[] = [];
+
+// 初始化：寫死嘅帳號永遠存在
+clients.set(SUPER_ADMIN.id, SUPER_ADMIN);
+clients.set(DEMO_CLIENT.id, DEMO_CLIENT);
 
 // ── CRUD ──
 
