@@ -22,7 +22,7 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
   );
   const allAnswered = pageQs.every((q) => answers[q.id]);
 
-  // 計分
+  // 计分
   const scores = useMemo(() => {
     const s: Record<number, number> = {};
     for (let i = 1; i <= 9; i++) s[i] = 0;
@@ -114,7 +114,7 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
             <span className="text-sm text-[#999]">{page + 1}/{totalPages}</span>
           </div>
           {/* 進度條 */}
-          <div className="mt-2 h-1.5 bg-[#eeece8] rounded-full overflow-hidden">
+          <div className="mt-2 h-1.5 bg-[#eee8e8] rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-[#c9a84c] to-[#b89430] transition-all duration-300"
               style={{ width: `${((page + 1) / totalPages) * 100}%` }}
@@ -182,6 +182,8 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
   const mainType = enneagramTypes.find((t) => t.id === result.main)!;
   const wingType = enneagramTypes.find((t) => t.id === result.wing)!;
 
+  const [showFull, setShowFull] = useState(false);
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
@@ -236,69 +238,96 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
           </div>
         </div>
 
-        {/* 核心恐懼/渴望 */}
-        <div className="mt-4 card">
-          <h3 className="font-bold text-[#1a1a1a] mb-3">核心驱动力</h3>
-          <div className="space-y-3">
-            <div className="flex items-start gap-2">
-              <span className="text-base mt-0.5">😰</span>
-              <div>
-                <p className="text-xs text-[#999]">核心恐惧</p>
-                <p className="text-sm text-[#1a1a1a]">{mainType.coreFear}</p>
+        {/* 價值遞進：免費版只顯示部分 + 引導解鎖 */}
+        {showFull ? (
+          <>
+            {/* 核心恐懼/渴望 */}
+            <div className="mt-4 card">
+              <h3 className="font-bold text-[#1a1a1a] mb-3">核心驱动力</h3>
+              <div className="space-y-3">
+                <div className="flex items-start gap-2">
+                  <span className="text-base mt-0.5">😰</span>
+                  <div>
+                    <p className="text-xs text-[#999]">核心恐惧</p>
+                    <p className="text-sm text-[#1a1a1a]">{mainType.coreFear}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-base mt-0.5">💫</span>
+                  <div>
+                    <p className="text-xs text-[#999]">核心渴望</p>
+                    <p className="text-sm text-[#1a1a1a]">{mainType.coreDesire}</p>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="flex items-start gap-2">
-              <span className="text-base mt-0.5">💫</span>
-              <div>
-                <p className="text-xs text-[#999]">核心渴望</p>
-                <p className="text-sm text-[#1a1a1a]">{mainType.coreDesire}</p>
+
+            {/* 性格概述 */}
+            <div className="mt-4 card">
+              <h3 className="font-bold text-[#1a1a1a] mb-2">性格概述</h3>
+              <p className="text-sm text-[#333] leading-relaxed">{mainType.overview}</p>
+            </div>
+
+            {/* 優勢/盲點 */}
+            <div className="mt-4 card">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h4 className="font-bold text-[#c9a84c] text-sm mb-2">✨ 优势</h4>
+                  <ul className="space-y-1.5">
+                    {mainType.strengths.map((s, i) => (
+                      <li key={i} className="text-xs text-[#333] leading-relaxed">· {s}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-bold text-[#8a9bae] text-sm mb-2">👁 盲点</h4>
+                  <ul className="space-y-1.5">
+                    {mainType.blindSpots.map((s, i) => (
+                      <li key={i} className="text-xs text-[#333] leading-relaxed">· {s}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* 性格概述 */}
-        <div className="mt-4 card">
-          <h3 className="font-bold text-[#1a1a1a] mb-2">性格概述</h3>
-          <p className="text-sm text-[#333] leading-relaxed">{mainType.overview}</p>
-        </div>
-
-        {/* 優勢/盲點 */}
-        <div className="mt-4 card">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="font-bold text-[#c9a84c] text-sm mb-2">✨ 优势</h4>
-              <ul className="space-y-1.5">
-                {mainType.strengths.map((s, i) => (
-                  <li key={i} className="text-xs text-[#333] leading-relaxed">· {s}</li>
-                ))}
-              </ul>
+            {/* Sino-NLP 解读 */}
+            <div className="mt-4 rounded-2xl bg-[#fdf8ed] border border-[#c9a84c]/20 p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-base">🙏</span>
+                <h3 className="font-bold text-[#c9a84c] font-song">亦须先生 · Sino-NLP 解读</h3>
+              </div>
+              <p className="text-sm text-[#333] leading-relaxed">{mainType.sinoxNlp}</p>
             </div>
-            <div>
-              <h4 className="font-bold text-[#8a9bae] text-sm mb-2">👁 盲点</h4>
-              <ul className="space-y-1.5">
-                {mainType.blindSpots.map((s, i) => (
-                  <li key={i} className="text-xs text-[#333] leading-relaxed">· {s}</li>
-                ))}
-              </ul>
+
+            {/* 修行方向 */}
+            <div className="mt-4 card">
+              <h3 className="font-bold text-[#1a1a1a] mb-2">🎯 修行方向</h3>
+              <p className="text-sm text-[#333] leading-relaxed">{mainType.growthTip}</p>
+            </div>
+          </>
+        ) : (
+          /* 免費版：只顯示部分，引導加微信 */
+          <div className="mt-6 card text-center">
+            <div className="text-4xl mb-3">🔓</div>
+            <h3 className="font-bold text-[#1a1a1a] mb-2">解锁完整报告</h3>
+            <p className="text-sm text-[#666] mb-4 leading-relaxed">
+              免费版已显示你的核心型号。<br/>
+              完整报告包含：9 型深度分析 + Sino-NLP 专属建议 + 个人成长路线图
+            </p>
+            <div className="space-y-3">
+              <button
+                onClick={() => setShowFull(true)}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-[#c9a84c] to-[#b89430] text-white font-bold text-sm shadow-lg shadow-[#c9a84c]/25 active:scale-95 transition-transform"
+              >
+                免费解锁完整报告
+              </button>
+              <p className="text-xs text-[#999]">
+                添加微信 <span className="text-[#c9a84c] font-bold">859022196</span>，备注「九型」
+              </p>
+              <p className="text-xs text-[#ccc]">亦须先生亲自解读你的类型 + 成长方向</p>
             </div>
           </div>
-        </div>
-
-        {/* Sino-NLP 解讀 */}
-        <div className="mt-4 rounded-2xl bg-[#fdf8ed] border border-[#c9a84c]/20 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-base">🙏</span>
-            <h3 className="font-bold text-[#c9a84c] font-song">亦须先生 · Sino-NLP 解读</h3>
-          </div>
-          <p className="text-sm text-[#333] leading-relaxed">{mainType.sinoxNlp}</p>
-        </div>
-
-        {/* 修行方向 */}
-        <div className="mt-4 card">
-          <h3 className="font-bold text-[#1a1a1a] mb-2">🎯 修行方向</h3>
-          <p className="text-sm text-[#333] leading-relaxed">{mainType.growthTip}</p>
-        </div>
+        )}
 
         {/* 重新測試 */}
         <button onClick={handleRestart} className="mt-6 w-full py-3 rounded-xl border border-[#c9a84c] text-[#c9a84c] font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform">

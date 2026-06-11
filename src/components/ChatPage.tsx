@@ -12,12 +12,14 @@ interface Message {
 const STORAGE_KEY = "yixu-chat-history";
 const MAX_HISTORY = 50;
 const TIMER_STORAGE_KEY = "yixu-timer-left";
+const MAX_DAILY_SECONDS = 600; // 10 分鐘每日免費
+const DAILY_RESET_KEY = "yixu-last-reset-date";
 
 const WELCOME_MESSAGE: Message = {
   id: "welcome",
   role: "assistant",
   content:
-    "你好，我是亦须AI 🙏\n\n修行路上，有什么困扰你？\n\n你可以随意问，我用传统经学及Sino-NLP，多维角度陪你聊。",
+    "你好，我是亦须AI 🙏\n\n修行路上，有什么困扰你？\n\n我们有 10 分钟免费对话时间，之后要等明日重置，或者你升级 VIP。",
 };
 
 /* ── 智慧建議輪替：按時段動態切換 ── */
@@ -100,14 +102,22 @@ function saveHistory(messages: Message[]) {
 }
 
 function loadTimerLeft(): number {
-  if (typeof window === "undefined") return 900;
+  if (typeof window === "undefined") return MAX_DAILY_SECONDS;
   try {
+    const today = new Date().toISOString().slice(0, 10);
+    const lastReset = localStorage.getItem(DAILY_RESET_KEY);
+    if (lastReset !== today) {
+      // 新的一天，重置計時器
+      localStorage.setItem(DAILY_RESET_KEY, today);
+      localStorage.setItem(TIMER_STORAGE_KEY, String(MAX_DAILY_SECONDS));
+      return MAX_DAILY_SECONDS;
+    }
     const saved = localStorage.getItem(TIMER_STORAGE_KEY);
-    if (!saved) return 900;
+    if (!saved) return MAX_DAILY_SECONDS;
     const val = parseInt(saved, 10);
-    return isNaN(val) ? 900 : Math.max(0, val);
+    return isNaN(val) ? MAX_DAILY_SECONDS : Math.max(0, val);
   } catch {
-    return 900;
+    return MAX_DAILY_SECONDS;
   }
 }
 
@@ -123,13 +133,17 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [timerLeft, setTimerLeft] = useState(900);
+  const [timerLeft, setTimerLeft] = useState(MAX_DAILY_SECONDS);
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
   const [speechLang, setSpeechLang] = useState<"zh-CN" | "zh-HK">("zh-HK");
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false); // WhatsApp 式按住錄音
   const [recordingSupported, setRecordingSupported] = useState(false);
+  const [showGift, setShowGift] = useState(false);
+  const [giftCard, setGiftCard] = useState<{ name: string; advice: string } | null>(null);
+  const lastMsgTimeRef = useRef<number>(Date.now());
+  const giftTimerRef = useRef<NodeJS.Timeout | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -450,11 +464,15 @@ export default function ChatPage() {
     }
   }, [timerLeft, started]);
 
-  // Countdown timer
+  // Countdown timer — 每日重置
   useEffect(() => {
     if (!started || timerLeft <= 0) return;
     const interval = setInterval(() => {
-      setTimerLeft((prev) => Math.max(0, prev - 1));
+      setTimerLeft((prev) => {
+        const next = Math.max(0, prev - 1);
+        saveTimerLeft(next);
+        return next;
+      });
     }, 1000);
     return () => clearInterval(interval);
   }, [started, timerLeft]);
@@ -462,6 +480,25 @@ export default function ChatPage() {
   // Auto scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // 每次有新消息，重設 dead air 計時器
+    lastMsgTimeRef.current = Date.now();
+    if (giftTimerRef.current) clearTimeout(giftTimerRef.current);
+    giftTimerRef.current = setTimeout(() => {
+      // 90 秒無新消息 → 送塔羅牌
+      const cards = [
+        { name: "初心", advice: "保持初心，不忘來時路。" },
+        { name: "突破", advice: "勇敢踏出舒適圈，突破就在當下。" },
+        { name: "放下", advice: "放下執念，才能看見新的可能。" },
+        { name: "觀照", advice: "不評判、不跟隨，只是觀照。" },
+        { name: "從容", advice: "事緩則圓，人緩則安。" },
+        { name: "守中", advice: "居中守正，不偏不倚。" },
+      ];
+      setGiftCard(cards[Math.floor(Math.random() * cards.length)]);
+      setShowGift(true);
+    }, 90000);
+    return () => {
+      if (giftTimerRef.current) clearTimeout(giftTimerRef.current);
+    };
   }, [messages]);
 
   const handleStart = useCallback(() => {
@@ -482,7 +519,7 @@ export default function ChatPage() {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+    return `${mins} 分 ${secs.toString().padStart(2, "0")} 秒`;
   };
 
   const handleSend = () => {
@@ -718,6 +755,69 @@ export default function ChatPage() {
         </div>
         {/* 語言切換 + 錄音狀態 */}
       </div>
+
+      {/* 90秒無對話送塔羅牌 */}
+      {showGift && giftCard && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40" onClick={() => setShowGift(false)}>
+          <div
+            className="w-full max-w-md bg-white rounded-t-2xl p-6 animate-slide-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center">
+              <div className="text-4xl mb-2">🙏</div>
+              <h3 className="text-lg font-bold text-[#1a1a1a] mb-1">再見！送你一個小錦囊</h3>
+              <p className="text-sm text-[#999] mb-4">亦須先生給你的小禮物</p>
+
+              <div className="card mb-4">
+                <div className="text-2xl mb-2">🃏</div>
+                <h4 className="font-bold text-[#c9a84c] mb-1">{giftCard.name}</h4>
+                <p className="text-sm text-[#333] leading-relaxed">{giftCard.advice}</p>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={async () => {
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+                    if (ctx) {
+                      canvas.width = 400;
+                      canvas.height = 300;
+                      ctx.fillStyle = "#fdf8ed";
+                      ctx.fillRect(0, 0, 400, 300);
+                      ctx.fillStyle = "#c9a84c";
+                      ctx.font = "bold 24px serif";
+                      ctx.textAlign = "center";
+                      ctx.fillText(giftCard.name, 200, 140);
+                      ctx.font = "14px sans-serif";
+                      ctx.fillStyle = "#333";
+                      ctx.fillText(giftCard.advice.slice(0, 30), 200, 180);
+                      canvas.toBlob((blob) => {
+                        if (blob) {
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = `亦須AI_${giftCard.name}.png`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        }
+                      });
+                    }
+                  }}
+                  className="flex-1 py-2.5 rounded-xl border border-[#c9a84c] text-[#c9a84c] text-sm font-bold"
+                >
+                  保存圖片
+                </button>
+                <button
+                  onClick={() => setShowGift(false)}
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#c9a84c] to-[#b89430] text-white text-sm font-bold"
+                >
+                  多謝先生
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

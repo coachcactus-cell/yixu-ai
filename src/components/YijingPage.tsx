@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Compass, Smartphone, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { Compass, Smartphone, Sparkles, ChevronDown, ChevronUp, Share2 } from "lucide-react";
+import html2canvas from "html2canvas";
 import {
   divineByPhone,
   divineByTime,
@@ -355,7 +356,25 @@ function ReportView({ result, onClose }: { result: DivinationResult; onClose: ()
             包含1000字深度解读，结合Sino-NLP体系与易经智慧的完整分析
           </p>
           <button className="btn-primary text-sm py-2.5 px-8">
-            解锁详细报告 · ¥9.90
+            解锁详细报告 · 付费
+          </button>
+        </div>
+
+        {/* 分享按鈕 */}
+        <div className="mt-3 flex gap-3">
+          <button
+            onClick={async () => {
+              const el = document.getElementById("yijing-share-card");
+              if (!el) return;
+              const canvas = await html2canvas(el, { backgroundColor: "#ffffff", scale: 2 });
+              const link = document.createElement("a");
+              link.download = `亦须AI_易卦_${hexagram.name}.png`;
+              link.href = canvas.toDataURL("image/png");
+              link.click();
+            }}
+            className="flex-1 py-3 rounded-xl border border-[#c9a84c] text-[#c9a84c] font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform"
+          >
+            <Share2 size={16} /> 保存分享图
           </button>
         </div>
       </div>
