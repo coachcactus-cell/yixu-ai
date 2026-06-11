@@ -169,18 +169,16 @@ export default function B2BDashboardPage() {
           </div>
           <div className="space-y-3">
             {[
-              { label: "九型人格", count: stats?.byType.enneagram || 0, color: "bg-[#c9a84c]", path: "/enneagram" },
-              { label: "7脈輪", count: stats?.byType.chakra || 0, color: "bg-purple-500", path: "/chakra" },
-              { label: "易經", count: stats?.byType.yijing || 0, color: "bg-blue-500", path: "/yijing" },
+              { label: "九型人格", count: stats?.byType.enneagram || 0, color: "bg-[#c9a84c]" },
+              { label: "7脈輪", count: stats?.byType.chakra || 0, color: "bg-purple-500" },
+              { label: "易經", count: stats?.byType.yijing || 0, color: "bg-blue-500" },
             ].map((item) => {
               const max = Math.max(stats?.byType.enneagram || 1, stats?.byType.chakra || 1, stats?.byType.yijing || 1);
               const pct = (item.count / max) * 100;
               return (
                 <div key={item.label}>
                   <div className="flex items-center justify-between mb-1">
-                    <Link href={item.path} className="text-sm text-[#333] hover:text-[#c9a84c] flex items-center gap-1 transition-colors">
-                      {item.label} <ArrowRight size={12} />
-                    </Link>
+                    <span className="text-sm text-[#333]">{item.label}</span>
                     <span className="text-sm font-bold text-[#1a1a1a]">{item.count} 次</span>
                   </div>
                   <div className="h-2 bg-[#f5f5f5] rounded-full overflow-hidden">
@@ -192,20 +190,20 @@ export default function B2BDashboardPage() {
           </div>
         </div>
 
-        {/* 可用功能 — NOW CLICKABLE with real links */}
+        {/* 可用功能 — 全部指返主頁，因為 App 係 SPA tab 架構 */}
         <div className="mt-4 card">
           <h3 className="font-bold text-[#1a1a1a] mb-3">可用功能</h3>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { name: "九型人格", path: "/enneagram", available: true },
-              { name: "7脈輪", path: "/chakra", available: true },
-              { name: "易經", path: "/yijing", available: true },
-              { name: "孟子塔羅", path: "/tarot", available: false },
+              { name: "九型人格", tab: "assessment", available: true },
+              { name: "7脈輪", tab: "assessment", available: true },
+              { name: "易經占卜", tab: "yijing", available: true },
+              { name: "孟子塔羅", tab: "", available: false },
             ].map((item) => (
               item.available ? (
                 <Link
                   key={item.name}
-                  href={item.path}
+                  href={`/?tab=${item.tab}`}
                   className="flex items-center gap-2 px-3 py-3 rounded-lg bg-[#fdf8ed] hover:bg-[#f5e6c0] active:scale-[0.98] transition-all"
                 >
                   <div className="w-2 h-2 rounded-full bg-green-500" />
@@ -226,32 +224,22 @@ export default function B2BDashboardPage() {
           </div>
         </div>
 
-        {/* 快速入口 — big buttons */}
+        {/* 快速入口 — 全部指返主頁對應 tab */}
         <div className="mt-4 card">
           <h3 className="font-bold text-[#1a1a1a] mb-3">快速測驗入口</h3>
           <div className="space-y-2">
             <Link
-              href="/enneagram"
+              href="/?tab=assessment"
               className="flex items-center justify-between px-4 py-3 rounded-xl bg-gradient-to-r from-[#fdf8ed] to-[#faf3dd] hover:from-[#f5e6c0] hover:to-[#f0d890] active:scale-[0.98] transition-all"
             >
               <div>
-                <p className="font-bold text-[#1a1a1a]">九型人格測驗</p>
-                <p className="text-xs text-[#999]">36 題 · 約 15 分鐘</p>
+                <p className="font-bold text-[#1a1a1a]">測評中心</p>
+                <p className="text-xs text-[#999]">九型人格 · 7脈輪 · 心念檢測</p>
               </div>
               <ArrowRight size={18} className="text-[#c9a84c]" />
             </Link>
             <Link
-              href="/chakra"
-              className="flex items-center justify-between px-4 py-3 rounded-xl bg-gradient-to-r from-[#f5f0ff] to-[#ede0ff] hover:from-[#e8d8ff] hover:to-[#dcc8ff] active:scale-[0.98] transition-all"
-            >
-              <div>
-                <p className="font-bold text-[#1a1a1a]">7脈輪測驗</p>
-                <p className="text-xs text-[#999]">49 題 · 約 20 分鐘</p>
-              </div>
-              <ArrowRight size={18} className="text-purple-500" />
-            </Link>
-            <Link
-              href="/yijing"
+              href="/?tab=yijing"
               className="flex items-center justify-between px-4 py-3 rounded-xl bg-gradient-to-r from-[#f0f5ff] to-[#e0ecff] hover:from-[#d8e8ff] hover:to-[#c8dcff] active:scale-[0.98] transition-all"
             >
               <div>
@@ -259,6 +247,16 @@ export default function B2BDashboardPage() {
                 <p className="text-xs text-[#999]">6 爻起卦 · 即時解卦</p>
               </div>
               <ArrowRight size={18} className="text-blue-500" />
+            </Link>
+            <Link
+              href="/"
+              className="flex items-center justify-between px-4 py-3 rounded-xl bg-gradient-to-r from-[#f5f5f5] to-[#eeeeee] hover:from-[#e8e8e8] hover:to-[#e0e0e0] active:scale-[0.98] transition-all"
+            >
+              <div>
+                <p className="font-bold text-[#1a1a1a]">AI 對話療癒</p>
+                <p className="text-xs text-[#999]">Sino-NLP 智能對話 · 隨時隨地</p>
+              </div>
+              <ArrowRight size={18} className="text-[#666]" />
             </Link>
           </div>
         </div>
