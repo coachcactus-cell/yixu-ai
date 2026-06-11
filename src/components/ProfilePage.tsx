@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Star,
   Sparkles,
+  Building2,
 } from "lucide-react";
 
 const VIP_PLANS = [
@@ -32,6 +33,19 @@ const VIP_PLANS = [
 
 export default function ProfilePage() {
   const [showVIP, setShowVIP] = useState(false);
+  const [showB2B, setShowB2B] = useState(false);
+  const [inviteCode, setInviteCode] = useState("");
+  const [b2bError, setB2bError] = useState("");
+
+  // ── 邀請碼驗證 ──
+  const handleB2BLogin = async () => {
+    if (!inviteCode.trim()) {
+      setB2bError("請輸入邀請碼");
+      return;
+    }
+    // inviteCode 即係 clientId，直接帶去 Dashboard
+    window.location.href = `/b2b-dashboard?clientId=${encodeURIComponent(inviteCode.trim())}`;
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -156,6 +170,52 @@ export default function ProfilePage() {
             </button>
           ))}
         </div>
+
+        {/* 商務合作入口 */}
+        <div className="mt-4 space-y-1">
+          <button
+            onClick={() => setShowB2B(true)}
+            className="w-full card flex items-center justify-between py-3"
+          >
+            <div className="flex items-center gap-3">
+              <Building2 size={18} className="text-[#c9a84c]" />
+              <span className="text-sm text-[#1a1a1a]">B2B 商務合作</span>
+            </div>
+            <ChevronRight size={16} className="text-[#999999]" />
+          </button>
+        </div>
+
+        {/* B2B 邀請碼彈窗 */}
+        {showB2B && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => { setShowB2B(false); setB2bError(""); setInviteCode(""); }}>
+            <div className="bg-white rounded-2xl p-6 m-4 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+              <div className="text-center mb-4">
+                <Building2 size={36} className="mx-auto text-[#c9a84c] mb-2" />
+                <h3 className="text-lg font-bold text-[#1a1a1a]">B2B 商務合作</h3>
+                <p className="text-xs text-[#999] mt-1">請輸入邀請碼登入數據面板</p>
+              </div>
+              <input
+                type="text"
+                value={inviteCode}
+                onChange={(e) => { setInviteCode(e.target.value); setB2bError(""); }}
+                onKeyDown={(e) => e.key === "Enter" && handleB2BLogin()}
+                placeholder="輸入邀請碼"
+                className="w-full px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-lg tracking-widest outline-none focus:border-[#c9a84c]"
+                autoFocus
+              />
+              {b2bError && <p className="text-xs text-red-500 mt-2 text-center">{b2bError}</p>}
+              <button
+                onClick={handleB2BLogin}
+                className="mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-[#c9a84c] to-[#b89430] text-white font-bold"
+              >
+                登入
+              </button>
+              <p className="text-xs text-[#ccc] mt-3 text-center">
+                未有邀請碼？請加微信 859022196 申請
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="mt-8 text-center pb-4">
