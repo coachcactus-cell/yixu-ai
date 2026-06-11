@@ -2,8 +2,31 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://yixu-ai.online"),
   title: "亦须AI — Cactus AI",
   description: "Sino-NLP 中华身心语言学 × 传统经学 × 行为心理学 — 你的随身疗愈修行伙伴",
+  openGraph: {
+    title: "亦须AI — Cactus AI",
+    description: "Sino-NLP 中华身心语言学 × 传统经学 × 行为心理学 — 你的随身疗愈修行伙伴",
+    url: "https://yixu-ai.online",
+    siteName: "亦须AI",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "亦须AI — 你的隨身療癒修行伙伴",
+      },
+    ],
+    locale: "zh_HK",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "亦须AI — Cactus AI",
+    description: "Sino-NLP 中华身心语言学 × 传统经学 — 随身疗愈修行伙伴",
+    images: ["/og-image.png"],
+  },
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon-32.png",
