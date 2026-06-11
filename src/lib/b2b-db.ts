@@ -36,7 +36,7 @@ export interface AssessmentRecord {
 // ── 超級管理員（寫死，不受 deploy 影響）──
 const SUPER_ADMIN = {
   id: "yixu-founder",
-  wechatId: "859022196",
+  wechatId: process.env.FOUNDER_WECHAT_ID || "founder",
   companyName: "YIXU HEALING 總部",
   plan: "pro" as const,
   trialStart: 0,
@@ -116,14 +116,24 @@ export function listB2BClients(): B2BClient[] {
   return Array.from(clients.values()).sort((a, b) => b.createdAt - a.createdAt);
 }
 
-/** 更新客戶狀態（人手開通/停用） */
+/** 允許更新的欄位白名單 */
+const UPDATABLE_FIELDS = ["plan", "status", "subscriptionEnd", "features"] as const;
+type UpdatableField = typeof UPDATABLE_FIELDS[number];
+
+/** 更新客戶狀態（人手開通/停用）— 只允許白名單欄位 */
 export function updateB2BClient(
   id: string,
   updates: Partial<Pick<B2BClient, "plan" | "status" | "subscriptionEnd" | "features">>
 ): B2BClient | null {
   const client = clients.get(id);
   if (!client) return null;
-  Object.assign(client, updates);
+
+  // 只複製白名單中的欄位，防止注入 id/wechatId 等
+  for (const key of UPDATABLE_FIELDS) {
+    if (key in updates) {
+      (client as any)[key] = (updates as any)[key];
+    }
+  }
   clients.set(id, client);
   return client;
 }

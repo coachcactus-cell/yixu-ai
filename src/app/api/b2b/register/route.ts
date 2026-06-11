@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const { wechatId, companyName } = await request.json();
 
     if (!wechatId || !companyName) {
-      return NextResponse.json({ error: "請填寫微信號和公司名稱" }, { status: 400 });
+      return NextResponse.json({ success: false, error: "請填寫微信號和公司名稱" }, { status: 400 });
     }
 
     // 檢查是否已註冊
@@ -18,6 +18,7 @@ export async function POST(request: Request) {
     if (existing) {
       return NextResponse.json({
         success: true,
+        isExisting: true,
         client: existing,
         message: "你已註冊，以下是你的帳戶資訊",
       });
@@ -27,10 +28,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
+      isExisting: false,
       client,
       message: "註冊成功！你已獲得 7 日免費試用",
     });
   } catch (error) {
-    return NextResponse.json({ error: "註冊失敗" }, { status: 500 });
+    return NextResponse.json({ success: false, error: "註冊失敗" }, { status: 500 });
   }
 }
