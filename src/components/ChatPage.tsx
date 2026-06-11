@@ -322,7 +322,7 @@ export default function ChatPage() {
         setMessages((prev) =>
           prev.map((m) =>
             m.id === aiId
-              ? { ...m, content: generateMockResponse(text.trim()) }
+              ? { ...m, content: "抱歉，AI暂时未能回应，请稍后再试 🙏" }
               : m
           )
         );
@@ -331,7 +331,7 @@ export default function ChatPage() {
       setMessages((prev) =>
         prev.map((m) =>
           m.id === aiId
-            ? { ...m, content: generateMockResponse(text.trim()) }
+            ? { ...m, content: "网络不太稳定，请稍后再试 🙏" }
             : m
         )
       );
@@ -822,12 +822,3 @@ export default function ChatPage() {
   );
 }
 
-// Temporary mock response — will be replaced with real DeepSeek API
-function generateMockResponse(input: string): string {
-  const responses = [
-    "你这个问题，让我想起庄子讲的一句话：「泉涸，鱼相与处于陆，相呴以湿，相濡以沫，不如相忘于江湖。」\n\n有时候我们越用力去抓住一些东西，越把自己困住。不如试着退一步，用「观照」的角度去看看你当下的状况。\n\n你可以试着做一个简单的练习：闭上眼，想象你的困扰是一片云，你只是看着它飘过，不需要抓住它，也不需要推开它。\n\n感觉怎么样？",
-    "谢谢你愿意说出来 🙏\n\n从 Sino-NLP 的角度看，情绪不是敌人，而是信差。你现在感受到的，是内心深处有些东西想要告诉你。\n\n我建议你先做几下深呼吸，然后问自己三个问题：\n1. 这个感觉，身体哪个位置最强烈？\n2. 如果这个感觉可以说话，它想告诉我什么？\n3. 我需要什么，才能放松一些？\n\n慢慢来，不用急。",
-    "明白你的感受。\n\n儒家讲「修身齐家」，但修身之前，要先「诚意正心」。你现在的困扰，可能是内心有些东西还没诚实面对。\n\n我邀请你做一个小练习：找个安静的地方，写下你真正怕的是什么。不用修饰，直接写。写完之后，看着你写的东西，问自己：「这是事实，还是我的想象？」\n\n很多时候，我们害怕的东西，写出来之后就没那么可怕了。",
-  ];
-  return responses[Math.floor(Math.random() * responses.length)];
-}
