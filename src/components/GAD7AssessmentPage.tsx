@@ -95,10 +95,6 @@ function GAD7Intro({ onStart, onBack }: { onStart: () => void; onBack: () => voi
             </li>
             <li className="flex items-start gap-2">
               <span className="text-[#c9a84c] font-bold mt-0.5">•</span>
-              禁止截图保存及复制文字
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[#c9a84c] font-bold mt-0.5">•</span>
               本测评仅供参考，不作为医学诊断依据
             </li>
           </ul>
@@ -161,7 +157,7 @@ function GAD7Quiz({ onComplete }: { onComplete: (answers: Record<number, number>
             }}
           />
         </div>
-        <p className="text-base font-bold text-[#1a1a1a] mt-3">
+        <p className="text-xl font-bold text-[#1a1a1a] mt-3 px-1">
           📌 过去两个星期，你有多常被以下问题困扰？
         </p>
       </nav>

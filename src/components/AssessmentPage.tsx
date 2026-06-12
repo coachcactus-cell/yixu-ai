@@ -42,7 +42,7 @@ const ASSESSMENTS = [
   },
   {
     id: "pcl5",
-    title: "PCL-5 创伤压力筛查",
+    title: "PTSD 创伤压力筛查",
     desc: "20 题评估创伤后压力症状，DSM-5 国际标准量表",
     icon: ShieldAlert,
     price: "¥9.90",

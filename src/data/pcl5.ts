@@ -1,4 +1,5 @@
-// PCL-5 PTSD Checklist for DSM-5
+// PCL-5 PTSD 创伤压力筛查
+// PTSD Checklist for DSM-5
 // 20 题 · 0-4 计分 · 总分 0-80
 // 时间框架：过去一个月
 

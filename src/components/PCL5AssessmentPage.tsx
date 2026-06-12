@@ -60,8 +60,8 @@ function PCL5Intro({ onStart, onBack }: { onStart: () => void; onBack: () => voi
             <ChevronLeft size={24} />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-[#1a1a1a] font-song">PCL-5 PTSD 检查表</h1>
-            <p className="text-base text-[#666666] mt-0.5">PTSD Checklist for DSM-5</p>
+            <h1 className="text-2xl font-bold text-[#1a1a1a] font-song">PTSD 创伤压力筛查</h1>
+            <p className="text-base text-[#666666] mt-0.5">PCL-5 · PTSD Checklist for DSM-5</p>
           </div>
           <HomeLink />
         </div>
@@ -89,10 +89,6 @@ function PCL5Intro({ onStart, onBack }: { onStart: () => void; onBack: () => voi
             <li className="flex items-start gap-2">
               <span className="text-[#c9a84c] font-bold mt-0.5">•</span>
               0-4 分制：从"完全没有"到"极度严重"
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[#c9a84c] font-bold mt-0.5">•</span>
-              禁止截图保存及复制文字
             </li>
             <li className="flex items-start gap-2">
               <span className="text-[#c9a84c] font-bold mt-0.5">•</span>
@@ -157,7 +153,7 @@ function PCL5Quiz({ onComplete }: { onComplete: (answers: Record<number, number>
             }}
           />
         </div>
-        <p className="text-base font-bold text-[#1a1a1a] mt-3">
+        <p className="text-xl font-bold text-[#1a1a1a] mt-3 px-1">
           📌 过去一个月，以下问题对你的困扰程度如何？
         </p>
       </nav>
