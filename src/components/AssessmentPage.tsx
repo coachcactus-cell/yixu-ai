@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Brain, Heart, Sparkles, Users, ArrowRight, Lock, Hexagon, AlertTriangle, ShieldAlert } from "lucide-react";
+import { Brain, Heart, Sparkles, Users, ArrowRight, Lock, Hexagon, AlertTriangle, ShieldAlert, Activity, Leaf } from "lucide-react";
 import ChakraAssessmentPage from "@/components/ChakraAssessmentPage";
 import EnneagramPage from "@/components/EnneagramPage";
 import GAD7AssessmentPage from "@/components/GAD7AssessmentPage";
 import PCL5AssessmentPage from "@/components/PCL5AssessmentPage";
+import PHQ15AssessmentPage from "@/components/PHQ15AssessmentPage";
+import COREOMAssessmentPage from "@/components/COREOMAssessmentPage";
 
-type ViewMode = "list" | "chakra-quiz" | "enneagram-quiz" | "gad7-quiz" | "pcl5-quiz";
+type ViewMode = "list" | "chakra-quiz" | "enneagram-quiz" | "gad7-quiz" | "pcl5-quiz" | "phq15-quiz" | "coreom-quiz";
 
 const ASSESSMENTS = [
   {
@@ -19,6 +21,7 @@ const ASSESSMENTS = [
     count: "1,286+ 人已测",
     available: true,
     color: "#c9a84c",
+    category: "yixu",
   },
   {
     id: "enneagram",
@@ -29,6 +32,7 @@ const ASSESSMENTS = [
     count: "1,500+ 人已测",
     available: true,
     color: "#c9a84c",
+    category: "yixu",
   },
   {
     id: "gad7",
@@ -39,16 +43,40 @@ const ASSESSMENTS = [
     count: "已上线",
     available: true,
     color: "#7c9cd4",
+    category: "clinical",
   },
   {
     id: "pcl5",
     title: "PTSD 创伤压力筛查",
     desc: "20 题评估创伤后压力症状，DSM-5 国际标准量表",
     icon: ShieldAlert,
-    price: "¥9.90",
+    price: "免费",
     count: "已上线",
     available: true,
     color: "#9b7fd4",
+    category: "clinical",
+  },
+  {
+    id: "phq15",
+    title: "PHQ-15 躯体症状量表",
+    desc: "15 题筛查身体不适程度，含性别适配，DSM-5 国际标准量表",
+    icon: Activity,
+    price: "免费",
+    count: "已上线",
+    available: true,
+    color: "#7caacc",
+    category: "clinical",
+  },
+  {
+    id: "coreom",
+    title: "CORE-OM 临床结果评量",
+    desc: "34 题全面评估心理困扰，含反向计分与自杀风险筛查",
+    icon: Leaf,
+    price: "免费",
+    count: "已上线",
+    available: true,
+    color: "#7dba9a",
+    category: "clinical",
   },
   {
     id: "attachment",
@@ -59,6 +87,7 @@ const ASSESSMENTS = [
     count: "即将上线",
     available: false,
     color: "#888888",
+    category: "coming",
   },
   {
     id: "emotion",
@@ -69,6 +98,7 @@ const ASSESSMENTS = [
     count: "即将上线",
     available: false,
     color: "#888888",
+    category: "coming",
   },
 ];
 
@@ -99,6 +129,16 @@ export default function AssessmentPage({
     onFullscreenChange?.(true);
   }, [onFullscreenChange]);
 
+  const handleStartPHQ15 = useCallback(() => {
+    setView("phq15-quiz");
+    onFullscreenChange?.(true);
+  }, [onFullscreenChange]);
+
+  const handleStartCOREOM = useCallback(() => {
+    setView("coreom-quiz");
+    onFullscreenChange?.(true);
+  }, [onFullscreenChange]);
+
   const handleBackToList = useCallback(() => {
     setView("list");
     onFullscreenChange?.(false);
@@ -109,6 +149,8 @@ export default function AssessmentPage({
     enneagram: handleStartEnneagram,
     gad7: handleStartGAD7,
     pcl5: handleStartPCL5,
+    phq15: handleStartPHQ15,
+    coreom: handleStartCOREOM,
   };
 
   if (view === "chakra-quiz") {
@@ -125,6 +167,14 @@ export default function AssessmentPage({
 
   if (view === "pcl5-quiz") {
     return <PCL5AssessmentPage onBack={handleBackToList} />;
+  }
+
+  if (view === "phq15-quiz") {
+    return <PHQ15AssessmentPage onBack={handleBackToList} />;
+  }
+
+  if (view === "coreom-quiz") {
+    return <COREOMAssessmentPage onBack={handleBackToList} />;
   }
 
   return (
@@ -152,14 +202,14 @@ export default function AssessmentPage({
           </p>
         </div>
 
-        {/* 专业心理量表专区 */}
+        {/* 国际标准心理量表专区 */}
         <div className="mt-4">
           <h3 className="text-sm font-semibold text-[#888] mb-2 flex items-center gap-1.5">
             <ShieldAlert size={14} className="text-[#7c9cd4]" />
             国际标准心理量表
           </h3>
           <div className="space-y-3">
-            {ASSESSMENTS.filter((a) => a.id === "gad7" || a.id === "pcl5").map((a) => {
+            {ASSESSMENTS.filter((a) => a.category === "clinical").map((a) => {
               const Icon = a.icon;
               return (
                 <div key={a.id} className="card" style={{ opacity: a.available ? 1 : 0.6 }}>
@@ -205,7 +255,7 @@ export default function AssessmentPage({
             亦须原创测评
           </h3>
           <div className="space-y-3">
-            {ASSESSMENTS.filter((a) => a.id === "chakra" || a.id === "enneagram").map((a) => {
+            {ASSESSMENTS.filter((a) => a.category === "yixu").map((a) => {
               const Icon = a.icon;
               return (
                 <div key={a.id} className="card" style={{ opacity: a.available ? 1 : 0.6 }}>
@@ -248,7 +298,7 @@ export default function AssessmentPage({
         <div className="mt-4">
           <h3 className="text-sm font-semibold text-[#888] mb-2">即将上线</h3>
           <div className="space-y-3">
-            {ASSESSMENTS.filter((a) => !a.available).map((a) => {
+            {ASSESSMENTS.filter((a) => a.category === "coming").map((a) => {
               const Icon = a.icon;
               return (
                 <div key={a.id} className="card" style={{ opacity: 0.6 }}>
