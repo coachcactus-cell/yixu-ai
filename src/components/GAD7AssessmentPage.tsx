@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback, useMemo, useRef } from "react";
-import { ChevronLeft, Sparkles, Download, Share2, Phone } from "lucide-react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import { ChevronLeft, Sparkles, Download, Share2, Phone, Home } from "lucide-react";
 import html2canvas from "html2canvas";
 import { GAD7_QUESTIONS, GAD7_OPTIONS, TOTAL_GAD7, calcGAD7Result, type GAD7Result } from "@/data/gad7";
 import { useUser } from "@/hooks/useUser";
@@ -22,6 +22,40 @@ const severityBgMap: Record<string, string> = {
   severe: "#fce4e4",
 };
 
+// ─── 禁止截图 + 复制的 Hook ───
+function useQuizProtection() {
+  useEffect(() => {
+    const preventCopy = (e: Event) => { e.preventDefault(); };
+    const preventScreenshot = () => {
+      // 检测截屏行为（Android 音量键组合）
+      document.body.style.filter = "none";
+    };
+
+    document.addEventListener("copy", preventCopy);
+    document.addEventListener("cut", preventCopy);
+    document.addEventListener("contextmenu", preventCopy);
+
+    return () => {
+      document.removeEventListener("copy", preventCopy);
+      document.removeEventListener("cut", preventCopy);
+      document.removeEventListener("contextmenu", preventCopy);
+    };
+  }, []);
+}
+
+// ─── 回首页链接 ───
+function HomeLink() {
+  return (
+    <button
+      onClick={() => window.location.href = "/"}
+      className="text-[#c9a84c] text-base flex items-center gap-1 shrink-0"
+    >
+      <Home size={18} />
+      <span>首页</span>
+    </button>
+  );
+}
+
 // ─── 介绍页 ───
 function GAD7Intro({ onStart, onBack }: { onStart: () => void; onBack: () => void }) {
   return (
@@ -29,12 +63,13 @@ function GAD7Intro({ onStart, onBack }: { onStart: () => void; onBack: () => voi
       <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
         <div className="flex items-center gap-2">
           <button onClick={onBack} className="text-[#c9a84c]">
-            <ChevronLeft size={22} />
+            <ChevronLeft size={24} />
           </button>
           <div>
-            <h1 className="text-xl font-bold text-[#1a1a1a] font-song">GAD-7 广泛性焦虑问卷</h1>
-            <p className="text-sm text-[#666666] mt-0.5">Generalized Anxiety Disorder Assessment (DSM-5)</p>
+            <h1 className="text-2xl font-bold text-[#1a1a1a] font-song">GAD-7 广泛性焦虑问卷</h1>
+            <p className="text-base text-[#666666] mt-0.5">Generalized Anxiety Disorder Assessment (DSM-5)</p>
           </div>
+          <HomeLink />
         </div>
       </header>
 
@@ -42,10 +77,10 @@ function GAD7Intro({ onStart, onBack }: { onStart: () => void; onBack: () => voi
         {/* 说明卡 */}
         <div className="mt-6 card">
           <div className="flex items-center gap-2 mb-3">
-            <Sparkles size={18} className="text-[#c9a84c]" />
-            <span className="font-semibold text-[#1a1a1a]">测评须知</span>
+            <Sparkles size={20} className="text-[#c9a84c]" />
+            <span className="text-lg font-semibold text-[#1a1a1a]">测评须知</span>
           </div>
-          <ul className="space-y-2 text-sm text-[#666666]">
+          <ul className="space-y-2.5 text-base text-[#666666]">
             <li className="flex items-start gap-2">
               <span className="text-[#c9a84c] font-bold mt-0.5">•</span>
               共 {TOTAL_GAD7} 题，预计需时 2-3 分钟
@@ -54,9 +89,13 @@ function GAD7Intro({ onStart, onBack }: { onStart: () => void; onBack: () => voi
               <span className="text-[#c9a84c] font-bold mt-0.5">•</span>
               回顾过去两周的状况，选择最符合的选项
             </li>
+            <li className="flex items-start gap-2 font-bold text-[#1a1a1a]">
+              <span className="text-[#c9a84c] font-bold mt-0.5">•</span>
+              请看好问题后以第一感觉直觉尽快作答，即不必深思熟虑，考虑越多，结果越不准确。
+            </li>
             <li className="flex items-start gap-2">
               <span className="text-[#c9a84c] font-bold mt-0.5">•</span>
-              诚实作答才能获得准确结果
+              禁止截图保存及复制文字
             </li>
             <li className="flex items-start gap-2">
               <span className="text-[#c9a84c] font-bold mt-0.5">•</span>
@@ -67,15 +106,15 @@ function GAD7Intro({ onStart, onBack }: { onStart: () => void; onBack: () => voi
 
         {/* 金句 */}
         <div className="mt-4 px-2 py-4 text-center">
-          <p className="text-sm text-[#999999] italic font-song leading-relaxed">
+          <p className="text-base text-[#999999] italic font-song leading-relaxed">
             「焦虑不是软弱，而是你承受了太多。」
           </p>
-          <p className="text-sm text-[#999999] mt-1">—— 亦须先生</p>
+          <p className="text-base text-[#999999] mt-1">—— 亦须先生</p>
         </div>
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-[#e8e8e8] bg-white/95 backdrop-blur-md px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
-        <button onClick={onStart} className="btn-primary w-full text-base py-3.5">
+        <button onClick={onStart} className="btn-primary w-full text-lg py-3.5">
           开始测评
         </button>
       </div>
@@ -87,13 +126,13 @@ function GAD7Intro({ onStart, onBack }: { onStart: () => void; onBack: () => voi
 function GAD7Quiz({ onComplete }: { onComplete: (answers: Record<number, number>) => void }) {
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
+  useQuizProtection();
 
   const answeredCount = Object.keys(answers).length;
   const progress = Math.round((answeredCount / TOTAL_GAD7) * 100);
 
   const handleSelect = useCallback((score: number) => {
     setAnswers((prev) => ({ ...prev, [GAD7_QUESTIONS[currentQ].id]: score }));
-    // 自动跳到下一题
     if (currentQ < TOTAL_GAD7 - 1) {
       setTimeout(() => setCurrentQ((p) => p + 1), 200);
     }
@@ -103,12 +142,13 @@ function GAD7Quiz({ onComplete }: { onComplete: (answers: Record<number, number>
   const currentSelected = answers[GAD7_QUESTIONS[currentQ].id];
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-white quiz-protected">
       <nav className="sticky top-0 z-30 border-b border-[#e8e8e8] bg-white/95 backdrop-blur-md px-4 py-3">
         <div className="flex items-center gap-2 mb-2">
-          <Sparkles size={18} className="text-[#c9a84c]" />
-          <span className="text-sm font-semibold text-[#1a1a1a]">GAD-7 焦虑测评</span>
-          <span className="ml-auto text-sm text-[#666666]">
+          <HomeLink />
+          <Sparkles size={20} className="text-[#c9a84c]" />
+          <span className="text-base font-semibold text-[#1a1a1a]">GAD-7 焦虑测评</span>
+          <span className="ml-auto text-base text-[#666666]">
             {answeredCount}/{TOTAL_GAD7}
           </span>
         </div>
@@ -121,16 +161,16 @@ function GAD7Quiz({ onComplete }: { onComplete: (answers: Record<number, number>
             }}
           />
         </div>
-        <p className="text-xs text-[#999999] mt-2">
+        <p className="text-base font-bold text-[#1a1a1a] mt-3">
           📌 过去两个星期，你有多常被以下问题困扰？
         </p>
       </nav>
 
       <section className="flex-1 px-4 pt-6 pb-40">
-        <div className="mb-2 text-xs text-[#9b7fd4] font-semibold">
+        <div className="mb-2 text-base text-[#9b7fd4] font-semibold">
           第 {currentQ + 1} 题（共 {TOTAL_GAD7} 题）
         </div>
-        <h2 className="text-xl font-medium text-[#1a1a1a] leading-relaxed mb-8">
+        <h2 className="text-2xl font-bold text-[#1a1a1a] leading-relaxed mb-8">
           {GAD7_QUESTIONS[currentQ].text}
         </h2>
 
@@ -141,7 +181,7 @@ function GAD7Quiz({ onComplete }: { onComplete: (answers: Record<number, number>
               <button
                 key={opt.score}
                 onClick={() => handleSelect(opt.score)}
-                className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border-2 transition-all active:scale-[0.98]"
+                className="w-full flex items-center gap-3 px-4 py-4 rounded-xl border-2 transition-all active:scale-[0.98]"
                 style={{
                   borderColor: isSelected ? "#c9a84c" : "#e8e8e8",
                   backgroundColor: isSelected ? "#fdf8ed" : "#fafaff",
@@ -149,7 +189,7 @@ function GAD7Quiz({ onComplete }: { onComplete: (answers: Record<number, number>
                 }}
               >
                 <div
-                  className="size-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 transition-all"
+                  className="size-10 rounded-full flex items-center justify-center text-base font-bold shrink-0 transition-all"
                   style={{
                     backgroundColor: isSelected ? "#c9a84c" : "#f0f0f0",
                     color: isSelected ? "white" : "#999999",
@@ -158,8 +198,8 @@ function GAD7Quiz({ onComplete }: { onComplete: (answers: Record<number, number>
                   {opt.score}
                 </div>
                 <div className="text-left flex-1">
-                  <div className="text-base font-medium text-[#1a1a1a]">{opt.label}</div>
-                  <div className="text-xs text-[#999999]">{opt.score} 分</div>
+                  <div className="text-lg font-medium text-[#1a1a1a]">{opt.label}</div>
+                  <div className="text-sm text-[#999999]">{opt.score} 分</div>
                 </div>
               </button>
             );
@@ -171,14 +211,14 @@ function GAD7Quiz({ onComplete }: { onComplete: (answers: Record<number, number>
           <button
             onClick={() => setCurrentQ((p) => Math.max(0, p - 1))}
             disabled={currentQ === 0}
-            className="flex-1 py-3 rounded-xl border border-[#e8e8e8] text-sm text-[#666] disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex-1 py-3 rounded-xl border border-[#e8e8e8] text-base text-[#666] disabled:opacity-30 disabled:cursor-not-allowed"
           >
             上一题
           </button>
           <button
             onClick={() => setCurrentQ((p) => Math.min(TOTAL_GAD7 - 1, p + 1))}
             disabled={currentQ === TOTAL_GAD7 - 1}
-            className="flex-1 py-3 rounded-xl border border-[#e8e8e8] text-sm text-[#666] disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex-1 py-3 rounded-xl border border-[#e8e8e8] text-base text-[#666] disabled:opacity-30 disabled:cursor-not-allowed"
           >
             下一题
           </button>
@@ -187,14 +227,14 @@ function GAD7Quiz({ onComplete }: { onComplete: (answers: Record<number, number>
 
       <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-[#e8e8e8] bg-white/95 backdrop-blur-md px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
         {!allAnswered && (
-          <p className="mb-2 text-center text-sm text-[#666666]">
+          <p className="mb-2 text-center text-base text-[#666666]">
             已完成 {answeredCount}/{TOTAL_GAD7} 题
           </p>
         )}
         <button
           onClick={() => onComplete(answers)}
           disabled={!allAnswered}
-          className="w-full rounded-xl py-3.5 text-base font-semibold transition-all active:scale-[0.98]"
+          className="w-full rounded-xl py-3.5 text-lg font-semibold transition-all active:scale-[0.98]"
           style={{
             backgroundColor: allAnswered ? "#c9a84c" : "#e8e8e8",
             color: allAnswered ? "white" : "#aaaaaa",
@@ -234,8 +274,9 @@ function PhoneCollectPage({
     <div className="flex flex-col min-h-screen bg-white">
       <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
         <div className="flex items-center gap-2">
-          <Sparkles size={18} className="text-[#c9a84c]" />
-          <h1 className="text-xl font-bold text-[#1a1a1a] font-song">解锁完整报告</h1>
+          <HomeLink />
+          <Sparkles size={20} className="text-[#c9a84c]" />
+          <h1 className="text-2xl font-bold text-[#1a1a1a] font-song">解锁完整报告</h1>
         </div>
       </header>
 
@@ -244,8 +285,8 @@ function PhoneCollectPage({
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#fdf8ed] to-[#fef3d0] flex items-center justify-center mx-auto mb-4">
             <Phone size={32} className="text-[#c9a84c]" />
           </div>
-          <h2 className="text-lg font-bold text-[#1a1a1a] mb-2">🎁 先生送你完整报告</h2>
-          <p className="text-sm text-[#666666] leading-relaxed">
+          <h2 className="text-xl font-bold text-[#1a1a1a] mb-2">🎁 先生送你完整报告</h2>
+          <p className="text-base text-[#666666] leading-relaxed">
             输入手机号，即可查看完整焦虑评估报告<br />
             并可随时下载保存
           </p>
@@ -253,7 +294,7 @@ function PhoneCollectPage({
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[#1a1a1a] mb-1.5">
+            <label className="block text-base font-medium text-[#1a1a1a] mb-1.5">
               📱 手机号 <span className="text-red-400">*</span>
             </label>
             <input
@@ -265,10 +306,10 @@ function PhoneCollectPage({
               className="w-full px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-lg tracking-widest outline-none focus:border-[#c9a84c] transition-colors"
               autoFocus
             />
-            {error && <p className="text-xs text-red-500 mt-1.5 text-center">{error}</p>}
+            {error && <p className="text-sm text-red-500 mt-1.5 text-center">{error}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#1a1a1a] mb-1.5">💬 微信号（选填）</label>
+            <label className="block text-base font-medium text-[#1a1a1a] mb-1.5">💬 微信号（选填）</label>
             <input
               type="text"
               value={wechatId}
@@ -276,21 +317,21 @@ function PhoneCollectPage({
               placeholder="选填，先生可加你交流"
               className="w-full px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-base outline-none focus:border-[#c9a84c] transition-colors"
             />
-            <p className="text-xs text-[#999999] mt-1 text-center">留下微信号，先生可亲自为你解读报告</p>
+            <p className="text-sm text-[#999999] mt-1 text-center">留下微信号，先生可亲自为你解读报告</p>
           </div>
         </div>
 
         <button
           onClick={handleSubmit}
-          className="w-full mt-6 rounded-xl py-3.5 text-base font-semibold text-white transition-all active:scale-[0.98]"
+          className="w-full mt-6 rounded-xl py-3.5 text-lg font-semibold text-white transition-all active:scale-[0.98]"
           style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}
         >
           获取报告
         </button>
-        <button onClick={onSkip} className="w-full mt-3 py-2.5 text-sm text-[#999999]">暂不输入，直接查看</button>
+        <button onClick={onSkip} className="w-full mt-3 py-2.5 text-base text-[#999999]">暂不输入，直接查看</button>
       </div>
       <div className="px-4 pb-8 text-center">
-        <p className="text-xs text-[#cccccc]">你的信息仅用于发送报告，不会公开</p>
+        <p className="text-sm text-[#cccccc]">你的信息仅用于发送报告，不会公开</p>
       </div>
     </div>
   );
@@ -299,12 +340,10 @@ function PhoneCollectPage({
 // ─── 结果页 ───
 function GAD7ResultView({
   result,
-  answers,
   onRestart,
   phone,
 }: {
   result: GAD7Result;
-  answers: Record<number, number>;
   onRestart: () => void;
   phone?: string;
 }) {
@@ -360,11 +399,12 @@ function GAD7ResultView({
     <div className="flex flex-col min-h-screen bg-white">
       <nav className="sticky top-0 z-30 border-b border-[#e8e8e8] bg-white/95 backdrop-blur-md px-4 py-3">
         <div className="flex items-center gap-2">
-          <Sparkles size={18} className="text-[#c9a84c]" />
-          <span className="text-sm font-semibold text-[#1a1a1a]">GAD-7 评估结果</span>
+          <HomeLink />
+          <Sparkles size={20} className="text-[#c9a84c]" />
+          <span className="text-base font-semibold text-[#1a1a1a]">GAD-7 评估结果</span>
           <div className="ml-auto flex items-center gap-1">
-            <button onClick={handleShare} className="p-2 text-[#999999] active:text-[#c9a84c]" title="分享"><Share2 size={18} /></button>
-            <button onClick={handleDownload} disabled={isDownloading} className="p-2 text-[#999999] active:text-[#c9a84c] disabled:opacity-50" title="下载报告"><Download size={18} /></button>
+            <button onClick={handleShare} className="p-2 text-[#999999] active:text-[#c9a84c]" title="分享"><Share2 size={20} /></button>
+            <button onClick={handleDownload} disabled={isDownloading} className="p-2 text-[#999999] active:text-[#c9a84c] disabled:opacity-50" title="下载报告"><Download size={20} /></button>
           </div>
         </div>
       </nav>
@@ -373,21 +413,21 @@ function GAD7ResultView({
         <div ref={reportRef} className="bg-white">
           <div className="text-center mb-6">
             <h1 className="text-2xl font-bold text-[#1a1a1a] font-song">你的焦虑水平评估</h1>
-            <p className="text-sm text-[#666666] mt-1.5">{testDate}</p>
+            <p className="text-base text-[#666666] mt-1.5">{testDate}</p>
             {phone && (
-              <p className="text-xs text-[#999999] mt-0.5">账号：{phone.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2")}</p>
+              <p className="text-sm text-[#999999] mt-0.5">账号：{phone.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2")}</p>
             )}
           </div>
 
           {/* 总分卡 */}
           <div className="text-center mb-6">
-            <p className="text-sm text-[#8888aa] mb-2">你的总分</p>
+            <p className="text-base text-[#8888aa] mb-2">你的总分</p>
             <p className="text-5xl font-extrabold" style={{ color: severityColorMap[result.severityClass] }}>
               {result.totalScore}
             </p>
-            <p className="text-sm text-[#8888aa] mt-1">/ 21</p>
+            <p className="text-base text-[#8888aa] mt-1">/ 21</p>
             <div
-              className="inline-block mt-3 px-5 py-2 rounded-full text-base font-bold"
+              className="inline-block mt-3 px-5 py-2 rounded-full text-lg font-bold"
               style={{
                 backgroundColor: severityBgMap[result.severityClass],
                 color: severityColorMap[result.severityClass],
@@ -398,11 +438,11 @@ function GAD7ResultView({
           </div>
 
           {/* 分数条 */}
-          <div className="mb-4">
-            <div className="flex justify-between text-xs text-[#999] mb-1">
+          <div className="mb-6">
+            <div className="flex justify-between text-sm text-[#999] mb-1">
               <span>0 正常</span><span>4</span><span>9</span><span>14</span><span>21 重度</span>
             </div>
-            <div className="h-2 rounded-full bg-[#f0f0f0] relative overflow-hidden">
+            <div className="h-3 rounded-full bg-[#f0f0f0] relative overflow-hidden">
               <div className="absolute inset-0 flex">
                 <div className="flex-1 bg-[#27ae6030]" />
                 <div className="flex-1 bg-[#e67e2230]" />
@@ -410,35 +450,20 @@ function GAD7ResultView({
                 <div className="flex-1 bg-[#c0392b30]" />
               </div>
               <div
-                className="absolute top-0 h-full w-1 bg-black rounded-full"
+                className="absolute top-0 h-full w-1.5 bg-black rounded-full"
                 style={{ left: `${Math.min(100, (result.totalScore / 21) * 100)}%` }}
               />
             </div>
           </div>
 
           {/* 建议 */}
-          <div className="rounded-xl p-4 mb-4" style={{ backgroundColor: severityBgMap[result.severityClass] + "80" }}>
-            <p className="text-sm text-[#555577] leading-relaxed">{result.advice}</p>
-          </div>
-
-          {/* 答题摘要 */}
-          <div className="space-y-1 mb-4">
-            <p className="text-xs text-[#999] mb-2">答题详情</p>
-            {GAD7_QUESTIONS.map((q) => {
-              const score = answers[q.id] ?? 0;
-              const label = GAD7_OPTIONS.find((o) => o.score === score)?.label ?? "";
-              return (
-                <div key={q.id} className="flex items-center justify-between py-1.5 border-b border-[#f5f5f5]">
-                  <span className="text-sm text-[#555] truncate flex-1 mr-2">{q.id}. {q.text}</span>
-                  <span className="text-xs text-[#999] shrink-0">{label}（{score}分）</span>
-                </div>
-              );
-            })}
+          <div className="rounded-xl p-5 mb-6" style={{ backgroundColor: severityBgMap[result.severityClass] + "80" }}>
+            <p className="text-lg text-[#555577] leading-relaxed">{result.advice}</p>
           </div>
 
           <div className="text-center pt-2 pb-2">
-            <p className="text-xs text-[#c9a84c] font-song">YIXU HEALING · 亦须疗愈</p>
-            <p className="text-[10px] text-[#999999]">Sino-NLP 中华身心语言学</p>
+            <p className="text-sm text-[#c9a84c] font-song">YIXU HEALING · 亦须疗愈</p>
+            <p className="text-xs text-[#999999]">Sino-NLP 中华身心语言学</p>
           </div>
         </div>
 
@@ -446,27 +471,27 @@ function GAD7ResultView({
         <div className="mt-4 rounded-xl border border-[#c9a84c30] bg-gradient-to-br from-[#fdf8ed] to-white p-5">
           <div className="text-center mb-3">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c9a84c15] mb-2">
-              <Sparkles size={14} className="text-[#c9a84c]" />
-              <span className="text-sm font-semibold text-[#c9a84c]">解锁深度解读</span>
+              <Sparkles size={16} className="text-[#c9a84c]" />
+              <span className="text-base font-semibold text-[#c9a84c]">解锁深度解读</span>
             </div>
-            <h3 className="text-lg font-bold text-[#1a1a1a] font-song">获取专属焦虑舒缓方案</h3>
+            <h3 className="text-xl font-bold text-[#1a1a1a] font-song">获取专属焦虑舒缓方案</h3>
           </div>
           <div className="space-y-2 mb-4">
             {["焦虑来源深度分析", "个性化正念冥想指引", "七日情绪管理练习", "亦须先生亲自解读"].map((f, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm text-[#555]"><span className="text-[#c9a84c] text-xs">✦</span>{f}</div>
+              <div key={i} className="flex items-center gap-2 text-base text-[#555]"><span className="text-[#c9a84c] text-sm">✦</span>{f}</div>
             ))}
           </div>
           <div className="text-center mb-3">
             <span className="text-2xl font-bold text-[#c9a84c]">¥9.90</span>
-            <span className="text-sm text-[#666] ml-1">/ 永久解锁</span>
+            <span className="text-base text-[#666] ml-1">/ 永久解锁</span>
           </div>
-          <button className="w-full rounded-xl py-3 text-sm font-semibold text-white transition-all active:scale-[0.98]" style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}>
+          <button className="w-full rounded-xl py-3 text-lg font-semibold text-white transition-all active:scale-[0.98]" style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}>
             解锁完整报告
           </button>
         </div>
 
         <div className="mt-4 mb-2 text-center">
-          <button onClick={onRestart} className="text-sm text-[#999] underline underline-offset-4">重新测评</button>
+          <button onClick={onRestart} className="text-base text-[#999] underline underline-offset-4">重新测评</button>
         </div>
       </div>
     </div>
@@ -513,7 +538,7 @@ export default function GAD7AssessmentPage({ onBack }: { onBack?: () => void }) 
       {stage === "intro" && <GAD7Intro onStart={handleStart} onBack={handleBack} />}
       {stage === "quiz" && <GAD7Quiz onComplete={handleComplete} />}
       {stage === "collect-phone" && <PhoneCollectPage onComplete={handlePhoneComplete} onSkip={handlePhoneSkip} />}
-      {stage === "result" && result && <GAD7ResultView result={result} answers={answers} onRestart={handleRestart} />}
+      {stage === "result" && result && <GAD7ResultView result={result} onRestart={handleRestart} />}
     </>
   );
 }

@@ -57,7 +57,7 @@ function AppContent() {
               className={`tab-item ${isActive ? "active" : ""}`}
               onClick={() => setActiveTab(tab.key)}
             >
-              <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+              <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
               <span>{tab.label}</span>
             </button>
           );

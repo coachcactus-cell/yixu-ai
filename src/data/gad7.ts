@@ -22,7 +22,7 @@ export interface GAD7Result {
 export const GAD7_QUESTIONS: GAD7Question[] = [
   { id: 1, text: "感到紧张、焦虑或不安" },
   { id: 2, text: "无法停止担心或无法控制担心" },
-  { id: 3, text: "过度担心各种事情" },
+  { id: 3, text: "过度担心各种事情（「过度」的意思是令你无法集中注意力）" },
   { id: 4, text: "难以放松" },
   { id: 5, text: "坐立不安，无法安静坐着" },
   { id: 6, text: "容易烦躁或生气" },
