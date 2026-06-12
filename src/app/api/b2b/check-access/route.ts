@@ -5,18 +5,18 @@ const VALID_FEATURES = ["enneagram", "chakra", "yijing", "tarot"];
 
 /**
  * POST /api/b2b/check-access
- * 檢查 B 端客戶嘅功能權限
+ * 檢查 B 端客戶的功能权限
  */
 export async function POST(request: Request) {
   try {
     const { clientId, feature } = await request.json();
 
     if (!clientId || !feature) {
-      return NextResponse.json({ success: false, allowed: false, error: "缺少參數" }, { status: 400 });
+      return NextResponse.json({ success: false, allowed: false, error: "缺少參数" }, { status: 400 });
     }
 
     if (!VALID_FEATURES.includes(feature)) {
-      return NextResponse.json({ success: false, allowed: false, error: "無效的功能名稱" }, { status: 400 });
+      return NextResponse.json({ success: false, allowed: false, error: "无效的功能名稱" }, { status: 400 });
     }
 
     const result = checkFeatureAccess(clientId, feature);

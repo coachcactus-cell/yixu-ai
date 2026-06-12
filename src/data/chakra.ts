@@ -1,18 +1,18 @@
 // ============================================================
-// 七脈輪能量測評 — 完整數據引擎
-// 基於 chakra-test-seven.vercel.app 的 56 題體系
-// 適配亦須AI 品牌色系（金 #c9a84c + 白 + 灰）
+// 七脉轮能量测评 — 完整数据引擎
+// 基于 chakra-test-seven.vercel.app 的 56 题体系
+// 适配亦须AI 品牌色系（金 #c9a84c + 白 + 灰）
 // ============================================================
 
-// ─── 脈輪顏色（CSS 變量引用 + hex fallback） ───
+// ─── 脉轮顏色（CSS 变量引用 + hex fallback） ───
 export const CHAKRA_COLORS: Record<number, string> = {
-  1: "#e74c3c", // 海底輪 — 紅
-  2: "#e67e22", // 本我輪 — 橙
-  3: "#f1c40f", // 太陽神經叢 — 黃
-  4: "#2ecc71", // 心輪 — 綠
-  5: "#3498db", // 喉輪 — 藍
-  6: "#4a3f8a", // 眉心輪 — 靛
-  7: "#9b59b6", // 頂輪 — 紫
+  1: "#e74c3c", // 海底轮 — 紅
+  2: "#e67e22", // 本我轮 — 橙
+  3: "#f1c40f", // 太阳神经叢 — 黄
+  4: "#2ecc71", // 心轮 — 綠
+  5: "#3498db", // 喉轮 — 藍
+  6: "#4a3f8a", // 眉心轮 — 靛
+  7: "#9b59b6", // 顶轮 — 紫
 };
 
 export const CHAKRA_GRADIENTS: Record<number, [string, string]> = {
@@ -25,7 +25,7 @@ export const CHAKRA_GRADIENTS: Record<number, [string, string]> = {
   7: ["#9b59b6", "#8e44ad"],
 };
 
-// ─── 脈輪定義 ───
+// ─── 脉轮定義 ───
 export interface ChakraInfo {
   id: number;
   nameZh: string;
@@ -48,222 +48,222 @@ export interface ChakraInfo {
 export const CHAKRAS: ChakraInfo[] = [
   {
     id: 1,
-    nameZh: "海底輪",
+    nameZh: "海底轮",
     nameEn: "Root Chakra",
     sanskrit: "Muladhara",
     color: CHAKRA_COLORS[1],
     gradient: CHAKRA_GRADIENTS[1],
     location: "脊椎底部",
     description: "主管生存、安全感和穩定感。",
-    statusOpen: "你感到踏實、穩定和安全，不會不必要地不信任他人。你感到活在當下，與身體連接，有足夠的安全感。",
-    statusUnder: "你容易感到恐懼或緊張，覺得自己不受歡迎。建議練習接地冥想（關注脊椎底部），吟誦聲音 LAM，通過面對恐懼來開啟此脈輪。",
-    statusOver: "你可能過於物質和貪婪，可能沉迷於安全感而抗拒改變。建議先不要直接減少海底輪的能量，而是檢查是否有其他脈輪不活躍導致它過度補償。練習內觀冥想（Vipassana）來平衡。",
-    demon: "恐懼",
-    right: "存在的權利",
+    statusOpen: "你感到踏实、穩定和安全，不会不必要地不信任他人。你感到活在当下，與身体连接，有足夠的安全感。",
+    statusUnder: "你容易感到恐惧或紧张，觉得自己不受欢迎。建议練习接地冥想（关注脊椎底部），吟誦声音 LAM，通过面对恐惧来开启此脉轮。",
+    statusOver: "你可能过于物质和貪婪，可能沉迷于安全感而抗拒改变。建议先不要直接减少海底轮的能量，而是檢查是否有其他脉轮不活躍导致它过度補償。練习内观冥想（Vipassana）来平衡。",
+    demon: "恐惧",
+    right: "存在的权利",
     sound: "LAM",
-    meditation: "關注生殖器和肛門之間的位置。手印：拇指和食指指尖相觸。",
+    meditation: "关注生殖器和肛门之间的位置。手印：拇指和食指指尖相觸。",
     mantraZh: "拉姆",
   },
   {
     id: 2,
-    nameZh: "本我輪",
+    nameZh: "本我轮",
     nameEn: "Sacral Chakra",
     sanskrit: "Svadhisthana",
     color: CHAKRA_COLORS[2],
     gradient: CHAKRA_GRADIENTS[2],
     location: "下腹部",
     description: "主管情感、創造力、感官享受。",
-    statusOpen: "你的情感自由流動並自然表達，不會過度情緒化。你對親密關係開放，可以充滿熱情和活力。",
-    statusUnder: "你傾向於僵硬和缺乏情感，或者面無表情。你不很願意對人敞開心扉。建議練習感受冥想（關注骶骨），吟誦聲音 VAM，通過面對內疚感來開啟此脈輪。",
-    statusOver: "你可能時刻處於情緒化狀態，對他人情感依賴過強，可能過度沉迷於性。建議練習覺察冥想，關注內在感受而非外在刺激，以平衡此脈輪。",
-    demon: "內疚",
-    right: "感受的權利",
+    statusOpen: "你的情感自由流动並自然表达，不会过度情绪化。你对亲密关是开放，可以充滿热情和活力。",
+    statusUnder: "你傾向于僵硬和缺乏情感，或者面无表情。你不很愿意对人敞开心扉。建议練习感受冥想（关注骶骨），吟誦声音 VAM，通过面对内疚感来开启此脉轮。",
+    statusOver: "你可能时刻处于情绪化狀態，对他人情感依賴过强，可能过度沉迷于性。建议練习觉察冥想，关注内在感受而非外在刺激，以平衡此脉轮。",
+    demon: "内疚",
+    right: "感受的权利",
     sound: "VAM",
-    meditation: "關注骶骨（下背部）。手印：雙手放於腿上，掌心朝上，左手在下，拇指指尖相觸。",
+    meditation: "关注骶骨（下背部）。手印：双手放于腿上，掌心朝上，左手在下，拇指指尖相觸。",
     mantraZh: "瓦姆",
   },
   {
     id: 3,
-    nameZh: "太陽神經叢",
+    nameZh: "太阳神经叢",
     nameEn: "Solar Plexus Chakra",
     sanskrit: "Manipura",
     color: CHAKRA_COLORS[3],
     gradient: CHAKRA_GRADIENTS[3],
     location: "胃部上方",
-    description: "主管自信、意志力和行動力。",
+    description: "主管自信、意志力和行动力。",
     statusOpen: "你感到有掌控力，擁有足夠的自尊和自信。",
-    statusUnder: "你傾向於被動和猶豫不決，可能膽怯，不容易得到自己想要的東西。建議練習力量冥想（關注脊柱肚臍稍上方），吟誦聲音 RAM，通過面對羞恥感來建立自信。",
-    statusOver: "你可能專橫甚至具有攻擊性。建議練習慈悲冥想，學會傾聽他人，以平衡權力和溫柔。",
+    statusUnder: "你傾向于被动和猶豫不决，可能膽怯，不容易得到自己想要的東西。建议練习力量冥想（关注脊柱肚臍稍上方），吟誦声音 RAM，通过面对羞恥感来建立自信。",
+    statusOver: "你可能专橫甚至具有攻擊性。建议練习慈悲冥想，学会傾听他人，以平衡权力和温柔。",
     demon: "羞恥",
-    right: "行動的權利",
+    right: "行动的权利",
     sound: "RAM",
-    meditation: "關注脊柱肚臍稍上方的位置。手印：雙手置於胃前，手指頂部相接指向外方，交叉拇指。",
+    meditation: "关注脊柱肚臍稍上方的位置。手印：双手置于胃前，手指顶部相接指向外方，交叉拇指。",
     mantraZh: "拉姆",
   },
   {
     id: 4,
-    nameZh: "心輪",
+    nameZh: "心轮",
     nameEn: "Heart Chakra",
     sanskrit: "Anahata",
     color: CHAKRA_COLORS[4],
     gradient: CHAKRA_GRADIENTS[4],
     location: "胸口中央",
-    description: "主管愛、同理心和人際關係。",
-    statusOpen: "你富有同情心和友善，努力維護和諧的關係。",
-    statusUnder: "你冷漠而疏離，不容易與人建立親密關係。建議練習慈悲冥想（關注脊柱與心臟齊平處），吟誦聲音 YAM，通過面對悲傷來開啟心輪。",
-    statusOver: "你可能用愛令人窒息，而你的愛可能帶有自私的動機。建議學習給予空間和自由，無條件地愛。",
+    description: "主管爱、同理心和人际关是。",
+    statusOpen: "你富有同情心和友善，努力維护和諧的关是。",
+    statusUnder: "你冷漠而疏离，不容易與人建立亲密关是。建议練习慈悲冥想（关注脊柱與心臟齐平处），吟誦声音 YAM，通过面对悲傷来开启心轮。",
+    statusOver: "你可能用爱令人窒息，而你的爱可能帶有自私的动机。建议学习給予空间和自由，无条件地爱。",
     demon: "悲傷",
-    right: "愛與被愛的權利",
+    right: "爱與被爱的权利",
     sound: "YAM",
-    meditation: "關注脊柱與心臟齊平處。手印：左手放於左膝，右手置於胸骨下方，食指和拇指指尖相觸。",
+    meditation: "关注脊柱與心臟齐平处。手印：左手放于左膝，右手置于胸骨下方，食指和拇指指尖相觸。",
     mantraZh: "雅姆",
   },
   {
     id: 5,
-    nameZh: "喉輪",
+    nameZh: "喉轮",
     nameEn: "Throat Chakra",
     sanskrit: "Vishuddha",
     color: CHAKRA_COLORS[5],
     gradient: CHAKRA_GRADIENTS[5],
     location: "喉嚨",
-    description: "主管溝通、表達和真實聲音。",
-    statusOpen: "你能夠自如地表達自己，可能以藝術家的方式表達。",
-    statusUnder: "你傾向於不多說話，可能內向害羞。不說真話可能會阻塞此脈輪。建議練習真實表達冥想（關注喉嚨底部），吟誦聲音 HAM，勇敢說出真話。",
-    statusOver: "你可能說話過多，通常為了控制局面和與人保持距離。你可能是個糟糕的傾聽者。建議練習靜默冥想和深度傾聽，學會在表達和傾聽之間取得平衡。",
+    description: "主管溝通、表达和真实声音。",
+    statusOpen: "你能夠自如地表达自己，可能以艺术家的方式表达。",
+    statusUnder: "你傾向于不多说话，可能内向害羞。不说真话可能会阻塞此脉轮。建议練习真实表达冥想（关注喉嚨底部），吟誦声音 HAM，勇敢说出真话。",
+    statusOver: "你可能说话过多，通常为了控制局面和與人保持距离。你可能是个糟糕的傾听者。建议練习静默冥想和深度傾听，学会在表达和傾听之间取得平衡。",
     demon: "謊言",
-    right: "說真話和聽真話的權利",
+    right: "说真话和听真话的权利",
     sound: "HAM",
-    meditation: "關注喉嚨底部。手印：雙手手指交叉於內側，拇指在頂部相觸並稍微向上拉。",
+    meditation: "关注喉嚨底部。手印：双手手指交叉于内側，拇指在顶部相觸並稍微向上拉。",
     mantraZh: "哈姆",
   },
   {
     id: 6,
-    nameZh: "眉心輪",
+    nameZh: "眉心轮",
     nameEn: "Third Eye Chakra",
     sanskrit: "Ajna",
     color: CHAKRA_COLORS[6],
     gradient: CHAKRA_GRADIENTS[6],
-    location: "兩眉之間",
-    description: "主管直覺、洞察力和內在智慧。",
-    statusOpen: "你擁有良好的直覺，可能傾向於想像和幻想。",
-    statusUnder: "你不太善於獨立思考，可能傾向於依賴權威。你可能思維僵化，過於依賴信念，甚至容易困惑。建議練習直覺冥想（關注兩眉之間稍上方），吟誦聲音 OM，通過面對幻覺來開啟。",
-    statusOver: "你可能過多地生活在幻想世界中，在極端情況下可能出現幻覺。建議練習內觀禪修（Zen），關注當下現實，腳踏實地。",
-    demon: "幻覺",
-    right: "看見的權利",
+    location: "两眉之间",
+    description: "主管直觉、洞察力和内在智慧。",
+    statusOpen: "你擁有良好的直觉，可能傾向于想像和幻想。",
+    statusUnder: "你不太善于独立思考，可能傾向于依賴权威。你可能思維僵化，过于依賴信念，甚至容易困惑。建议練习直觉冥想（关注两眉之间稍上方），吟誦声音 OM，通过面对幻觉来开启。",
+    statusOver: "你可能过多地生活在幻想世界中，在极端情況下可能出现幻觉。建议練习内观禅修（Zen），关注当下现实，腳踏实地。",
+    demon: "幻觉",
+    right: "看见的权利",
     sound: "OM",
-    meditation: "關注兩眉之間稍上方的位置。手印：雙手置於胸前，中指伸直在頂部相觸，其他手指彎曲。",
+    meditation: "关注两眉之间稍上方的位置。手印：双手置于胸前，中指伸直在顶部相觸，其他手指彎曲。",
     mantraZh: "嗡",
   },
   {
     id: 7,
-    nameZh: "頂輪",
+    nameZh: "顶轮",
     nameEn: "Crown Chakra",
     sanskrit: "Sahasrara",
     color: CHAKRA_COLORS[7],
     gradient: CHAKRA_GRADIENTS[7],
-    location: "頭頂",
-    description: "主管靈性連接、覺知和宇宙意識。",
-    statusOpen: "你沒有偏見，對世界和自己有深刻的覺知。",
-    statusUnder: "你對靈性不太覺察，可能思維相當僵化。建議練習開放冥想（關注頭頂），吟誦聲音 NG，通過放下執念來開啟頂輪。",
-    statusOver: "你可能過度理性化事物，可能沉迷於靈性而忽視身體需求。建議先確保海底輪（根輪）足夠強大，再進行頂輪冥想。平衡靈性與日常生活。",
+    location: "头顶",
+    description: "主管灵性连接、觉知和宇宙意识。",
+    statusOpen: "你沒有偏见，对世界和自己有深刻的觉知。",
+    statusUnder: "你对灵性不太觉察，可能思維相当僵化。建议練习开放冥想（关注头顶），吟誦声音 NG，通过放下執念来开启顶轮。",
+    statusOver: "你可能过度理性化事物，可能沉迷于灵性而忽视身体需求。建议先确保海底轮（根轮）足夠强大，再进行顶轮冥想。平衡灵性與日常生活。",
     demon: "執念",
-    right: "認知的權利",
+    right: "认知的权利",
     sound: "NG",
-    meditation: "關注頭頂。手印：雙手置於胃前，無名指向上在頂部相觸，交叉其他手指。注意：除非海底輪足夠強大，否則不要進行此冥想。",
+    meditation: "关注头顶。手印：双手置于胃前，无名指向上在顶部相觸，交叉其他手指。注意：除非海底轮足夠强大，否则不要进行此冥想。",
     mantraZh: "嗡",
   },
 ];
 
-// ─── 測評題目（56 題：7 脈輪 × 8 題） ───
+// ─── 测评题目（56 题：7 脉轮 × 8 题） ───
 export interface Question {
   id: number;
   chakraId: number;
   text: string;
-  reverse: boolean; // 反向題：高分 = 脈輪越不活躍
+  reverse: boolean; // 反向题：高分 = 脉轮越不活躍
 }
 
 export const QUESTIONS: Question[] = [
-  // 脈輪 1 - 海底輪 (Q1-Q8)
-  { id: 1, chakraId: 1, text: "你容易毫無保留地表達自己的情感？", reverse: false },
-  { id: 2, chakraId: 1, text: "你對於自己的本能衝動感到羞恥？", reverse: true },
-  { id: 3, chakraId: 1, text: "你是個非常情緒化和熱情的人？", reverse: false },
-  { id: 4, chakraId: 1, text: "處於團體中，你感覺可以掌控事情的發展？", reverse: false },
-  { id: 5, chakraId: 1, text: "你喜好談論？", reverse: false },
-  { id: 6, chakraId: 1, text: "你是否很依賴於某些人或事？", reverse: true },
-  { id: 7, chakraId: 1, text: "你很依賴直覺？", reverse: false },
-  { id: 8, chakraId: 1, text: "你覺得不論在哪裡，都感到很自在？", reverse: false },
+  // 脉轮 1 - 海底轮 (Q1-Q8)
+  { id: 1, chakraId: 1, text: "你容易毫无保留地表达自己的情感？", reverse: false },
+  { id: 2, chakraId: 1, text: "你对于自己的本能衝动感到羞恥？", reverse: true },
+  { id: 3, chakraId: 1, text: "你是个非常情绪化和热情的人？", reverse: false },
+  { id: 4, chakraId: 1, text: "处于團体中，你感觉可以掌控事情的发展？", reverse: false },
+  { id: 5, chakraId: 1, text: "你喜好谈论？", reverse: false },
+  { id: 6, chakraId: 1, text: "你是否很依賴于某些人或事？", reverse: true },
+  { id: 7, chakraId: 1, text: "你很依賴直觉？", reverse: false },
+  { id: 8, chakraId: 1, text: "你觉得不论在哪里，都感到很自在？", reverse: false },
 
-  // 脈輪 2 - 本我輪 (Q9-Q16)
+  // 脉轮 2 - 本我轮 (Q9-Q16)
   { id: 9, chakraId: 2, text: "你很有自信？", reverse: false },
-  { id: 10, chakraId: 2, text: "你容易緊張或傾向避免讓你緊張的情況？", reverse: true },
-  { id: 11, chakraId: 2, text: "你能自由地表達對性方面的感覺？", reverse: false },
-  { id: 12, chakraId: 2, text: "你能覺察你的喜好、厭惡和需求？", reverse: false },
-  { id: 13, chakraId: 2, text: "你很難表達自己的感覺，並且很少說話？", reverse: true },
+  { id: 10, chakraId: 2, text: "你容易紧张或傾向避免让你紧张的情況？", reverse: true },
+  { id: 11, chakraId: 2, text: "你能自由地表达对性方面的感觉？", reverse: false },
+  { id: 12, chakraId: 2, text: "你能觉察你的喜好、厭恶和需求？", reverse: false },
+  { id: 13, chakraId: 2, text: "你很难表达自己的感觉，並且很少说话？", reverse: true },
   { id: 14, chakraId: 2, text: "你通常依賴他人的洞察力？", reverse: true },
-  { id: 15, chakraId: 2, text: "你擔心自己的財務狀況和家宅的安全？", reverse: true },
-  { id: 16, chakraId: 2, text: "你是否通常覺得活在當下，生活十分踏實？", reverse: false },
+  { id: 15, chakraId: 2, text: "你擔心自己的財务狀況和家宅的安全？", reverse: true },
+  { id: 16, chakraId: 2, text: "你是否通常觉得活在当下，生活十分踏实？", reverse: false },
 
-  // 脈輪 3 - 太陽神經叢 (Q17-Q24)
-  { id: 17, chakraId: 3, text: "你能在必要時積極主動？", reverse: false },
-  { id: 18, chakraId: 3, text: "你與人們情感聯繫的需求很強烈？", reverse: false },
-  { id: 19, chakraId: 3, text: "你對所有發生在你身上的事情接受性很高？", reverse: false },
-  { id: 20, chakraId: 3, text: "你是否傾向於被動，感到寂寞，或與他人刻意保持距離？", reverse: true },
+  // 脉轮 3 - 太阳神经叢 (Q17-Q24)
+  { id: 17, chakraId: 3, text: "你能在必要时积极主动？", reverse: false },
+  { id: 18, chakraId: 3, text: "你與人們情感联系的需求很强烈？", reverse: false },
+  { id: 19, chakraId: 3, text: "你对所有发生在你身上的事情接受性很高？", reverse: false },
+  { id: 20, chakraId: 3, text: "你是否傾向于被动，感到寂寞，或與他人刻意保持距离？", reverse: true },
   { id: 21, chakraId: 3, text: "你很有創造性？", reverse: false },
-  { id: 22, chakraId: 3, text: "你努力追求人與人之關係的和諧？", reverse: false },
-  { id: 23, chakraId: 3, text: "你覺得所謂巧合通常是有意義，而非全是隨機發生？", reverse: false },
-  { id: 24, chakraId: 3, text: "你很容易回想你的夢境？", reverse: false },
+  { id: 22, chakraId: 3, text: "你努力追求人與人之关是的和諧？", reverse: false },
+  { id: 23, chakraId: 3, text: "你觉得所謂巧合通常是有意義，而非全是随机发生？", reverse: false },
+  { id: 24, chakraId: 3, text: "你很容易回想你的梦境？", reverse: false },
 
-  // 脈輪 4 - 心輪 (Q25-Q32)
-  { id: 25, chakraId: 4, text: "你對於未來有願景或期待？", reverse: false },
-  { id: 26, chakraId: 4, text: "你有自律的習慣？", reverse: false },
-  { id: 27, chakraId: 4, text: "你對於表達示好的對象很小心，以免受到傷害？", reverse: true },
-  { id: 28, chakraId: 4, text: "你傾向把發生在自己身上的事當作學習的過程？", reverse: false },
-  { id: 29, chakraId: 4, text: "你對團隊合作感到很輕鬆？", reverse: false },
-  { id: 30, chakraId: 4, text: "你容易對於你所想要的事物採取行動？", reverse: false },
-  { id: 31, chakraId: 4, text: "你感覺自己是背後一股更大力量的展現？", reverse: false },
-  { id: 32, chakraId: 4, text: "你具有熱情和同理心，可以容易延伸至自我和他人？", reverse: false },
+  // 脉轮 4 - 心轮 (Q25-Q32)
+  { id: 25, chakraId: 4, text: "你对于未来有愿景或期待？", reverse: false },
+  { id: 26, chakraId: 4, text: "你有自律的习慣？", reverse: false },
+  { id: 27, chakraId: 4, text: "你对于表达示好的对象很小心，以免受到傷害？", reverse: true },
+  { id: 28, chakraId: 4, text: "你傾向把发生在自己身上的事当作学习的过程？", reverse: false },
+  { id: 29, chakraId: 4, text: "你对團队合作感到很轻松？", reverse: false },
+  { id: 30, chakraId: 4, text: "你容易对于你所想要的事物採取行动？", reverse: false },
+  { id: 31, chakraId: 4, text: "你感觉自己是背后一股更大力量的展现？", reverse: false },
+  { id: 32, chakraId: 4, text: "你具有热情和同理心，可以容易延伸至自我和他人？", reverse: false },
 
-  // 脈輪 5 - 喉輪 (Q33-Q40)
-  { id: 33, chakraId: 5, text: "你總是對他人付出太多以至於忘記了自己？", reverse: true },
-  { id: 34, chakraId: 5, text: "你是一個天生就很友善的人？", reverse: false },
-  { id: 35, chakraId: 5, text: "你感覺到完整的自覺意識？", reverse: false },
-  { id: 36, chakraId: 5, text: "是否經常有一些情況你極力想避免？", reverse: true },
-  { id: 37, chakraId: 5, text: "你總是有掌控局勢的強烈慾望？", reverse: true },
-  { id: 38, chakraId: 5, text: "你對於親密關係和肉體慾望，都感覺很自然？", reverse: false },
-  { id: 39, chakraId: 5, text: "你透過某種形式或創作（音樂、繪畫、唱歌等）表達自己？", reverse: false },
-  { id: 40, chakraId: 5, text: "你有困難將事情視覺化？", reverse: true },
+  // 脉轮 5 - 喉轮 (Q33-Q40)
+  { id: 33, chakraId: 5, text: "你总是对他人付出太多以至于忘记了自己？", reverse: true },
+  { id: 34, chakraId: 5, text: "你是一个天生就很友善的人？", reverse: false },
+  { id: 35, chakraId: 5, text: "你感觉到完整的自觉意识？", reverse: false },
+  { id: 36, chakraId: 5, text: "是否经常有一些情況你极力想避免？", reverse: true },
+  { id: 37, chakraId: 5, text: "你总是有掌控局勢的强烈慾望？", reverse: true },
+  { id: 38, chakraId: 5, text: "你对于亲密关是和肉体慾望，都感觉很自然？", reverse: false },
+  { id: 39, chakraId: 5, text: "你透过某种形式或創作（音乐、繪画、唱歌等）表达自己？", reverse: false },
+  { id: 40, chakraId: 5, text: "你有困难將事情视觉化？", reverse: true },
 
-  // 脈輪 6 - 眉心輪 (Q41-Q48)
-  { id: 41, chakraId: 6, text: "你信賴大多數的人？", reverse: false },
-  { id: 42, chakraId: 6, text: "你通常覺得你的精神常駐於肉體？", reverse: false },
-  { id: 43, chakraId: 6, text: "你傾向於隱藏情緒，不顯露表情？", reverse: true },
-  { id: 44, chakraId: 6, text: "你常常有好的、創新的點子？", reverse: false },
-  { id: 45, chakraId: 6, text: "你善於用語言、符號和概念進行思考？", reverse: false },
-  { id: 46, chakraId: 6, text: "你善於寫作以進行溝通？", reverse: false },
-  { id: 47, chakraId: 6, text: "你喜愛無拘無束的幻想？", reverse: false },
-  { id: 48, chakraId: 6, text: "你在社交上有被動和猶豫不決的傾向？", reverse: true },
+  // 脉轮 6 - 眉心轮 (Q41-Q48)
+  { id: 41, chakraId: 6, text: "你信賴大多数的人？", reverse: false },
+  { id: 42, chakraId: 6, text: "你通常觉得你的精神常駐于肉体？", reverse: false },
+  { id: 43, chakraId: 6, text: "你傾向于隐藏情绪，不显露表情？", reverse: true },
+  { id: 44, chakraId: 6, text: "你常常有好的、創新的点子？", reverse: false },
+  { id: 45, chakraId: 6, text: "你善于用语言、符号和概念进行思考？", reverse: false },
+  { id: 46, chakraId: 6, text: "你善于写作以进行溝通？", reverse: false },
+  { id: 47, chakraId: 6, text: "你喜爱无拘无束的幻想？", reverse: false },
+  { id: 48, chakraId: 6, text: "你在社交上有被动和猶豫不决的傾向？", reverse: true },
 
-  // 脈輪 7 - 頂輪 (Q49-Q56)
-  { id: 49, chakraId: 7, text: "如果你和他人有衝突，你會考慮到他人的感受？", reverse: false },
-  { id: 50, chakraId: 7, text: "你善於溝通，能傾聽也能善於表達？", reverse: false },
-  { id: 51, chakraId: 7, text: "你總是很有安全感？", reverse: false },
-  { id: 52, chakraId: 7, text: "你對事物有洞見？", reverse: false },
-  { id: 53, chakraId: 7, text: "你覺得和身邊所有圍繞你的事物或宇宙間有某種聯繫？", reverse: false },
-  { id: 54, chakraId: 7, text: "你行事比較傾向於事前規劃而非隨遇而安？", reverse: false },
-  { id: 55, chakraId: 7, text: "你說話時的聲音響亮清楚？", reverse: false },
-  { id: 56, chakraId: 7, text: "你喜愛大多數的人？", reverse: false },
+  // 脉轮 7 - 顶轮 (Q49-Q56)
+  { id: 49, chakraId: 7, text: "如果你和他人有衝突，你会考慮到他人的感受？", reverse: false },
+  { id: 50, chakraId: 7, text: "你善于溝通，能傾听也能善于表达？", reverse: false },
+  { id: 51, chakraId: 7, text: "你总是很有安全感？", reverse: false },
+  { id: 52, chakraId: 7, text: "你对事物有洞见？", reverse: false },
+  { id: 53, chakraId: 7, text: "你觉得和身边所有圍繞你的事物或宇宙间有某种联系？", reverse: false },
+  { id: 54, chakraId: 7, text: "你行事比較傾向于事前规划而非随遇而安？", reverse: false },
+  { id: 55, chakraId: 7, text: "你说话时的声音響亮清楚？", reverse: false },
+  { id: 56, chakraId: 7, text: "你喜爱大多数的人？", reverse: false },
 ];
 
-// ─── 評分系統 ───
+// ─── 评分系统 ───
 export const SCORE_OPTIONS = [-2, -1, 0, 1, 2];
-export const SCORE_LABELS = ["完全沒有", "偏弱", "一般", "偏強", "感覺強烈"];
+export const SCORE_LABELS = ["完全沒有", "偏弱", "一般", "偏强", "感觉强烈"];
 export const MAX_SCORE = 2;
 export const QUESTIONS_PER_CHAKRA = 8;
 export const TOTAL_QUESTIONS = QUESTIONS.length;
 
-// ─── 計算邏輯 ───
+// ─── 计算邏輯 ───
 
-/** 計算某脈輪的得分（含反向題反轉），範圍 -16 到 +16 */
+/** 计算某脉轮的得分（含反向题反转），範圍 -16 到 +16 */
 export function calcChakraScore(chakraId: number, answers: Record<number, number>): number {
   const qs = QUESTIONS.filter((q) => q.chakraId === chakraId);
   let total = 0;
@@ -282,12 +282,12 @@ export interface ChakraStatus {
   level: ChakraStatusLevel;
 }
 
-/** 獲取脈輪狀態：不活躍 < -4, 過度活躍 > 8, 中間為適度 */
+/** 獲取脉轮狀態：不活躍 < -4, 过度活躍 > 8, 中间为适度 */
 export function getChakraStatus(score: number, answered: number): ChakraStatus {
   if (answered < QUESTIONS_PER_CHAKRA) return { label: "未完成", level: "mid" };
   if (score < -4) return { label: "不活躍", level: "low" };
-  if (score > 8) return { label: "過度活躍", level: "high" };
-  return { label: "適度活躍", level: "mid" };
+  if (score > 8) return { label: "过度活躍", level: "high" };
+  return { label: "适度活躍", level: "mid" };
 }
 
 export interface ChakraResult {
@@ -300,7 +300,7 @@ export interface ChakraResult {
 const MIN_SCORE_TOTAL = QUESTIONS_PER_CHAKRA * (-MAX_SCORE); // -16
 const MAX_SCORE_TOTAL = QUESTIONS_PER_CHAKRA * MAX_SCORE;     // +16
 
-/** 計算全部 7 脈輪的結果 */
+/** 计算全部 7 脉轮的结果 */
 export function calcAllResults(answers: Record<number, number>): ChakraResult[] {
   return CHAKRAS.map((chakra) => {
     const qs = QUESTIONS.filter((q) => q.chakraId === chakra.id);
@@ -314,7 +314,7 @@ export function calcAllResults(answers: Record<number, number>): ChakraResult[] 
   });
 }
 
-/** 生成脈輪分數的 SVG 雷達圖數據（用於視覺化） */
+/** 生成脉轮分数的 SVG 雷达图数据（用于视觉化） */
 export function getRadarPoints(results: ChakraResult[], cx: number, cy: number, r: number) {
   const n = results.length;
   return results.map((res, i) => {
@@ -329,16 +329,16 @@ export function getRadarPoints(results: ChakraResult[], cx: number, cy: number, 
   });
 }
 
-/** 付費牆配置 */
+/** 付费牆配置 */
 export const PAYWALL_CONFIG = {
   price: "¥9.90",
-  title: "解鎖詳細脈輪分析",
-  subtitle: "獲得每個脈輪的深入解讀、冥想指引與七日平衡計劃",
+  title: "解鎖詳细脉轮分析",
+  subtitle: "獲得每个脉轮的深入解读、冥想指引與七日平衡计划",
   features: [
-    "7 脈輪 × 200+ 字深度解讀",
-    "對應梵咒冥想音頻指引",
-    "七日脈輪平衡練習計劃",
-    "專屬脈輪能量提升技巧",
-    "可保存 PDF 報告",
+    "7 脉轮 × 200+ 字深度解读",
+    "对應梵咒冥想音频指引",
+    "七日脉轮平衡練习计划",
+    "专屬脉轮能量提升技巧",
+    "可保存 PDF 报告",
   ],
 };

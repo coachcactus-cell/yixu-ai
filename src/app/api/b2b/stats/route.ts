@@ -3,7 +3,7 @@ import { getClientStats } from "@/lib/b2b-db";
 
 /**
  * GET /api/b2b/stats?clientId=xxx
- * 查詢某客戶嘅測評統計
+ * 查询某客戶的测评统计
  */
 export async function GET(request: Request) {
   try {
@@ -17,6 +17,6 @@ export async function GET(request: Request) {
     const stats = getClientStats(clientId);
     return NextResponse.json({ success: true, stats });
   } catch (error) {
-    return NextResponse.json({ error: "查詢失敗" }, { status: 500 });
+    return NextResponse.json({ error: "查询失敗" }, { status: 500 });
   }
 }

@@ -4,9 +4,9 @@ import { BookOpen, CheckCircle2, Lock, ArrowRight } from "lucide-react";
 
 const PRACTICES = [
   {
-    day: "今日修行",
+    day: "今天修行",
     title: "儒家：三省吾身",
-    desc: "曾子曰：「吾日三省吾身」— 今日回顾三件事：为人谋而不忠乎？与朋友交而不信乎？传不习乎？",
+    desc: "曾子曰：「吾日三省吾身」— 今天回顾三件事：为人谋而不忠乎？与朋友交而不信乎？传不习乎？",
     unlocked: true,
     progress: "0/1",
   },
@@ -34,7 +34,7 @@ const PRACTICES = [
   {
     day: "Day 5",
     title: "心学：事上磨练",
-    desc: "阳明先生曰：「人须在事上磨，方立得住。」— 从今日遇到的一件事中修行。",
+    desc: "阳明先生曰：「人须在事上磨，方立得住。」— 从今天遇到的一件事中修行。",
     unlocked: false,
     progress: "🔒",
   },

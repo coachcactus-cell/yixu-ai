@@ -14,7 +14,7 @@ import {
 import type { DivinationResult, YaoReport } from "@/lib/divination";
 import { HEXAGRAMS, LOGICAL_LEVELS } from "@/data/yijing";
 
-/* ── 人生十項 ── */
+/* ── 人生十项 ── */
 const LIFE_TOPICS = [
   { id: 1, icon: "💚", name: "健康", hint: "身体与心理的良好状态" },
   { id: 2, icon: "💼", name: "工作", hint: "在事业、学业或目标上的成就感" },
@@ -29,23 +29,23 @@ const LIFE_TOPICS = [
 ];
 
 /* ══════════════════════════════════════════════ */
-/*  爻辭×理解層次解讀引擎 v2                      */
-/*  核心改進：基於卦象+爻位+爻辭原文+理解層次       */
-/*  生成唯一解讀，不再跨卦重複                      */
+/*  爻辭×理解层次解读引擎 v2                      */
+/*  核心改进：基于卦象+爻位+爻辭原文+理解层次       */
+/*  生成唯一解读，不再跨卦重复                      */
 /* ══════════════════════════════════════════════ */
 
-// 提取爻辭關鍵詞（去掉"初九："等前綴）
+// 提取爻辭关键词（去掉"初九："等前綴）
 function extractYaoKey(yaoText: string): string {
   return yaoText.replace(/^[初二三四五上][六九]：/, "").trim();
 }
 
-// 基於爻辭關鍵詞提取核心意象
+// 基于爻辭关键词提取核心意象
 function extractImagery(yaoKey: string): { main: string; action: string } {
-  // 常見易經意象映射
+  // 常见易经意象映射
   const imageryMap: Record<string, { main: string; action: string }> = {
     "潜龙勿用": { main: "潜藏的龙", action: "蓄势待发，不宜轻举妄动" },
     "见龙在田": { main: "田间的龙", action: "才华初显，等待时机" },
-    "君子终日乾乾": { main: "日夕不懈的君子", action: "勤勉精进，警惕自省" },
+    "君子终日干干": { main: "日夕不懈的君子", action: "勤勉精进，警惕自省" },
     "或跃在渊": { main: "跃动的龙", action: "审时度势，进退有度" },
     "飞龙在天": { main: "腾飞的龙", action: "正当其时，大有作为" },
     "亢龙有悔": { main: "过极的龙", action: "盛极而衰，需知进退" },
@@ -97,7 +97,7 @@ function extractImagery(yaoKey: string): { main: string; action: string } {
   return { main: "爻象所示", action: "审慎体悟，以变应变" };
 }
 
-// 根據理解層次 + 卦名 + 爻位 + 意象 → 生成唯一解讀
+// 根据理解层次 + 卦名 + 爻位 + 意象 → 生成唯一解读
 function generateYaoNLP(
   hexagramName: string,
   position: number,
@@ -110,7 +110,7 @@ function generateYaoNLP(
   const yinYang = isYang ? "阳刚主动" : "阴柔承顺";
   const posLabel = ["初", "二", "三", "四", "五", "上"][position - 1];
 
-  // 每個層次的解讀模板，融入卦名+爻位+意象
+  // 每个层次的解读模板，融入卦名+爻位+意象
   const levelInterpretations: Record<string, string> = {
     "环境": `在${hexagramName}卦的${posLabel}位，${main}揭示了你当下的外在处境。${yaoKey}——${action}。环境正在释放信号：${isYang ? "外在条件已具备行动的基础" : "外在条件尚需沉淀与等待"}。此爻提醒你审视周遭，${isDong ? "环境正处于关键转折点，不可忽视" : "留意环境的变化节奏"}。`,
 
@@ -128,7 +128,7 @@ function generateYaoNLP(
   return levelInterpretations[level] || levelInterpretations["环境"];
 }
 
-// 動爻詳解：5-6句深度解讀
+// 动爻詳解：5-6句深度解读
 function generateDongYaoNLP(
   hexagramName: string,
   position: number,
@@ -157,7 +157,7 @@ function generateDongYaoNLP(
   return dongInterpretations[level] || dongInterpretations["环境"];
 }
 
-/* ── SVG 六爻圖 ── */
+/* ── SVG 六爻图 ── */
 function HexagramSVG({ lines, dongYao }: { lines: number[]; dongYao: number }) {
   return (
     <div className="flex flex-col items-center gap-1.5 my-4">
@@ -203,7 +203,7 @@ function HexagramSVG({ lines, dongYao }: { lines: number[]; dongYao: number }) {
   );
 }
 
-/* ── 爻辭報告卡片 ── */
+/* ── 爻辭报告卡片 ── */
 function YaoCard({ report, hexagramName }: { report: YaoReport; hexagramName: string }) {
   const [expanded, setExpanded] = useState(report.isDongYao);
 
@@ -228,7 +228,7 @@ function YaoCard({ report, hexagramName }: { report: YaoReport; hexagramName: st
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center gap-3 px-4 py-3.5 text-left"
       >
-        {/* 爻位 + 陰陽符號 */}
+        {/* 爻位 + 阴阳符号 */}
         <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
           report.isDongYao ? "bg-[#c9a84c] text-white" : "bg-[#f5f5f5] text-[#666666]"
         }`}>
@@ -269,7 +269,7 @@ function YaoCard({ report, hexagramName }: { report: YaoReport; hexagramName: st
   );
 }
 
-/* ── 完整報告頁 ── */
+/* ── 完整报告页 ── */
 function ReportView({ result, onClose }: { result: DivinationResult; onClose: () => void }) {
   const { hexagram, upperGuaName, lowerGuaName, dongYao, season, topic } = result;
   const yaoReports = generateYaoReports(result);
@@ -297,7 +297,7 @@ function ReportView({ result, onClose }: { result: DivinationResult; onClose: ()
       <div className="flex-1 px-4 pb-24">
         {/* 卦象主卡片 */}
         <div className="card mt-4 border-[#c9a84c]/30 bg-gradient-to-b from-[#fdf8ed]/50 to-white">
-          {/* 季節/課題標籤 */}
+          {/* 季節/课题标籤 */}
           {seasonLabel && (
             <p className="text-sm text-[#c9a84c] font-medium mb-1">{seasonLabel}</p>
           )}
@@ -313,7 +313,7 @@ function ReportView({ result, onClose }: { result: DivinationResult; onClose: ()
             上{upperGuaName} 下{lowerGuaName} · 动第{dongYao}爻
           </p>
 
-          {/* 六爻圖 */}
+          {/* 六爻图 */}
           <HexagramSVG lines={hexagram.lines} dongYao={dongYao} />
 
           {/* 卦辭 */}
@@ -328,14 +328,14 @@ function ReportView({ result, onClose }: { result: DivinationResult; onClose: ()
             <p className="text-base text-[#1a1a1a] leading-relaxed">{hexagram.image}</p>
           </div>
 
-          {/* 整體解讀 */}
+          {/* 整体解读 */}
           <div className="mt-2 p-3.5 rounded-lg bg-white border border-[#e8e8e8]">
             <p className="text-sm font-bold text-[#1a1a1a] mb-1">解读</p>
             <p className="text-base text-[#444444] leading-relaxed">{hexagram.interpretation}</p>
           </div>
         </div>
 
-        {/* 六爻×理解層次 */}
+        {/* 六爻×理解层次 */}
         <div className="mt-4">
           <h3 className="section-header">六爻 · 理解层次</h3>
           <p className="text-sm text-[#777777] px-4 -mt-2 mb-3">
@@ -348,7 +348,7 @@ function ReportView({ result, onClose }: { result: DivinationResult; onClose: ()
           </div>
         </div>
 
-        {/* 付費詳細報告入口 */}
+        {/* 付费詳细报告入口 */}
         <div className="card mt-6 bg-gradient-to-r from-[#fdf8ed] to-white border-[#c9a84c]/30 text-center">
           <Sparkles size={20} className="mx-auto text-[#c9a84c] mb-2" />
           <p className="text-base font-bold text-[#1a1a1a] mb-1">获取详细报告</p>
@@ -383,7 +383,7 @@ function ReportView({ result, onClose }: { result: DivinationResult; onClose: ()
 }
 
 /* ══════════════════════════════════════════════ */
-/*  主頁面：點心問卦                              */
+/*  主页面：点心问卦                              */
 /* ══════════════════════════════════════════════ */
 
 export default function YijingPage() {
@@ -408,14 +408,14 @@ export default function YijingPage() {
     setSeasonLabel(getSeasonLabel(getSeason()));
   }, []);
 
-  // 清理計時器
+  // 清理计时器
   useEffect(() => {
     return () => {
       if (breathTimerRef.current) clearTimeout(breathTimerRef.current);
     };
   }, []);
 
-  /* ── 入口一：手機號起卦 ── */
+  /* ── 入口一：手机号起卦 ── */
   const handlePhoneDivine = () => {
     if (!isValidPhone(phoneInput)) {
       setPhoneError("请输入有效的手机号码（3-15位数字）");
@@ -430,7 +430,7 @@ export default function YijingPage() {
     }
   };
 
-  /* ── 入口二：時間+狀態分起卦 ── */
+  /* ── 入口二：时间+狀態分起卦 ── */
   const handleTopicSelect = (name: string, hint: string) => {
     setSelectedTopic(hint);
     setSelectedTopicName(name);
@@ -449,12 +449,12 @@ export default function YijingPage() {
     setResult(r);
   };
 
-  /* ── 如果有結果，顯示報告 ── */
+  /* ── 如果有结果，显示报告 ── */
   if (result) {
     return <ReportView result={result} onClose={() => setResult(null)} />;
   }
 
-  /* ── 主頁面 ── */
+  /* ── 主页面 ── */
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
@@ -482,7 +482,7 @@ export default function YijingPage() {
           </p>
         </div>
 
-        {/* ═══ 入口一：季度咨詢 ═══ */}
+        {/* ═══ 入口一：季度咨询 ═══ */}
         <div className="card mt-3">
           <button
             onClick={() => setActiveModule(activeModule === "phone" ? "none" : "phone")}
@@ -535,14 +535,14 @@ export default function YijingPage() {
           )}
         </div>
 
-        {/* 分隔線 */}
+        {/* 分隔线 */}
         <div className="flex items-center gap-3 px-4 my-1">
           <div className="flex-1 h-px bg-[#e8e8e8]" />
           <span className="text-sm text-[#999999] font-song">亦 须</span>
           <div className="flex-1 h-px bg-[#e8e8e8]" />
         </div>
 
-        {/* ═══ 入口二：生活咨詢 ═══ */}
+        {/* ═══ 入口二：生活咨询 ═══ */}
         <div className="card">
           <button
             onClick={() => setActiveModule(activeModule === "life" ? "none" : "life")}
@@ -587,13 +587,13 @@ export default function YijingPage() {
 
           {activeModule === "life" && showBreath && (
             <div className="mt-4 animate-fade-in-up text-center">
-              {/* 已選課題 */}
+              {/* 已选课题 */}
               <div className="flex items-center justify-center gap-2 mb-6">
                 <span className="gold-tag">{selectedTopicName}</span>
               </div>
 
               {!showClickBtn ? (
-                /* 呼吸引導 */
+                /* 呼吸引导 */
                 <div className="py-8">
                   <div className="w-20 h-20 rounded-full bg-[#fdf8ed] mx-auto mb-4 flex items-center justify-center animate-pulse">
                     <span className="text-3xl">🙏</span>
@@ -639,7 +639,7 @@ export default function YijingPage() {
                 </div>
               )}
 
-              {/* 返回選題 */}
+              {/* 返回选题 */}
               <button
                 onClick={() => {
                   setShowBreath(false);
@@ -656,7 +656,7 @@ export default function YijingPage() {
           )}
         </div>
 
-        {/* 底部說明 */}
+        {/* 底部说明 */}
         <div className="mt-6 text-center pb-4">
           <p className="text-sm text-[#999999] font-song">
             梅花易数 · 先天八卦数 · NLP理解层次

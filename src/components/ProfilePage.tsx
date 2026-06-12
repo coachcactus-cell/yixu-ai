@@ -33,32 +33,32 @@ const VIP_PLANS = [
   },
 ];
 
-// ── 邀請碼分流規則 ──
+// ── 邀请码分流规则 ──
 const INVITE_ROUTES: { pattern: string; label: string; path: string; icon: any; color: string }[] = [
-  { pattern: "cactus-2026", label: "C老大後台", path: "/admin", icon: Shield, color: "#c9a84c" },
-  { pattern: "yixu-founder", label: "C老大後台", path: "/admin", icon: Shield, color: "#c9a84c" },
-  { pattern: "yixu-demo", label: "B2B 數據面板", path: "/b2b-dashboard?clientId=yixu-demo", icon: Building2, color: "#6366f1" },
+  { pattern: "cactus-2026", label: "C老大后台", path: "/admin", icon: Shield, color: "#c9a84c" },
+  { pattern: "yixu-founder", label: "C老大后台", path: "/admin", icon: Shield, color: "#c9a84c" },
+  { pattern: "yixu-demo", label: "B2B 数据面板", path: "/b2b-dashboard?clientId=yixu-demo", icon: Building2, color: "#6366f1" },
 ];
 
-// 分銷商碼以 DSP- 開頭
+// 分銷商码以 DSP- 开头
 function resolveInviteCode(code: string): { path: string; label: string; icon: any; color: string } | null {
   const trimmed = code.trim().toLowerCase();
 
-  // 超級管理員
+  // 超级管理員
   for (const route of INVITE_ROUTES) {
     if (trimmed === route.pattern.toLowerCase()) {
       return { path: route.path, label: route.label, icon: route.icon, color: route.color };
     }
   }
 
-  // 分銷商碼：DSP-xxx
+  // 分銷商码：DSP-xxx
   if (trimmed.startsWith("dsp-") || trimmed.startsWith("dsp_")) {
-    return { path: `/distributor?code=${encodeURIComponent(code.trim())}`, label: "分銷商後台", icon: Handshake, color: "#10b981" };
+    return { path: `/distributor?code=${encodeURIComponent(code.trim())}`, label: "分銷商后台", icon: Handshake, color: "#10b981" };
   }
 
-  // B2B 客戶碼：b2b_xxx 或其他
+  // B2B 客戶码：b2b_xxx 或其他
   if (trimmed.startsWith("b2b_") || trimmed.length > 5) {
-    return { path: `/b2b-dashboard?clientId=${encodeURIComponent(code.trim())}`, label: "B2B 數據面板", icon: Building2, color: "#6366f1" };
+    return { path: `/b2b-dashboard?clientId=${encodeURIComponent(code.trim())}`, label: "B2B 数据面板", icon: Building2, color: "#6366f1" };
   }
 
   return null;
@@ -76,10 +76,10 @@ export default function ProfilePage() {
     color: string;
   } | null>(null);
 
-  // ── 邀請碼驗證 + 分流 ──
+  // ── 邀请码验证 + 分流 ──
   const handleInviteSubmit = () => {
     if (!inviteCode.trim()) {
-      setInviteError("請輸入邀請碼");
+      setInviteError("请输入邀请码");
       return;
     }
 
@@ -88,7 +88,7 @@ export default function ProfilePage() {
       setResolvedRoute(route);
       setInviteError("");
     } else {
-      setInviteError("邀請碼無效，請檢查後重試");
+      setInviteError("邀请码无效，请檢查后重试");
     }
   };
 
@@ -222,7 +222,7 @@ export default function ProfilePage() {
           ))}
         </div>
 
-        {/* ── 統一邀請入口（取代舊 B2B 入口）── */}
+        {/* ── 统一邀请入口（取代旧 B2B 入口）── */}
         <div className="mt-4 space-y-1">
           <button
             onClick={() => {
@@ -235,13 +235,13 @@ export default function ProfilePage() {
           >
             <div className="flex items-center gap-3">
               <Sparkles size={18} className="text-[#c9a84c]" />
-              <span className="text-sm text-[#1a1a1a]">邀請登入</span>
+              <span className="text-sm text-[#1a1a1a]">邀请登入</span>
             </div>
             <ChevronRight size={16} className="text-[#999999]" />
           </button>
         </div>
 
-        {/* ── 統一邀請碼彈窗（分流邏輯）── */}
+        {/* ── 统一邀请码彈窗（分流邏輯）── */}
         {showInvite && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
@@ -260,13 +260,13 @@ export default function ProfilePage() {
                 <div className="w-12 h-12 rounded-full bg-[#fdf8ed] flex items-center justify-center mx-auto mb-2">
                   <Sparkles size={24} className="text-[#c9a84c]" />
                 </div>
-                <h3 className="text-lg font-bold text-[#1a1a1a]">邀請登入</h3>
-                <p className="text-xs text-[#999] mt-1">輸入邀請碼進入對應後台</p>
+                <h3 className="text-lg font-bold text-[#1a1a1a]">邀请登入</h3>
+                <p className="text-xs text-[#999] mt-1">输入邀请码进入对應后台</p>
               </div>
 
               {!resolvedRoute ? (
                 <>
-                  {/* 輸入邀請碼 */}
+                  {/* 输入邀请码 */}
                   <input
                     type="text"
                     value={inviteCode}
@@ -275,7 +275,7 @@ export default function ProfilePage() {
                       setInviteError("");
                     }}
                     onKeyDown={(e) => e.key === "Enter" && handleInviteSubmit()}
-                    placeholder="輸入邀請碼"
+                    placeholder="输入邀请码"
                     className="w-full px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-lg tracking-widest outline-none focus:border-[#c9a84c] transition-colors"
                     autoFocus
                   />
@@ -286,29 +286,29 @@ export default function ProfilePage() {
                     onClick={handleInviteSubmit}
                     className="mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-[#c9a84c] to-[#b89430] text-white font-bold active:scale-[0.98] transition-transform"
                   >
-                    驗證
+                    验证
                   </button>
 
-                  {/* 提示分類 */}
+                  {/* 提示分类 */}
                   <div className="mt-4 space-y-1.5 text-center">
                     <p className="text-[10px] text-[#999]">
-                      <Shield size={10} className="inline -mt-0.5" /> 超級碼 → C老大後台
+                      <Shield size={10} className="inline -mt-0.5" /> 超级码 → C老大后台
                     </p>
                     <p className="text-[10px] text-[#999]">
-                      <Handshake size={10} className="inline -mt-0.5" /> DSP-xxx → 分銷商後台
+                      <Handshake size={10} className="inline -mt-0.5" /> DSP-xxx → 分銷商后台
                     </p>
                     <p className="text-[10px] text-[#999]">
-                      <Building2 size={10} className="inline -mt-0.5" /> 其他碼 → B2B 數據面板
+                      <Building2 size={10} className="inline -mt-0.5" /> 其他码 → B2B 数据面板
                     </p>
                   </div>
 
                   <p className="text-xs text-[#ccc] mt-3 text-center">
-                    未有邀請碼？請加微信 859022196 申請
+                    未有邀请码？请加微信 859022196 申请
                   </p>
                 </>
               ) : (
                 <>
-                  {/* 確認分流結果 */}
+                  {/* 确认分流结果 */}
                   <div className="bg-[#fdf8ed] rounded-xl p-4 text-center">
                     <div
                       className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2"
@@ -317,10 +317,10 @@ export default function ProfilePage() {
                       <resolvedRoute.icon size={20} style={{ color: resolvedRoute.color }} />
                     </div>
                     <p className="text-sm font-bold text-[#1a1a1a]">
-                      即將進入：{resolvedRoute.label}
+                      即將进入：{resolvedRoute.label}
                     </p>
                     <p className="text-xs text-[#999] mt-1">
-                      邀請碼：{inviteCode}
+                      邀请码：{inviteCode}
                     </p>
                   </div>
                   <div className="flex gap-3 mt-4">
@@ -337,7 +337,7 @@ export default function ProfilePage() {
                       onClick={handleConfirmRoute}
                       className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#c9a84c] to-[#b89430] text-white text-sm font-bold active:scale-[0.98] transition-transform"
                     >
-                      確認進入
+                      确认进入
                     </button>
                   </div>
                 </>

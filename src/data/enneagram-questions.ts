@@ -1,15 +1,15 @@
-// 九型人格測驗題庫
-// 基於 Eclectic Energies Classical Enneagram Test 結構
-// 每題對應一個或多個型號，用於計分
+// 九型人格测验题庫
+// 基于 Eclectic Energies Classical Enneagram Test 结构
+// 每题对應一个或多个型号，用于计分
 
 export interface EnneagramQuestion {
   id: number;
   text: string;
-  /** 該題對應的型號加權：{ type: weight } */
+  /** 该题对應的型号加权：{ type: weight } */
   types: Record<number, number>;
 }
 
-// 型號特質速查：
+// 型号特质速查：
 // Type 1: perfectionist, strict, correcting, organized, principled, self-critical, angry at imperfection
 // Type 2: helper, caring, warm, generous, need to be needed, proud, relationship-focused
 // Type 3: achiever, success, admired, competitive, image-conscious, networking, efficient
@@ -162,7 +162,7 @@ export const enneagramQuestions: EnneagramQuestion[] = [
   { id: 114, text: "我喜欢回忆过去，即使带点忧郁。", types: { 4: 3 } },
   { id: 115, text: "别人不说谢谢时，我真的很困扰。", types: { 2: 2, 1: 1 } },
   { id: 116, text: "我很少在原则上妥协。", types: { 1: 2, 8: 1 } },
-  { id: 117, text: "我才不在乎道德呢，但我有我自己的一套准则。", types: { 8: 2, 7: 1 } },
+  { id: 117, text: "我才不在乎道德这，但我有我自己的一套准则。", types: { 8: 2, 7: 1 } },
 
   // ═══ PAGE 14 ═══
   { id: 118, text: "当我真正投入到一个激发我的智力问题时，我倾向于从情绪中抽离。", types: { 5: 3 } },

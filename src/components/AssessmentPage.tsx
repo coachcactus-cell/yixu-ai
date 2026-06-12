@@ -10,11 +10,11 @@ type ViewMode = "list" | "chakra-quiz" | "enneagram-quiz";
 const ASSESSMENTS = [
   {
     id: "chakra",
-    title: "七脈輪能量評估",
-    desc: "56 題深度檢測，了解你七個能量中心狀態",
+    title: "七脉轮能量评估",
+    desc: "56 题深度檢测，了解你七个能量中心狀態",
     icon: Sparkles,
     price: "¥9.90",
-    count: "1,286+ 人已測",
+    count: "1,286+ 人已测",
     available: true,
     color: "#c9a84c",
   },
@@ -30,21 +30,21 @@ const ASSESSMENTS = [
   },
   {
     id: "attachment",
-    title: "心念執念檢測",
-    desc: "唯識學 × 行為心理：識別你深層的執著模式",
+    title: "心念執念檢测",
+    desc: "唯识学 × 行为心理：识別你深层的執著模式",
     icon: Heart,
     price: "¥19.90",
-    count: "即將上線",
+    count: "即將上线",
     available: false,
     color: "#888888",
   },
   {
     id: "emotion",
-    title: "情緒慣性模式",
-    desc: "Sino-NLP × 四體模型：揭露你的情緒反應慣性",
+    title: "情绪慣性模式",
+    desc: "Sino-NLP × 四体模型：揭露你的情绪反應慣性",
     icon: Brain,
     price: "¥19.90",
-    count: "即將上線",
+    count: "即將上线",
     available: false,
     color: "#888888",
   },
@@ -72,12 +72,12 @@ export default function AssessmentPage({
     onFullscreenChange?.(false);
   }, [onFullscreenChange]);
 
-  // 如果進入脈輪測評流程，全屏接管
+  // 如果进入脉轮测评流程，全屏接管
   if (view === "chakra-quiz") {
     return <ChakraAssessmentPage onBack={handleBackToList} />;
   }
 
-  // 如果進入九型人格測評流程，全屏接管
+  // 如果进入九型人格测评流程，全屏接管
   if (view === "enneagram-quiz") {
     return <EnneagramPage onBack={handleBackToList} />;
   }
@@ -86,8 +86,8 @@ export default function AssessmentPage({
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
       <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
-        <h1 className="text-xl font-bold text-[#1a1a1a] font-song">測評中心</h1>
-        <p className="text-sm text-[#666666] mt-1">深入了解自己，從測評開始</p>
+        <h1 className="text-xl font-bold text-[#1a1a1a] font-song">测评中心</h1>
+        <p className="text-sm text-[#666666] mt-1">深入了解自己，從测评开始</p>
       </header>
 
       <div className="flex-1 px-4 pb-24">
@@ -100,10 +100,10 @@ export default function AssessmentPage({
         >
           <div className="flex items-center gap-3 mb-2">
             <Users size={20} />
-            <span className="text-sm font-medium">已有 1,286+ 人通過測評更了解自己</span>
+            <span className="text-sm font-medium">已有 1,286+ 人通过测评更了解自己</span>
           </div>
           <p className="text-sm opacity-80">
-            每個測評都由亦須先生親自設計，基於 Sino-NLP 體系與中華經學智慧
+            每个测评都由亦须先生亲自设计，基于 Sino-NLP 体系與中華经学智慧
           </p>
         </div>
 
@@ -136,14 +136,14 @@ export default function AssessmentPage({
                       <span className="text-sm text-[#777777]">{a.count}</span>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-bold text-[#c9a84c]">
-                          {a.available ? "免費測評" : a.price}
+                          {a.available ? "免费测评" : a.price}
                         </span>
                         {a.available ? (
                           <button
                             className="btn-primary text-sm py-2 px-4"
                             onClick={a.id === "enneagram" ? handleStartEnneagram : handleStartChakra}
                           >
-                            開始測評
+                            开始测评
                             <ArrowRight size={14} />
                           </button>
                         ) : (

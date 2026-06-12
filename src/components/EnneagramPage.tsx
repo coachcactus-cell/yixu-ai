@@ -113,7 +113,7 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
             <h1 className="text-base font-bold text-[#1a1a1a]">九型人格测试</h1>
             <span className="text-sm text-[#999]">{page + 1}/{totalPages}</span>
           </div>
-          {/* 進度條 */}
+          {/* 进度条 */}
           <div className="mt-2 h-1.5 bg-[#eee8e8] rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-[#c9a84c] to-[#b89430] transition-all duration-300"
@@ -157,7 +157,7 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
           ))}
         </div>
 
-        {/* 底部導航 */}
+        {/* 底部导航 */}
         <div className="sticky bottom-0 bg-white/95 backdrop-blur-md px-4 py-3 border-t border-[#e8e8e8]">
           <div className="flex gap-3">
             {page > 0 && (
@@ -207,7 +207,7 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
           </div>
         </div>
 
-        {/* 分數圖 */}
+        {/* 分数图 */}
         <div className="mt-4 card">
           <h3 className="font-bold text-[#1a1a1a] mb-3">九型分数分布</h3>
           <div className="space-y-2">
@@ -238,10 +238,10 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
           </div>
         </div>
 
-        {/* 價值遞進：免費版只顯示部分 + 引導解鎖 */}
+        {/* 价值遞进：免费版只显示部分 + 引导解鎖 */}
         {showFull ? (
           <>
-            {/* 核心恐懼/渴望 */}
+            {/* 核心恐惧/渴望 */}
             <div className="mt-4 card">
               <h3 className="font-bold text-[#1a1a1a] mb-3">核心驱动力</h3>
               <div className="space-y-3">
@@ -268,7 +268,7 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
               <p className="text-sm text-[#333] leading-relaxed">{mainType.overview}</p>
             </div>
 
-            {/* 優勢/盲點 */}
+            {/* 优勢/盲点 */}
             <div className="mt-4 card">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -306,7 +306,7 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
             </div>
           </>
         ) : (
-          /* 免費版：只顯示部分，引導加微信 */
+          /* 免费版：只显示部分，引导加微信 */
           <div className="mt-6 card text-center">
             <div className="text-4xl mb-3">🔓</div>
             <h3 className="font-bold text-[#1a1a1a] mb-2">解锁完整报告</h3>
@@ -329,7 +329,7 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
           </div>
         )}
 
-        {/* 重新測試 */}
+        {/* 重新测试 */}
         <button onClick={handleRestart} className="mt-6 w-full py-3 rounded-xl border border-[#c9a84c] text-[#c9a84c] font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform">
           <RotateCcw size={16} /> 重新测试
         </button>

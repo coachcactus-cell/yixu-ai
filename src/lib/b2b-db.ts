@@ -1,6 +1,6 @@
 /**
- * B2B 客戶數據層
- * 使用 Vercel KV (生產) 或 Memory Store (開發)
+ * B2B 客戶数据层
+ * 使用 Vercel KV (生产) 或 Memory Store (开发)
  */
 
 // ── Types ──
@@ -11,7 +11,7 @@ export interface B2BClient {
   plan: "trial" | "basic" | "pro";
   trialStart: number; // Unix ms
   trialEnd: number;
-  subscriptionEnd: number; // 0 = 無訂閱
+  subscriptionEnd: number; // 0 = 无订阅
   features: B2BFeatures;
   createdAt: number;
   status: "active" | "expired" | "suspended";
@@ -33,11 +33,11 @@ export interface AssessmentRecord {
   createdAt: number;
 }
 
-// ── 超級管理員（寫死，不受 deploy 影響）──
+// ── 超级管理員（写死，不受 deploy 影響）──
 const SUPER_ADMIN = {
   id: "yixu-founder",
   wechatId: process.env.FOUNDER_WECHAT_ID || "founder",
-  companyName: "YIXU HEALING 總部",
+  companyName: "YIXU HEALING 总部",
   plan: "pro" as const,
   trialStart: 0,
   trialEnd: 9999999999999,
@@ -47,7 +47,7 @@ const SUPER_ADMIN = {
   status: "active" as const,
 };
 
-// ── 預設演示客戶（寫死，方便測試）──
+// ── 预设演示客戶（写死，方便测试）──
 const DEMO_CLIENT = {
   id: "yixu-demo",
   wechatId: "demo",
@@ -61,17 +61,17 @@ const DEMO_CLIENT = {
   status: "active" as const,
 };
 
-// ── In-Memory Store (開發用) ──
+// ── In-Memory Store (开发用) ──
 const clients = new Map<string, B2BClient>();
 const records: AssessmentRecord[] = [];
 
-// 初始化：寫死嘅帳號永遠存在
+// 初始化：写死的帳号永远存在
 clients.set(SUPER_ADMIN.id, SUPER_ADMIN);
 clients.set(DEMO_CLIENT.id, DEMO_CLIENT);
 
 // ── CRUD ──
 
-/** 創建 B2B 客戶（自動 7 日試用） */
+/** 創建 B2B 客戶（自动 7 日试用） */
 export function createB2BClient(data: {
   wechatId: string;
   companyName: string;
@@ -86,7 +86,7 @@ export function createB2BClient(data: {
     trialEnd: now + 7 * 24 * 60 * 60 * 1000, // 7 日
     subscriptionEnd: 0,
     features: {
-      enneagram: true, // 試用期全開
+      enneagram: true, // 试用期全开
       chakra: true,
       yijing: true,
       tarot: false, // 孟子塔羅未完成
@@ -98,12 +98,12 @@ export function createB2BClient(data: {
   return client;
 }
 
-/** 查詢客戶 */
+/** 查询客戶 */
 export function getB2BClient(id: string): B2BClient | null {
   return clients.get(id) || null;
 }
 
-/** 查詢客戶 by wechatId */
+/** 查询客戶 by wechatId */
 export function getB2BClientByWechat(wechatId: string): B2BClient | null {
   for (const c of clients.values()) {
     if (c.wechatId === wechatId) return c;
@@ -111,16 +111,16 @@ export function getB2BClientByWechat(wechatId: string): B2BClient | null {
   return null;
 }
 
-/** 列出所有客戶（後台用） */
+/** 列出所有客戶（后台用） */
 export function listB2BClients(): B2BClient[] {
   return Array.from(clients.values()).sort((a, b) => b.createdAt - a.createdAt);
 }
 
-/** 允許更新的欄位白名單 */
+/** 允许更新的欄位白名单 */
 const UPDATABLE_FIELDS = ["plan", "status", "subscriptionEnd", "features"] as const;
 type UpdatableField = typeof UPDATABLE_FIELDS[number];
 
-/** 更新客戶狀態（人手開通/停用）— 只允許白名單欄位 */
+/** 更新客戶狀態（人手开通/停用）— 只允许白名单欄位 */
 export function updateB2BClient(
   id: string,
   updates: Partial<Pick<B2BClient, "plan" | "status" | "subscriptionEnd" | "features">>
@@ -128,7 +128,7 @@ export function updateB2BClient(
   const client = clients.get(id);
   if (!client) return null;
 
-  // 只複製白名單中的欄位，防止注入 id/wechatId 等
+  // 只复制白名单中的欄位，防止注入 id/wechatId 等
   for (const key of UPDATABLE_FIELDS) {
     if (key in updates) {
       (client as any)[key] = (updates as any)[key];
@@ -143,32 +143,32 @@ export function deleteB2BClient(id: string): boolean {
   return clients.delete(id);
 }
 
-/** 檢查客戶是否有某功能權限 */
+/** 檢查客戶是否有某功能权限 */
 export function checkFeatureAccess(
   clientId: string,
   feature: keyof B2BFeatures
 ): { allowed: boolean; reason: string } {
   const client = getB2BClient(clientId);
   if (!client) return { allowed: false, reason: "客戶不存在" };
-  if (client.status === "suspended") return { allowed: false, reason: "帳號已停用" };
+  if (client.status === "suspended") return { allowed: false, reason: "帳号已停用" };
 
-  // 檢查試用期
+  // 檢查试用期
   if (client.plan === "trial") {
     if (Date.now() > client.trialEnd) {
-      return { allowed: false, reason: "試用期已結束，請加微信 859022196 續費" };
+      return { allowed: false, reason: "试用期已结束，请加微信 859022196 續费" };
     }
     return { allowed: client.features[feature], reason: "" };
   }
 
-  // 檢查付費期
+  // 檢查付费期
   if (client.subscriptionEnd > 0 && Date.now() > client.subscriptionEnd) {
-    return { allowed: false, reason: "訂閱已過期，請續費" };
+    return { allowed: false, reason: "订阅已过期，请續费" };
   }
 
   return { allowed: client.features[feature], reason: "" };
 }
 
-/** 儲存測評記錄 */
+/** 儲存测评记录 */
 export function saveAssessmentRecord(record: Omit<AssessmentRecord, "id" | "createdAt">): AssessmentRecord {
   const full: AssessmentRecord = {
     ...record,
@@ -179,7 +179,7 @@ export function saveAssessmentRecord(record: Omit<AssessmentRecord, "id" | "crea
   return full;
 }
 
-/** 查詢客戶嘅測評記錄 */
+/** 查询客戶的测评记录 */
 export function getClientRecords(clientId: string, limit = 50): AssessmentRecord[] {
   return records
     .filter((r) => r.clientId === clientId)
@@ -187,7 +187,7 @@ export function getClientRecords(clientId: string, limit = 50): AssessmentRecord
     .reverse();
 }
 
-/** 統計客戶數據（後台用） */
+/** 统计客戶数据（后台用） */
 export function getClientStats(clientId: string) {
   const clientRecords = records.filter((r) => r.clientId === clientId);
   return {

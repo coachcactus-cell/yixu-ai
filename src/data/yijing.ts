@@ -1,9 +1,9 @@
-// 點心問卦 · 易經64卦數據引擎
-// 先天八卦數：乾1 兌2 離3 震4 巽5 坎6 艮7 坤8
-// 6爻×理解層次：環境→行為→能力→信念價值→身份→精神
+// 点心问卦 · 易经64卦数据引擎
+// 先天八卦数：干1 兌2 离3 震4 巽5 坎6 艮7 坤8
+// 6爻×理解层次：环境→行为→能力→信念价值→身份→精神
 
 export const XIANTIAN: Record<string, number> = {
-  "乾": 1,
+  "干": 1,
   "兑": 2,
   "离": 3,
   "震": 4,
@@ -14,7 +14,7 @@ export const XIANTIAN: Record<string, number> = {
 };
 
 export const XIANTIAN_REVERSE: Record<number, string> = {
-  "1": "乾",
+  "1": "干",
   "2": "兑",
   "3": "离",
   "4": "震",
@@ -115,9 +115,9 @@ export interface Hexagram {
 export const HEXAGRAMS: Hexagram[] = [
   {
     "number": 1,
-    "name": "乾",
-    "upperTrigram": "乾",
-    "lowerTrigram": "乾",
+    "name": "干",
+    "upperTrigram": "干",
+    "lowerTrigram": "干",
     "lines": [
       1,
       1,
@@ -126,13 +126,13 @@ export const HEXAGRAMS: Hexagram[] = [
       1,
       1
     ],
-    "judgement": "乾：元，亨，利，贞。",
+    "judgement": "干：元，亨，利，贞。",
     "image": "天行健，君子以自强不息。",
-    "interpretation": "乾卦象征纯阳之气，代表刚健、进取、创造的力量。教导人们应当像天一样刚健有力，自强不息。",
+    "interpretation": "干卦象征纯阳之气，代表刚健、进取、创造的力量。教导人们应当像天一样刚健有力，自强不息。",
     "yaoTexts": [
       "初九：潜龙勿用。",
       "九二：见龙在田，利见大人。",
-      "九三：君子终日乾乾，夕惕若，厉无咎。",
+      "九三：君子终日干干，夕惕若，厉无咎。",
       "九四：或跃在渊，无咎。",
       "九五：飞龙在天，利见大人。",
       "上九：亢龙有悔。"
@@ -217,7 +217,7 @@ export const HEXAGRAMS: Hexagram[] = [
     "number": 5,
     "name": "需",
     "upperTrigram": "坎",
-    "lowerTrigram": "乾",
+    "lowerTrigram": "干",
     "lines": [
       1,
       1,
@@ -241,7 +241,7 @@ export const HEXAGRAMS: Hexagram[] = [
   {
     "number": 6,
     "name": "讼",
-    "upperTrigram": "乾",
+    "upperTrigram": "干",
     "lowerTrigram": "坎",
     "lines": [
       0,
@@ -317,7 +317,7 @@ export const HEXAGRAMS: Hexagram[] = [
     "number": 9,
     "name": "小畜",
     "upperTrigram": "巽",
-    "lowerTrigram": "乾",
+    "lowerTrigram": "干",
     "lines": [
       1,
       1,
@@ -341,7 +341,7 @@ export const HEXAGRAMS: Hexagram[] = [
   {
     "number": 10,
     "name": "履",
-    "upperTrigram": "乾",
+    "upperTrigram": "干",
     "lowerTrigram": "兑",
     "lines": [
       1,
@@ -367,7 +367,7 @@ export const HEXAGRAMS: Hexagram[] = [
     "number": 11,
     "name": "泰",
     "upperTrigram": "坤",
-    "lowerTrigram": "乾",
+    "lowerTrigram": "干",
     "lines": [
       1,
       1,
@@ -391,7 +391,7 @@ export const HEXAGRAMS: Hexagram[] = [
   {
     "number": 12,
     "name": "否",
-    "upperTrigram": "乾",
+    "upperTrigram": "干",
     "lowerTrigram": "坤",
     "lines": [
       0,
@@ -416,7 +416,7 @@ export const HEXAGRAMS: Hexagram[] = [
   {
     "number": 13,
     "name": "同人",
-    "upperTrigram": "乾",
+    "upperTrigram": "干",
     "lowerTrigram": "离",
     "lines": [
       1,
@@ -442,7 +442,7 @@ export const HEXAGRAMS: Hexagram[] = [
     "number": 14,
     "name": "大有",
     "upperTrigram": "离",
-    "lowerTrigram": "乾",
+    "lowerTrigram": "干",
     "lines": [
       1,
       1,
@@ -716,7 +716,7 @@ export const HEXAGRAMS: Hexagram[] = [
   {
     "number": 25,
     "name": "无妄",
-    "upperTrigram": "乾",
+    "upperTrigram": "干",
     "lowerTrigram": "震",
     "lines": [
       1,
@@ -742,7 +742,7 @@ export const HEXAGRAMS: Hexagram[] = [
     "number": 26,
     "name": "大畜",
     "upperTrigram": "艮",
-    "lowerTrigram": "乾",
+    "lowerTrigram": "干",
     "lines": [
       1,
       1,
@@ -916,7 +916,7 @@ export const HEXAGRAMS: Hexagram[] = [
   {
     "number": 33,
     "name": "遁",
-    "upperTrigram": "乾",
+    "upperTrigram": "干",
     "lowerTrigram": "艮",
     "lines": [
       0,
@@ -942,7 +942,7 @@ export const HEXAGRAMS: Hexagram[] = [
     "number": 34,
     "name": "大壮",
     "upperTrigram": "震",
-    "lowerTrigram": "乾",
+    "lowerTrigram": "干",
     "lines": [
       1,
       1,
@@ -1167,7 +1167,7 @@ export const HEXAGRAMS: Hexagram[] = [
     "number": 43,
     "name": "夬",
     "upperTrigram": "兑",
-    "lowerTrigram": "乾",
+    "lowerTrigram": "干",
     "lines": [
       1,
       1,
@@ -1191,7 +1191,7 @@ export const HEXAGRAMS: Hexagram[] = [
   {
     "number": 44,
     "name": "姤",
-    "upperTrigram": "乾",
+    "upperTrigram": "干",
     "lowerTrigram": "巽",
     "lines": [
       0,

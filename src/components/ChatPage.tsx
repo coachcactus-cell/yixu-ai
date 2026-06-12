@@ -12,7 +12,7 @@ interface Message {
 const STORAGE_KEY = "yixu-chat-history";
 const MAX_HISTORY = 50;
 const TIMER_STORAGE_KEY = "yixu-timer-left";
-const MAX_DAILY_SECONDS = 600; // 10 分鐘每日免費
+const MAX_DAILY_SECONDS = 600; // 10 分鐘每日免费
 const DAILY_RESET_KEY = "yixu-last-reset-date";
 
 const WELCOME_MESSAGE: Message = {
@@ -22,7 +22,7 @@ const WELCOME_MESSAGE: Message = {
     "你好，我是亦须AI 🙏\n\n修行路上，有什么困扰你？\n\n我们有 10 分钟免费对话时间，之后要等明日重置，或者你升级 VIP。",
 };
 
-/* ── 智慧建議輪替：按時段動態切換 ── */
+/* ── 智慧建议轮替：按时段动態切換 ── */
 function getSmartSuggestions(): { icon: string; text: string }[] {
   const hour = new Date().getHours();
   const dayOfWeek = new Date().getDay(); // 0=日, 1-6
@@ -45,7 +45,7 @@ function getSmartSuggestions(): { icon: string; text: string }[] {
       { icon: "🌅", text: "早上醒来心很乱，怎么办？" },
       { icon: "✨", text: "今天该怎样调整自己的状态？" },
     ];
-    // 週末加一條特別
+    // 週末加一条特別
     if (dayOfWeek === 0 || dayOfWeek === 6) {
       morningSuggestions[3] = { icon: "🌿", text: "周末怎样真正休息充电？" };
     }
@@ -62,7 +62,7 @@ function getSmartSuggestions(): { icon: string; text: string }[] {
     ];
   }
 
-  // 晚間 18-22
+  // 晚间 18-22
   return [
     { icon: "🌆", text: "今天有什么放不下的？" },
     { icon: "💭", text: "怎样安顿情绪入睡？" },
@@ -79,7 +79,7 @@ function getGreeting(): string {
   return "晚上好 ✨";
 }
 
-/* ── localStorage 工具函數 ── */
+/* ── localStorage 工具函数 ── */
 function loadHistory(): Message[] {
   if (typeof window === "undefined") return [];
   try {
@@ -107,7 +107,7 @@ function loadTimerLeft(): number {
     const today = new Date().toISOString().slice(0, 10);
     const lastReset = localStorage.getItem(DAILY_RESET_KEY);
     if (lastReset !== today) {
-      // 新的一天，重置計時器
+      // 新的一天，重置计时器
       localStorage.setItem(DAILY_RESET_KEY, today);
       localStorage.setItem(TIMER_STORAGE_KEY, String(MAX_DAILY_SECONDS));
       return MAX_DAILY_SECONDS;
@@ -138,7 +138,7 @@ export default function ChatPage() {
   const [speechSupported, setSpeechSupported] = useState(false);
   const [speechLang, setSpeechLang] = useState<"zh-CN" | "zh-HK">("zh-HK");
   const [speakingId, setSpeakingId] = useState<string | null>(null);
-  const [isRecording, setIsRecording] = useState(false); // WhatsApp 式按住錄音
+  const [isRecording, setIsRecording] = useState(false); // WhatsApp 式按住录音
   const [recordingSupported, setRecordingSupported] = useState(false);
   const [showGift, setShowGift] = useState(false);
   const [giftCard, setGiftCard] = useState<{ name: string; advice: string } | null>(null);
@@ -149,7 +149,7 @@ export default function ChatPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
-  // TTS 朗讀（瀏覽器原生 SpeechSynthesis，$0）
+  // TTS 朗读（瀏览器原生 SpeechSynthesis，$0）
   const speakMessage = useCallback((text: string, id: string) => {
     if (typeof window === "undefined" || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
@@ -161,10 +161,10 @@ export default function ChatPage() {
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = speechLang;
-    utterance.rate = 0.95; // 稍慢，更適合療癒對話
+    utterance.rate = 0.95; // 稍慢，更适合疗愈对话
     utterance.pitch = 1.0;
 
-    // 揀一把好聽嘅聲
+    // 揀一把好听的声
     const voices = window.speechSynthesis.getVoices();
     const preferred = voices.find(v => v.lang.startsWith("zh-HK") || v.lang.startsWith("zh-CN") || v.lang.startsWith("zh-TW"));
     if (preferred) utterance.voice = preferred;
@@ -176,7 +176,7 @@ export default function ChatPage() {
     window.speechSynthesis.speak(utterance);
   }, [speakingId, speechLang]);
 
-  // 預載 voices（Safari/Chrome 需要異步加載）
+  // 预载 voices（Safari/Chrome 需要異步加载）
   useEffect(() => {
     if (typeof window !== "undefined" && window.speechSynthesis) {
       window.speechSynthesis.getVoices();
@@ -186,14 +186,14 @@ export default function ChatPage() {
     }
   }, []);
 
-  // MediaRecorder 支援檢測（WhatsApp 式錄音）
+  // MediaRecorder 支援檢测（WhatsApp 式录音）
   useEffect(() => {
     if (typeof window !== "undefined" && navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === "function") {
       setRecordingSupported(true);
     }
   }, []);
 
-  // WhatsApp 式按住錄音邏輯
+  // WhatsApp 式按住录音邏輯
   const startRecording = useCallback(async () => {
     if (!recordingSupported) return;
     try {
@@ -213,13 +213,13 @@ export default function ChatPage() {
       mediaRecorder.onstop = () => {
         // 停止所有音軌
         stream.getTracks().forEach((t) => t.stop());
-        // 如果 Web Speech 冇結果，用 Whisper fallback（此處暫留）
+        // 如果 Web Speech 没结果，用 Whisper fallback（此处暫留）
       };
 
       mediaRecorder.start();
       setIsRecording(true);
 
-      // 同時啟動 Web Speech Recognition
+      // 同时启动 Web Speech Recognition
       if (recognitionRef.current) {
         try {
           recognitionRef.current.start();
@@ -244,18 +244,18 @@ export default function ChatPage() {
     setIsRecording(false);
     setIsListening(false);
 
-    // 錄音結束後，如果有 recognition 結果，自動 send
+    // 录音结束后，如果有 recognition 结果，自动 send
     setTimeout(() => {
       const transcript = (recognitionRef.current as any)?._lastTranscript;
       if (transcript && transcript.trim()) {
         setInput(transcript);
-        // 標記自動發送
+        // 标记自动发送
         (window as any).__yixuAutoSend = transcript.trim();
       }
     }, 300);
   }, []);
 
-  // 抽出 send 邏輯，方便 handleSend 同錄音 auto-send 共用
+  // 抽出 send 邏輯，方便 handleSend 同录音 auto-send 共用
   const doSend = useCallback(async (text: string) => {
     if (!text.trim() || isLoading || timerLeft <= 0) return;
 
@@ -340,7 +340,7 @@ export default function ChatPage() {
     }
   }, [messages, isLoading, timerLeft]);
 
-  // 錄音自動 send effect（必須在 doSend 定義之後）
+  // 录音自动 send effect（必须在 doSend 定義之后）
   useEffect(() => {
     const autoSend = (window as any).__yixuAutoSend;
     if (autoSend && input === autoSend && !isLoading && timerLeft > 0) {
@@ -351,7 +351,7 @@ export default function ChatPage() {
     }
   }, [input, doSend, isLoading, timerLeft]);
 
-  // 語音辨識初始化（雙語支援：粵語+普通話）
+  // 语音辨识初始化（双语支援：粵语+普通话）
   useEffect(() => {
     if (typeof window === "undefined") return;
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -360,7 +360,7 @@ export default function ChatPage() {
     }
   }, []);
 
-  // 每次切換語言重建 recognition 實例
+  // 每次切換语言重建 recognition 实例
   useEffect(() => {
     if (!speechSupported) return;
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -373,7 +373,7 @@ export default function ChatPage() {
       const recognition = new SpeechRecognition();
       recognition.lang = speechLang;
       recognition.interimResults = true;
-      recognition.continuous = true; // 改為 continuous 避免手機自動結束
+      recognition.continuous = true; // 改为 continuous 避免手机自动结束
       recognition.maxAlternatives = 1;
 
       recognition.onresult = (event: any) => {
@@ -393,11 +393,11 @@ export default function ChatPage() {
       recognition.onerror = (event: any) => {
         console.log("Speech error:", event.error);
         setIsListening(false);
-        // 手機常見 error: aborted, network, not-allowed
+        // 手机常见 error: aborted, network, not-allowed
         if (event.error === "not-allowed" || event.error === "service-not-allowed") {
           setSpeechSupported(false);
         }
-        // aborted 係正常（用戶停止/切換），唔使禁用
+        // aborted 是正常（用戶停止/切換），不用禁用
       };
 
       recognitionRef.current = recognition;
@@ -416,13 +416,13 @@ export default function ChatPage() {
       recognition.stop();
       setIsListening(false);
     } else {
-      // 手機需要用戶手勢後先可以 start
+      // 手机需要用戶手勢后先可以 start
       try {
         recognition.start();
         setIsListening(true);
       } catch (e: any) {
         console.log("Speech start failed:", e);
-        // iOS 有時會報 already started，試 stop 再 start
+        // iOS 有时会报 already started，试 stop 再 start
         if (e.name === "InvalidStateError") {
           try {
             recognition.stop();
@@ -444,20 +444,20 @@ export default function ChatPage() {
     }
   }, [isListening]);
 
-  // 頁面載入時恢復計時器（不跳過 landing page）
+  // 页面载入时恢復计时器（不跳过 landing page）
   useEffect(() => {
     const savedTimer = loadTimerLeft();
     setTimerLeft(savedTimer);
   }, []);
 
-  // 對話變化時自動保存
+  // 对话变化时自动保存
   useEffect(() => {
     if (messages.length > 0) {
       saveHistory(messages);
     }
   }, [messages]);
 
-  // 計時器變化時保存
+  // 计时器变化时保存
   useEffect(() => {
     if (started && timerLeft > 0) {
       saveTimerLeft(timerLeft);
@@ -480,17 +480,17 @@ export default function ChatPage() {
   // Auto scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    // 每次有新消息，重設 dead air 計時器
+    // 每次有新消息，重设 dead air 计时器
     lastMsgTimeRef.current = Date.now();
     if (giftTimerRef.current) clearTimeout(giftTimerRef.current);
     giftTimerRef.current = setTimeout(() => {
-      // 90 秒無新消息 → 送塔羅牌
+      // 90 秒无新消息 → 送塔羅牌
       const cards = [
-        { name: "初心", advice: "保持初心，不忘來時路。" },
-        { name: "突破", advice: "勇敢踏出舒適圈，突破就在當下。" },
-        { name: "放下", advice: "放下執念，才能看見新的可能。" },
-        { name: "觀照", advice: "不評判、不跟隨，只是觀照。" },
-        { name: "從容", advice: "事緩則圓，人緩則安。" },
+        { name: "初心", advice: "保持初心，不忘来时路。" },
+        { name: "突破", advice: "勇敢踏出舒适圈，突破就在当下。" },
+        { name: "放下", advice: "放下執念，才能看见新的可能。" },
+        { name: "观照", advice: "不评判、不跟随，只是观照。" },
+        { name: "從容", advice: "事緩则圓，人緩则安。" },
         { name: "守中", advice: "居中守正，不偏不倚。" },
       ];
       setGiftCard(cards[Math.floor(Math.random() * cards.length)]);
@@ -641,7 +641,7 @@ export default function ChatPage() {
             )}
             <div className="timer-badge">
               <Clock size={14} />
-              <span>{timerLeft > 0 ? `今日剩余 ${formatTime(timerLeft)}` : "今日限额已用完"}</span>
+              <span>{timerLeft > 0 ? `今天剩余 ${formatTime(timerLeft)}` : "今天限额已用完"}</span>
             </div>
           </div>
         </div>
@@ -711,7 +711,7 @@ export default function ChatPage() {
           </div>
         )}
 
-        {/* Smart Suggestions — 按時段動態 */}
+        {/* Smart Suggestions — 按时段动態 */}
         {messages.length === 1 && (
           <div className="mt-4 space-y-2">
             <p className="text-sm text-[#777777] px-1 font-medium">试着问：</p>
@@ -741,7 +741,7 @@ export default function ChatPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={timerLeft > 0 ? "说出你的困扰..." : "今日对话限额已用完"}
+            placeholder={timerLeft > 0 ? "说出你的困扰..." : "今天对话限额已用完"}
             disabled={timerLeft <= 0}
             className="chat-input flex-1"
           />
@@ -753,10 +753,10 @@ export default function ChatPage() {
             <Send size={18} className="text-white" />
           </button>
         </div>
-        {/* 語言切換 + 錄音狀態 */}
+        {/* 语言切換 + 录音狀態 */}
       </div>
 
-      {/* 90秒無對話送塔羅牌 */}
+      {/* 90秒无对话送塔羅牌 */}
       {showGift && giftCard && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40" onClick={() => setShowGift(false)}>
           <div
@@ -765,8 +765,8 @@ export default function ChatPage() {
           >
             <div className="text-center">
               <div className="text-4xl mb-2">🙏</div>
-              <h3 className="text-lg font-bold text-[#1a1a1a] mb-1">再見！送你一個小錦囊</h3>
-              <p className="text-sm text-[#999] mb-4">亦須先生給你的小禮物</p>
+              <h3 className="text-lg font-bold text-[#1a1a1a] mb-1">再见！送你一个小錦囊</h3>
+              <p className="text-sm text-[#999] mb-4">亦须先生給你的小禮物</p>
 
               <div className="card mb-4">
                 <div className="text-2xl mb-2">🃏</div>
@@ -796,7 +796,7 @@ export default function ChatPage() {
                           const url = URL.createObjectURL(blob);
                           const a = document.createElement("a");
                           a.href = url;
-                          a.download = `亦須AI_${giftCard.name}.png`;
+                          a.download = `亦须AI_${giftCard.name}.png`;
                           a.click();
                           URL.revokeObjectURL(url);
                         }
@@ -805,13 +805,13 @@ export default function ChatPage() {
                   }}
                   className="flex-1 py-2.5 rounded-xl border border-[#c9a84c] text-[#c9a84c] text-sm font-bold"
                 >
-                  保存圖片
+                  保存图片
                 </button>
                 <button
                   onClick={() => setShowGift(false)}
                   className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#c9a84c] to-[#b89430] text-white text-sm font-bold"
                 >
-                  多謝先生
+                  谢谢先生
                 </button>
               </div>
             </div>

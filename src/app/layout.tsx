@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         url: "https://yixu-ai.online/og-image.png?v=4",
         width: 1200,
         height: 630,
-        alt: "亦须AI — 你的隨身療癒修行伙伴",
+        alt: "亦须AI — 你的随身疗愈修行伙伴",
       },
     ],
     locale: "zh_HK",

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>C老大後台 · 亦須AI</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { font-family: "PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif; background: #fafafa; color: #1a1a1a; overscroll-behavior: none; }
+.font-song { font-family: "Noto Serif SC","STSong","Songti SC","PMingLiU",serif; }
+
+/* Header */
+.header { position: sticky; top: 0; z-index: 10; background: linear-gradient(to right,#1a1a2e,#16213e); padding: 12px 16px; }
+.header-inner { display: flex; align-items: center; justify-content: space-between; }
+.header-logo { display: flex; align-items: center; gap: 8px; }
+.header-icon { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg,#c9a84c,#b89430); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: 700; }
+.header-title { font-size: 14px; font-weight: 700; color: #fff; }
+.header-sub { font-size: 10px; color: rgba(255,255,255,.5); }
+.header-btn { padding: 6px; border-radius: 8px; background: rgba(255,255,255,.1); border: none; color: rgba(255,255,255,.7); cursor: pointer; font-size: 14px; }
+
+/* Tab Bar */
+.tab-bar { display: flex; border-bottom: 1px solid #e8e8e8; background: #fff; }
+.tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 0; font-size: 10px; font-weight: 500; color: #999; border: none; background: none; cursor: pointer; transition: color .2s; }
+.tab-item.active { color: #c9a84c; border-bottom: 2px solid #c9a84c; font-weight: 700; }
+.tab-icon { font-size: 16px; margin-bottom: 1px; }
+
+/* Content */
+.content { padding: 0 16px 32px; overflow-y: auto; }
+
+/* Cards */
+.card { background: #fff; border-radius: 12px; padding: 12px; border: 1px solid #e8e8e8; }
+.card-lg { padding: 16px; }
+
+/* KPI Grid */
+.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.kpi-card { background: #fff; border-radius: 12px; padding: 12px; border: 1px solid #e8e8e8; }
+.kpi-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.kpi-icon { font-size: 14px; }
+.kpi-change { font-size: 9px; font-weight: 700; display: flex; align-items: center; gap: 2px; }
+.kpi-change.up { color: #10b981; }
+.kpi-change.down { color: #ef4444; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #1a1a1a; }
+.kpi-label { font-size: 10px; color: #999; margin-top: 2px; }
+
+/* Stat Grid */
+.stat-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 16px; }
+.stat-card { background: #fff; border-radius: 12px; padding: 10px; border: 1px solid #e8e8e8; text-align: center; }
+.stat-value { font-size: 22px; font-weight: 700; }
+.stat-label { font-size: 10px; color: #999; margin-top: 2px; }
+
+/* Revenue Card */
+.revenue-card { background: linear-gradient(135deg,#1a1a2e,#16213e); border-radius: 12px; padding: 20px; color: #fff; margin-top: 16px; }
+.revenue-label { font-size: 12px; color: rgba(255,255,255,.6); }
+.revenue-amount { font-size: 28px; font-weight: 700; margin-top: 4px; }
+.revenue-change { font-size: 12px; color: #4ade80; margin-top: 4px; }
+
+/* Bar Chart */
+.bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; margin-top: 8px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bar-fill { width: 100%; border-radius: 3px 3px 0 0; background: linear-gradient(to top,#c9a84c,#d4b85c); transition: height .5s; }
+.bar-label { font-size: 9px; color: #999; }
+
+/* Progress Bar */
+.progress-row { margin-bottom: 12px; }
+.progress-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.progress-label { font-size: 12px; color: #333; }
+.progress-value { font-size: 12px; font-weight: 700; color: #1a1a1a; }
+.progress-track { height: 8px; background: #f5f5f5; border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 4px; transition: width .5s; }
+
+/* User List */
+.user-item { background: #fff; border-radius: 12px; padding: 12px; border: 1px solid #e8e8e8; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.user-avatar { width: 36px; height: 36px; border-radius: 50%; background: #fdf8ed; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 14px; font-weight: 700; }
+.user-date { font-size: 10px; color: #999; }
+.user-stats { text-align: right; flex-shrink: 0; }
+.user-chats { font-size: 12px; font-weight: 700; }
+.user-assess { font-size: 10px; color: #999; }
+.vip-badge { display: inline-block; font-size: 9px; padding: 2px 6px; border-radius: 10px; background: #c9a84c; color: #fff; font-weight: 700; margin-left: 4px; vertical-align: middle; }
+
+/* Distributor Card */
+.dist-card { background: #fff; border-radius: 12px; padding: 16px; border: 1px solid #e8e8e8; margin-bottom: 12px; }
+.dist-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.dist-name { font-size: 14px; font-weight: 700; }
+.dist-meta { font-size: 10px; color: #999; margin-top: 2px; }
+.dist-revenue { font-size: 14px; font-weight: 700; color: #c9a84c; }
+.dist-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.dist-stat { text-align: center; padding: 6px; background: #fafafa; border-radius: 8px; }
+.dist-stat-val { font-size: 14px; font-weight: 700; }
+.dist-stat-label { font-size: 9px; color: #999; }
+.dist-actions { display: flex; gap: 8px; }
+.dist-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #c9a84c; background: none; color: #c9a84c; font-size: 12px; font-weight: 700; cursor: pointer; }
+.dist-btn-primary { background: #10b981; color: #fff; border-color: #10b981; }
+.dist-btn-danger { border-color: #fca5a5; color: #ef4444; }
+.dist-btn-secondary { border-color: #e8e8e8; color: #666; }
+
+/* Status Badge */
+.badge { display: inline-block; font-size: 9px; padding: 2px 6px; border-radius: 10px; font-weight: 700; vertical-align: middle; }
+.badge-active { background: #dcfce7; color: #15803d; }
+.badge-trial { background: #dbeafe; color: #1d4ed8; }
+.badge-pending { background: #fef3c7; color: #b45309; }
+.badge-suspended { background: #fee2e2; color: #b91c1c; }
+.badge-green { background: #dcfce7; color: #15803d; }
+.badge-yellow { background: #fef3c7; color: #b45309; }
+.badge-gray { background: #f3f4f6; color: #4b5563; }
+
+/* Content List */
+.content-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
+.content-item:last-child { border-bottom: none; }
+.content-title { font-size: 12px; font-weight: 700; }
+.content-tags { display: flex; gap: 6px; margin-top: 3px; }
+.content-tag { font-size: 9px; padding: 2px 6px; border-radius: 4px; background: #f5f5f5; color: #666; }
+.content-views { font-size: 12px; color: #999; flex-shrink: 0; margin-left: 12px; }
+
+/* Section Title */
+.section-title { font-size: 14px; font-weight: 700; color: #1a1a1a; margin: 16px 0 12px; display: flex; align-items: center; gap: 6px; }
+.section-icon { color: #c9a84c; }
+
+/* Commission Row */
+.comm-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f5f5f5; }
+.comm-row:last-child { border-bottom: none; }
+.comm-month { font-size: 12px; font-weight: 700; }
+.comm-rev { font-size: 10px; color: #999; }
+.comm-amount { font-size: 14px; font-weight: 700; color: #c9a84c; }
+.comm-badge { font-size: 9px; padding: 2px 6px; border-radius: 10px; font-weight: 700; }
+
+/* Quick Links */
+.quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.quick-card { background: #fff; border-radius: 12px; padding: 12px; border: 1px solid #e8e8e8; display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
+.quick-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.quick-title { font-size: 12px; font-weight: 700; }
+.quick-sub { font-size: 10px; color: #999; }
+
+/* Tab content visibility */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Fade in */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.tab-content.active { animation: fadeIn .3s ease-out; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-logo">
+      <div class="header-icon font-song">亦</div>
+      <div>
+        <div class="header-title">C老大後台</div>
+        <div class="header-sub">超級管理員</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="header-btn">🔄</button>
+      <button class="header-btn" onclick="location.href='/'">🚪</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <button class="tab-item active" onclick="switchTab('overview',this)"><span class="tab-icon">📊</span>總覽</button>
+  <button class="tab-item" onclick="switchTab('users',this)"><span class="tab-icon">👥</span>用戶</button>
+  <button class="tab-item" onclick="switchTab('revenue',this)"><span class="tab-icon">💰</span>收入</button>
+  <button class="tab-item" onclick="switchTab('distributors',this)"><span class="tab-icon">🤝</span>分銷</button>
+  <button class="tab-item" onclick="switchTab('content',this)"><span class="tab-icon">📝</span>內容</button>
+</div>
+
+<!-- ============ 總覽 ============ -->
+<div id="tab-overview" class="tab-content active">
+  <div class="content">
+    <!-- KPI -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-top"><span class="kpi-icon">👥</span><span class="kpi-change up">↑12.5%</span></div>
+        <div class="kpi-value">23</div>
+        <div class="kpi-label">DAU</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-top"><span class="kpi-icon">💬</span><span class="kpi-change up">↑8.3%</span></div>
+        <div class="kpi-value">342</div>
+        <div class="kpi-label">AI對話</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-top"><span class="kpi-icon">✨</span><span class="kpi-change down">↓2.1%</span></div>
+        <div class="kpi-value">156</div>
+        <div class="kpi-label">測評次數</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-top"><span class="kpi-icon">💰</span><span class="kpi-change up">↑23.6%</span></div>
+        <div class="kpi-value">¥1,280</div>
+        <div class="kpi-label">收入(元)</div>
+      </div>
+    </div>
+
+    <!-- 週趨勢 -->
+    <div class="card card-lg" style="margin-top:16px">
+      <div class="section-title"><span class="section-icon">📈</span>本週 DAU 趨勢</div>
+      <div class="bar-chart">
+        <div class="bar-col"><div class="bar-fill" style="height:58%"></div><span class="bar-label">一</span></div>
+        <div class="bar-col"><div class="bar-fill" style="height:71%"></div><span class="bar-label">二</span></div>
+        <div class="bar-col"><div class="bar-fill" style="height:48%"></div><span class="bar-label">三</span></div>
+        <div class="bar-col"><div class="bar-fill" style="height:90%"></div><span class="bar-label">四</span></div>
+        <div class="bar-col"><div class="bar-fill" style="height:74%"></div><span class="bar-label">五</span></div>
+        <div class="bar-col"><div class="bar-fill" style="height:100%"></div><span class="bar-label">六</span></div>
+        <div class="bar-col"><div class="bar-fill" style="height:74%"></div><span class="bar-label">日</span></div>
+      </div>
+    </div>
+
+    <!-- 測評分佈 -->
+    <div class="card card-lg" style="margin-top:16px">
+      <div class="section-title"><span class="section-icon">📊</span>測評分佈</div>
+      <div class="progress-row">
+        <div class="progress-top"><span class="progress-label">九型人格</span><span class="progress-value">68 次 (44%)</span></div>
+        <div class="progress-track"><div class="progress-fill" style="width:44%;background:#c9a84c"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-top"><span class="progress-label">七脈輪</span><span class="progress-value">52 次 (33%)</span></div>
+        <div class="progress-track"><div class="progress-fill" style="width:33%;background:#8b5cf6"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-top"><span class="progress-label">易卦</span><span class="progress-value">36 次 (23%)</span></div>
+        <div class="progress-track"><div class="progress-fill" style="width:23%;background:#3b82f6"></div></div>
+      </div>
+    </div>
+
+    <!-- 快捷入口 -->
+    <div class="quick-grid">
+      <div class="quick-card">
+        <div class="quick-icon" style="background:#fdf8ed">🤝</div>
+        <div><div class="quick-title">新增 B2B</div><div class="quick-sub">註冊合作夥伴</div></div>
+      </div>
+      <div class="quick-card">
+        <div class="quick-icon" style="background:#f0f4ff">📋</div>
+        <div><div class="quick-title">B2B 管理</div><div class="quick-sub">客戶列表</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 用戶 ============ -->
+<div id="tab-users" class="tab-content">
+  <div class="content">
+    <div class="stat-grid-3">
+      <div class="stat-card"><div class="stat-value" style="color:#c9a84c">5</div><div class="stat-label">總用戶</div></div>
+      <div class="stat-card"><div class="stat-value" style="color:#10b981">2</div><div class="stat-label">VIP</div></div>
+      <div class="stat-card"><div class="stat-value" style="color:#6366f1">80</div><div class="stat-label">總對話</div></div>
+    </div>
+    <div style="margin-top:16px">
+      <div class="user-item">
+        <div class="user-avatar">🧘</div>
+        <div class="user-info"><div class="user-name">修行者甲</div><div class="user-date">加入: 2026-05-20</div></div>
+        <div class="user-stats"><div class="user-chats">24 對話</div><div class="user-assess">3 測評</div></div>
+      </div>
+      <div class="user-item">
+        <div class="user-avatar">🧘</div>
+        <div class="user-info"><div class="user-name">修行者乙<span class="vip-badge">VIP</span></div><div class="user-date">加入: 2026-05-28</div></div>
+        <div class="user-stats"><div class="user-chats">12 對話</div><div class="user-assess">5 測評</div></div>
+      </div>
+      <div class="user-item">
+        <div class="user-avatar">🧘</div>
+        <div class="user-info"><div class="user-name">修行者丙</div><div class="user-date">加入: 2026-06-01</div></div>
+        <div class="user-stats"><div class="user-chats">8 對話</div><div class="user-assess">2 測評</div></div>
+      </div>
+      <div class="user-item">
+        <div class="user-avatar">🧘</div>
+        <div class="user-info"><div class="user-name">修行者丁<span class="vip-badge">VIP</span></div><div class="user-date">加入: 2026-06-05</div></div>
+        <div class="user-stats"><div class="user-chats">31 對話</div><div class="user-assess">4 測評</div></div>
+      </div>
+      <div class="user-item">
+        <div class="user-avatar">🧘</div>
+        <div class="user-info"><div class="user-name">修行者戊</div><div class="user-date">加入: 2026-06-10</div></div>
+        <div class="user-stats"><div class="user-chats">5 對話</div><div class="user-assess">1 測評</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 收入 ============ -->
+<div id="tab-revenue" class="tab-content">
+  <div class="content">
+    <div class="revenue-card">
+      <div class="revenue-label">本月收入</div>
+      <div class="revenue-amount">¥1,280</div>
+      <div class="revenue-change">↑ +23.6% 較上月</div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">VIP 月費</div>
+        <div class="kpi-value" style="color:#c9a84c;font-size:20px">¥580</div>
+        <div class="kpi-label">20 人 × ¥29</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">B2B 合作</div>
+        <div class="kpi-value" style="color:#6366f1;font-size:20px">¥700</div>
+        <div class="kpi-label">2 家客戶</div>
+      </div>
+    </div>
+    <div class="card card-lg" style="margin-top:16px">
+      <div class="section-title">收入趨勢（近6月）</div>
+      <div class="bar-chart" style="height:100px">
+        <div class="bar-col"><span class="bar-label">¥320</span><div style="width:100%;border-radius:3px 3px 0 0;background:#e8e8e8;height:25%"></div><span class="bar-label">1月</span></div>
+        <div class="bar-col"><span class="bar-label">¥480</span><div style="width:100%;border-radius:3px 3px 0 0;background:#e8e8e8;height:37%"></div><span class="bar-label">2月</span></div>
+        <div class="bar-col"><span class="bar-label">¥560</span><div style="width:100%;border-radius:3px 3px 0 0;background:#e8e8e8;height:44%"></div><span class="bar-label">3月</span></div>
+        <div class="bar-col"><span class="bar-label">¥720</span><div style="width:100%;border-radius:3px 3px 0 0;background:#e8e8e8;height:56%"></div><span class="bar-label">4月</span></div>
+        <div class="bar-col"><span class="bar-label">¥980</span><div style="width:100%;border-radius:3px 3px 0 0;background:#e8e8e8;height:77%"></div><span class="bar-label">5月</span></div>
+        <div class="bar-col"><span class="bar-label">¥1280</span><div style="width:100%;border-radius:3px 3px 0 0;background:linear-gradient(to top,#c9a84c,#d4b85c);height:100%"></div><span class="bar-label">6月</span></div>
+      </div>
+    </div>
+    <div class="card card-lg" style="margin-top:16px">
+      <div class="section-title">待結算佣金</div>
+      <div class="comm-row">
+        <div><div class="comm-month">靜心瑜伽工作室</div><div class="comm-rev">佣金率: 15%</div></div>
+        <div class="comm-amount">¥134</div>
+      </div>
+      <div class="comm-row">
+        <div><div class="comm-month">芳療小院</div><div class="comm-rev">佣金率: 12%</div></div>
+        <div class="comm-amount">¥62</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 分銷 ============ -->
+<div id="tab-distributors" class="tab-content">
+  <div class="content">
+    <div class="stat-grid-3">
+      <div class="stat-card"><div class="stat-value" style="color:#c9a84c">4</div><div class="stat-label">總分銷</div></div>
+      <div class="stat-card"><div class="stat-value" style="color:#10b981">2</div><div class="stat-label">活躍</div></div>
+      <div class="stat-card"><div class="stat-value" style="color:#f59e0b">1</div><div class="stat-label">待審批</div></div>
+    </div>
+    <div style="margin-top:16px">
+      <!-- DSP 1 -->
+      <div class="dist-card">
+        <div class="dist-header">
+          <div><div class="dist-name">靜心瑜伽工作室 <span class="badge badge-active">活躍</span></div><div class="dist-meta">微信: yoga_zhengxin · 加入: 2026-04-01</div></div>
+          <div class="dist-revenue">¥890</div>
+        </div>
+        <div class="dist-stats">
+          <div class="dist-stat"><div class="dist-stat-val">45</div><div class="dist-stat-label">用戶數</div></div>
+          <div class="dist-stat"><div class="dist-stat-val">15%</div><div class="dist-stat-label">佣金率</div></div>
+          <div class="dist-stat"><div class="dist-stat-val">¥134</div><div class="dist-stat-label">佣金</div></div>
+        </div>
+        <div class="dist-actions">
+          <button class="dist-btn">📱 推廣碼</button>
+          <button class="dist-btn dist-btn-secondary">👁 詳情</button>
+        </div>
+      </div>
+      <!-- DSP 2 -->
+      <div class="dist-card">
+        <div class="dist-header">
+          <div><div class="dist-name">芳療小院 <span class="badge badge-active">活躍</span></div><div class="dist-meta">微信: aroma_garden · 加入: 2026-04-15</div></div>
+          <div class="dist-revenue">¥520</div>
+        </div>
+        <div class="dist-stats">
+          <div class="dist-stat"><div class="dist-stat-val">28</div><div class="dist-stat-label">用戶數</div></div>
+          <div class="dist-stat"><div class="dist-stat-val">12%</div><div class="dist-stat-label">佣金率</div></div>
+          <div class="dist-stat"><div class="dist-stat-val">¥62</div><div class="dist-stat-label">佣金</div></div>
+        </div>
+        <div class="dist-actions">
+          <button class="dist-btn">📱 推廣碼</button>
+          <button class="dist-btn dist-btn-secondary">👁 詳情</button>
+        </div>
+      </div>
+      <!-- DSP 3 -->
+      <div class="dist-card">
+        <div class="dist-header">
+          <div><div class="dist-name">身心健康中心 <span class="badge badge-trial">試用中</span></div><div class="dist-meta">微信: health_center · 加入: 2026-06-01</div></div>
+          <div class="dist-revenue">¥180</div>
+        </div>
+        <div class="dist-stats">
+          <div class="dist-stat"><div class="dist-stat-val">12</div><div class="dist-stat-label">用戶數</div></div>
+          <div class="dist-stat"><div class="dist-stat-val">10%</div><div class="dist-stat-label">佣金率</div></div>
+          <div class="dist-stat"><div class="dist-stat-val">¥18</div><div class="dist-stat-label">佣金</div></div>
+        </div>
+        <div class="dist-actions">
+          <button class="dist-btn">📱 推廣碼</button>
+          <button class="dist-btn dist-btn-secondary">👁 詳情</button>
+        </div>
+      </div>
+      <!-- DSP 4 -->
+      <div class="dist-card">
+        <div class="dist-header">
+          <div><div class="dist-name">道然書院 <span class="badge badge-pending">待審批</span></div><div class="dist-meta">微信: daoran_shuyuan · 加入: 2026-06-10</div></div>
+          <div class="dist-revenue">¥0</div>
+        </div>
+        <div class="dist-stats">
+          <div class="dist-stat"><div class="dist-stat-val">0</div><div class="dist-stat-label">用戶數</div></div>
+          <div class="dist-stat"><div class="dist-stat-val">0%</div><div class="dist-stat-label">佣金率</div></div>
+          <div class="dist-stat"><div class="dist-stat-val">¥0</div><div class="dist-stat-label">佣金</div></div>
+        </div>
+        <div class="dist-actions">
+          <button class="dist-btn dist-btn-primary">✓ 批准</button>
+          <button class="dist-btn dist-btn-danger">✗ 拒絕</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 內容 ============ -->
+<div id="tab-content" class="tab-content">
+  <div class="content">
+    <div class="card card-lg" style="margin-top:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="section-title" style="margin:0">內容管理</div>
+        <button style="font-size:12px;padding:6px 12px;border-radius:8px;background:#c9a84c;color:#fff;border:none;font-weight:700;cursor:pointer">+ 新增</button>
+      </div>
+      <div class="content-item">
+        <div><div class="content-title">七脈輪深度解讀</div><div class="content-tags"><span class="content-tag">測評</span><span class="badge badge-green">已上架</span></div></div>
+        <div class="content-views">156 次查看</div>
+      </div>
+      <div class="content-item">
+        <div><div class="content-title">孟子塔羅牌（5張）</div><div class="content-tags"><span class="content-tag">塔羅</span><span class="badge badge-yellow">開發中</span></div></div>
+        <div class="content-views">—</div>
+      </div>
+      <div class="content-item">
+        <div><div class="content-title">和香推薦·檀香</div><div class="content-tags"><span class="content-tag">用香</span><span class="badge badge-green">已上架</span></div></div>
+        <div class="content-views">89 次查看</div>
+      </div>
+      <div class="content-item">
+        <div><div class="content-title">修行日課·靜心法</div><div class="content-tags"><span class="content-tag">修行</span><span class="badge badge-gray">草稿</span></div></div>
+        <div class="content-views">—</div>
+      </div>
+      <div class="content-item">
+        <div><div class="content-title">易經·乾卦解讀</div><div class="content-tags"><span class="content-tag">易卦</span><span class="badge badge-green">已上架</span></div></div>
+        <div class="content-views">234 次查看</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

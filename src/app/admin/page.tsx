@@ -21,7 +21,7 @@ import Link from "next/link";
 
 type Tab = "overview" | "users" | "revenue" | "distributors" | "content";
 
-// ── Mock 數據 ──
+// ── Mock 数据 ──
 const MOCK_OVERVIEW = {
   dau: 23,
   dauChange: 12.5,
@@ -44,18 +44,18 @@ const MOCK_USERS = [
 ];
 
 const MOCK_DISTRIBUTORS = [
-  { id: "dsp-001", name: "靜心瑜伽工作室", wechat: "yoga_zhengxin", users: 45, revenue: 890, status: "active", commission: 15, joinDate: "2026-04-01" },
-  { id: "dsp-002", name: "芳療小院", wechat: "aroma_garden", users: 28, revenue: 520, status: "active", commission: 12, joinDate: "2026-04-15" },
+  { id: "dsp-001", name: "静心瑜伽工作室", wechat: "yoga_zhengxin", users: 45, revenue: 890, status: "active", commission: 15, joinDate: "2026-04-01" },
+  { id: "dsp-002", name: "芳疗小院", wechat: "aroma_garden", users: 28, revenue: 520, status: "active", commission: 12, joinDate: "2026-04-15" },
   { id: "dsp-003", name: "身心健康中心", wechat: "health_center", users: 12, revenue: 180, status: "trial", commission: 10, joinDate: "2026-06-01" },
-  { id: "dsp-004", name: "道然書院", wechat: "daoran_shuyuan", users: 0, revenue: 0, status: "pending", commission: 0, joinDate: "2026-06-10" },
+  { id: "dsp-004", name: "道然书院", wechat: "daoran_shuyuan", users: 0, revenue: 0, status: "pending", commission: 0, joinDate: "2026-06-10" },
 ];
 
 const MOCK_CONTENT = [
-  { id: "c1", title: "七脈輪深度解讀", type: "測評", status: "已上架", views: 156 },
-  { id: "c2", title: "孟子塔羅牌（5張）", type: "塔羅", status: "開發中", views: 0 },
+  { id: "c1", title: "七脉轮深度解读", type: "测评", status: "已上架", views: 156 },
+  { id: "c2", title: "孟子塔羅牌（5张）", type: "塔羅", status: "开发中", views: 0 },
   { id: "c3", title: "和香推薦·檀香", type: "用香", status: "已上架", views: 89 },
-  { id: "c4", title: "修行日課·靜心法", type: "修行", status: "草稿", views: 0 },
-  { id: "c5", title: "易經·乾卦解讀", type: "易卦", status: "已上架", views: 234 },
+  { id: "c4", title: "修行日课·静心法", type: "修行", status: "草稿", views: 0 },
+  { id: "c5", title: "易经·干卦解读", type: "易卦", status: "已上架", views: 234 },
 ];
 
 export default function AdminDashboard() {
@@ -68,11 +68,11 @@ export default function AdminDashboard() {
   };
 
   const tabs: { key: Tab; label: string; icon: any }[] = [
-    { key: "overview", label: "總覽", icon: BarChart3 },
+    { key: "overview", label: "总览", icon: BarChart3 },
     { key: "users", label: "用戶", icon: Users },
     { key: "revenue", label: "收入", icon: DollarSign },
     { key: "distributors", label: "分銷", icon: Handshake },
-    { key: "content", label: "內容", icon: FileText },
+    { key: "content", label: "内容", icon: FileText },
   ];
 
   return (
@@ -85,8 +85,8 @@ export default function AdminDashboard() {
               <span className="text-white text-sm font-bold font-song">亦</span>
             </div>
             <div>
-              <h1 className="text-sm font-bold text-white">C老大後台</h1>
-              <p className="text-[10px] text-white/50">超級管理員</p>
+              <h1 className="text-sm font-bold text-white">C老大后台</h1>
+              <p className="text-[10px] text-white/50">超级管理員</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -137,7 +137,7 @@ export default function AdminDashboard() {
   );
 }
 
-// ── 總覽 Tab ──
+// ── 总览 Tab ──
 function OverviewTab() {
   const d = MOCK_OVERVIEW;
   const maxWeek = Math.max(...d.weekData);
@@ -147,16 +147,16 @@ function OverviewTab() {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-3 mt-4">
         <KPICard label="DAU" value={d.dau} change={d.dauChange} icon={Users} color="#c9a84c" />
-        <KPICard label="AI對話" value={d.totalChats} change={d.chatChange} icon={MessageCircle} color="#6366f1" />
-        <KPICard label="測評次數" value={d.totalAssessments} change={d.assessmentChange} icon={Sparkles} color="#8b5cf6" />
+        <KPICard label="AI对话" value={d.totalChats} change={d.chatChange} icon={MessageCircle} color="#6366f1" />
+        <KPICard label="测评次数" value={d.totalAssessments} change={d.assessmentChange} icon={Sparkles} color="#8b5cf6" />
         <KPICard label="收入(元)" value={d.revenue} change={d.revenueChange} icon={DollarSign} color="#10b981" />
       </div>
 
-      {/* 週趨勢 */}
+      {/* 週趋勢 */}
       <div className="mt-4 bg-white rounded-xl p-4 border border-[#e8e8e8]">
         <h3 className="text-sm font-bold text-[#1a1a1a] mb-3 flex items-center gap-2">
           <TrendingUp size={14} className="text-[#c9a84c]" />
-          本週 DAU 趨勢
+          本週 DAU 趋勢
         </h3>
         <div className="flex items-end gap-2 h-24">
           {["一", "二", "三", "四", "五", "六", "日"].map((day, i) => (
@@ -171,16 +171,16 @@ function OverviewTab() {
         </div>
       </div>
 
-      {/* 測評分佈 */}
+      {/* 测评分佈 */}
       <div className="mt-4 bg-white rounded-xl p-4 border border-[#e8e8e8]">
         <h3 className="text-sm font-bold text-[#1a1a1a] mb-3 flex items-center gap-2">
           <BarChart3 size={14} className="text-[#c9a84c]" />
-          測評分佈
+          测评分佈
         </h3>
         <div className="space-y-3">
           {[
             { label: "九型人格", count: d.assessmentDist.enneagram, color: "#c9a84c" },
-            { label: "七脈輪", count: d.assessmentDist.chakra, color: "#8b5cf6" },
+            { label: "七脉轮", count: d.assessmentDist.chakra, color: "#8b5cf6" },
             { label: "易卦", count: d.assessmentDist.yijing, color: "#3b82f6" },
           ].map((item) => {
             const total = d.assessmentDist.enneagram + d.assessmentDist.chakra + d.assessmentDist.yijing;
@@ -211,7 +211,7 @@ function OverviewTab() {
           </div>
           <div>
             <p className="text-xs font-bold text-[#1a1a1a]">新增 B2B</p>
-            <p className="text-[10px] text-[#999]">註冊合作夥伴</p>
+            <p className="text-[10px] text-[#999]">註册合作夥伴</p>
           </div>
         </Link>
         <Link href="/b2b-admin" className="bg-white rounded-xl p-3 border border-[#e8e8e8] flex items-center gap-2 active:scale-[0.98] transition-transform">
@@ -236,7 +236,7 @@ function UsersTab() {
       <div className="mt-4 grid grid-cols-3 gap-3">
         <div className="bg-white rounded-xl p-3 border border-[#e8e8e8] text-center">
           <p className="text-xl font-bold text-[#c9a84c]">{users.length}</p>
-          <p className="text-[10px] text-[#999]">總用戶</p>
+          <p className="text-[10px] text-[#999]">总用戶</p>
         </div>
         <div className="bg-white rounded-xl p-3 border border-[#e8e8e8] text-center">
           <p className="text-xl font-bold text-[#10b981]">{users.filter(u => u.vip).length}</p>
@@ -244,7 +244,7 @@ function UsersTab() {
         </div>
         <div className="bg-white rounded-xl p-3 border border-[#e8e8e8] text-center">
           <p className="text-xl font-bold text-[#6366f1]">{users.reduce((a, u) => a + u.chats, 0)}</p>
-          <p className="text-[10px] text-[#999]">總對話</p>
+          <p className="text-[10px] text-[#999]">总对话</p>
         </div>
       </div>
 
@@ -264,8 +264,8 @@ function UsersTab() {
               <p className="text-[10px] text-[#999]">加入: {u.joinDate}</p>
             </div>
             <div className="text-right flex-shrink-0">
-              <p className="text-xs font-bold text-[#1a1a1a]">{u.chats} 對話</p>
-              <p className="text-[10px] text-[#999]">{u.assessments} 測評</p>
+              <p className="text-xs font-bold text-[#1a1a1a]">{u.chats} 对话</p>
+              <p className="text-[10px] text-[#999]">{u.assessments} 测评</p>
             </div>
           </div>
         ))}
@@ -288,7 +288,7 @@ function RevenueTab() {
 
       <div className="mt-4 grid grid-cols-2 gap-3">
         <div className="bg-white rounded-xl p-3 border border-[#e8e8e8]">
-          <p className="text-xs text-[#999]">VIP 月費</p>
+          <p className="text-xs text-[#999]">VIP 月费</p>
           <p className="text-lg font-bold text-[#c9a84c]">¥580</p>
           <p className="text-[10px] text-[#999]">20 人 × ¥29</p>
         </div>
@@ -300,7 +300,7 @@ function RevenueTab() {
       </div>
 
       <div className="mt-4 bg-white rounded-xl p-4 border border-[#e8e8e8]">
-        <h3 className="text-sm font-bold text-[#1a1a1a] mb-3">收入趨勢（近6月）</h3>
+        <h3 className="text-sm font-bold text-[#1a1a1a] mb-3">收入趋勢（近6月）</h3>
         <div className="flex items-end gap-3 h-28">
           {[320, 480, 560, 720, 980, 1280].map((val, i) => {
             const maxVal = 1280;
@@ -324,7 +324,7 @@ function RevenueTab() {
       </div>
 
       <div className="mt-4 bg-white rounded-xl p-4 border border-[#e8e8e8]">
-        <h3 className="text-sm font-bold text-[#1a1a1a] mb-3">待結算佣金</h3>
+        <h3 className="text-sm font-bold text-[#1a1a1a] mb-3">待结算佣金</h3>
         <div className="space-y-2">
           {MOCK_DISTRIBUTORS.filter(d => d.status === "active").map(d => (
             <div key={d.id} className="flex items-center justify-between py-2 border-b border-[#f5f5f5] last:border-0">
@@ -348,7 +348,7 @@ function DistributorsTab() {
       <div className="mt-4 grid grid-cols-3 gap-3">
         <div className="bg-white rounded-xl p-3 border border-[#e8e8e8] text-center">
           <p className="text-xl font-bold text-[#c9a84c]">{MOCK_DISTRIBUTORS.length}</p>
-          <p className="text-[10px] text-[#999]">總分銷</p>
+          <p className="text-[10px] text-[#999]">总分銷</p>
         </div>
         <div className="bg-white rounded-xl p-3 border border-[#e8e8e8] text-center">
           <p className="text-xl font-bold text-[#10b981]">{MOCK_DISTRIBUTORS.filter(d => d.status === "active").length}</p>
@@ -377,7 +377,7 @@ function DistributorsTab() {
             <div className="grid grid-cols-3 gap-2 mb-3">
               <div className="text-center py-1.5 bg-[#fafafa] rounded-lg">
                 <p className="text-sm font-bold text-[#1a1a1a]">{d.users}</p>
-                <p className="text-[9px] text-[#999]">用戶數</p>
+                <p className="text-[9px] text-[#999]">用戶数</p>
               </div>
               <div className="text-center py-1.5 bg-[#fafafa] rounded-lg">
                 <p className="text-sm font-bold text-[#1a1a1a]">{d.commission}%</p>
@@ -401,7 +401,7 @@ function DistributorsTab() {
             ) : (
               <div className="flex gap-2">
                 <button className="flex-1 py-2 rounded-lg border border-[#c9a84c] text-[#c9a84c] text-xs font-bold active:scale-95 transition-transform flex items-center justify-center gap-1">
-                  <QrCode size={12} /> 推廣碼
+                  <QrCode size={12} /> 推廣码
                 </button>
                 <button className="flex-1 py-2 rounded-lg border border-[#e8e8e8] text-[#666] text-xs font-bold active:scale-95 transition-transform flex items-center justify-center gap-1">
                   <Eye size={12} /> 詳情
@@ -415,11 +415,11 @@ function DistributorsTab() {
   );
 }
 
-// ── 內容 Tab ──
+// ── 内容 Tab ──
 function ContentTab() {
   const statusColor: Record<string, string> = {
     "已上架": "bg-green-100 text-green-700",
-    "開發中": "bg-yellow-100 text-yellow-700",
+    "开发中": "bg-yellow-100 text-yellow-700",
     "草稿": "bg-gray-100 text-gray-600",
   };
 
@@ -427,7 +427,7 @@ function ContentTab() {
     <>
       <div className="mt-4 bg-white rounded-xl p-4 border border-[#e8e8e8]">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-bold text-[#1a1a1a]">內容管理</h3>
+          <h3 className="text-sm font-bold text-[#1a1a1a]">内容管理</h3>
           <button className="text-xs px-3 py-1.5 rounded-lg bg-[#c9a84c] text-white font-bold active:scale-95 transition-transform">
             + 新增
           </button>
@@ -498,7 +498,7 @@ function StatusBadge({ status }: { status: string }) {
   };
   const labels: Record<string, string> = {
     active: "活躍",
-    trial: "試用中",
+    trial: "试用中",
     pending: "待審批",
     suspended: "已停用",
   };

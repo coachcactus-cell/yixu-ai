@@ -1,5 +1,5 @@
-// 九型人格介紹 — 簡體中文版
-// 基於 Eclectic Energies 描述 + 亦須先生 Sino-NLP 解讀風格
+// 九型人格介紹 — 簡体中文版
+// 基于 Eclectic Energies 描述 + 亦须先生 Sino-NLP 解读风格
 
 export interface EnneagramType {
   id: number;
@@ -10,7 +10,7 @@ export interface EnneagramType {
   coreDesire: string;
   strengths: string[];
   blindSpots: string[];
-  sinoxNlp: string; // 亦須先生的 Sino-NLP 解讀
+  sinoxNlp: string; // 亦须先生的 Sino-NLP 解读
   growthTip: string; // 修行方向
 }
 

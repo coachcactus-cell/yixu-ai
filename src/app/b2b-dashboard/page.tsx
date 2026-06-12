@@ -78,45 +78,45 @@ export default function B2BDashboardPage() {
   const exportCSV = () => {
     if (!stats) return;
     const csv = [
-      "類型,次數",
+      "类型,次数",
       `九型人格,${stats.byType.enneagram}`,
-      `7脈輪,${stats.byType.chakra}`,
-      `易經,${stats.byType.yijing}`,
-      `總計,${stats.totalAssessments}`,
+      `7脉轮,${stats.byType.chakra}`,
+      `易经,${stats.byType.yijing}`,
+      `总计,${stats.totalAssessments}`,
     ].join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `亦須AI_數據報表_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `亦须AI_数据报表_${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
   const fmtDate = (ts: number) => {
-    if (!ts) return "暫無數據";
+    if (!ts) return "暫无数据";
     return new Date(ts).toLocaleString("zh-HK");
   };
 
   if (!mounted) return null;
 
-  // 登入頁
+  // 登入页
   if (!loggedIn) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-white px-6">
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#c9a84c] to-[#b89430] flex items-center justify-center mb-4">
           <Handshake size={32} className="text-white" />
         </div>
-        <h1 className="text-xl font-bold text-[#1a1a1a] mb-1">亦須AI 合作夥伴</h1>
+        <h1 className="text-xl font-bold text-[#1a1a1a] mb-1">亦须AI 合作夥伴</h1>
         <p className="text-sm text-[#999] mb-6 text-center">
-          輸入客戶 ID 登入
+          输入客戶 ID 登入
         </p>
         <input
           type="text"
           value={clientId}
           onChange={(e) => setClientId(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-          placeholder="輸入客戶 ID"
+          placeholder="输入客戶 ID"
           className="w-full max-w-xs px-4 py-3 rounded-xl border border-[#e8e8e8] text-center outline-none focus:border-[#c9a84c]"
         />
         <button
@@ -126,19 +126,19 @@ export default function B2BDashboardPage() {
         >
           {loading ? "登入中..." : "登入"}
         </button>
-        <p className="text-xs text-[#c9a84c] mt-3 font-mono">測試碼：yixu-demo</p>
+        <p className="text-xs text-[#c9a84c] mt-3 font-mono">测试码：yixu-demo</p>
       </div>
     );
   }
 
-  // 登入後 — 招商主頁
+  // 登入后 — 招商主页
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Handshake size={20} className="text-[#c9a84c]" />
-            <h1 className="text-lg font-bold text-[#1a1a1a]">亦須AI 合作夥伴</h1>
+            <h1 className="text-lg font-bold text-[#1a1a1a]">亦须AI 合作夥伴</h1>
           </div>
           <button onClick={() => { setLoggedIn(false); setStats(null); }} className="p-1 text-[#999]">
             <LogOut size={18} />
@@ -158,35 +158,35 @@ export default function B2BDashboardPage() {
           onClick={() => setActiveTab("stats")}
           className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === "stats" ? "text-[#c9a84c] border-b-2 border-[#c9a84c]" : "text-[#999]"}`}
         >
-          數據面板
+          数据面板
         </button>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 pb-8">
         {activeTab === "partner" ? (
-          /* ============ 招商主頁 ============ */
+          /* ============ 招商主页 ============ */
           <>
             {/* Hero */}
             <div className="mt-4 rounded-2xl p-5 text-white" style={{ background: "linear-gradient(135deg, #c9a84c, #a88830)" }}>
-              <p className="text-sm font-medium opacity-80 mb-1">亦須AI · 合作夥伴計劃</p>
-              <h2 className="text-xl font-bold mb-2">讓療癒智慧，成為你的生意增長點</h2>
+              <p className="text-sm font-medium opacity-80 mb-1">亦须AI · 合作夥伴计划</p>
+              <h2 className="text-xl font-bold mb-2">让疗愈智慧，成为你的生意增长点</h2>
               <p className="text-sm opacity-80 leading-relaxed">
-                整合 Sino-NLP 中華身心語言學 × 傳統經學 × 行為心理學，為你的客戶帶來深度測評體驗
+                整合 Sino-NLP 中華身心语言学 × 传统经学 × 行为心理学，为你的客戶帶来深度测评体验
               </p>
             </div>
 
-            {/* 為什麼合作 */}
+            {/* 为什麼合作 */}
             <div className="mt-5">
               <h3 className="font-bold text-[#1a1a1a] mb-3 flex items-center gap-2">
                 <Sparkles size={16} className="text-[#c9a84c]" />
-                為什麼選擇亦須AI
+                为什麼选择亦须AI
               </h3>
               <div className="space-y-3">
                 {[
-                  { icon: Target, title: "專業測評工具", desc: "九型人格、7脈輪、易經占卜 — 每個測評都經 Sino-NLP 體系設計，不是網上免費貨色" },
-                  { icon: Users, title: "為你的客戶增值", desc: "用測評做客戶破冰和深度連結，從「消費者」變成「追隨者」" },
-                  { icon: DollarSign, title: "零成本啟動", desc: "無需開發、無需伺服器、無需技術人員。接入即用，你只管服務客戶" },
-                  { icon: Heart, title: "品牌差異化", desc: "市場上獨此一家的中華經學 × 心理學測評體系，讓你脫穎而出" },
+                  { icon: Target, title: "专业测评工具", desc: "九型人格、7脉轮、易经占卜 — 每个测评都经 Sino-NLP 体系设计，不是网上免费货色" },
+                  { icon: Users, title: "为你的客戶增值", desc: "用测评做客戶破冰和深度连结，從「消费者」变成「追随者」" },
+                  { icon: DollarSign, title: "零成本启动", desc: "无需开发、无需伺服器、无需技术人員。接入即用，你只管服务客戶" },
+                  { icon: Heart, title: "品牌差異化", desc: "市场上独此一家的中華经学 × 心理学测评体系，让你脫穎而出" },
                 ].map((item) => {
                   const Icon = item.icon;
                   return (
@@ -204,17 +204,17 @@ export default function B2BDashboardPage() {
               </div>
             </div>
 
-            {/* 適合誰 */}
+            {/* 适合谁 */}
             <div className="mt-5">
-              <h3 className="font-bold text-[#1a1a1a] mb-3">適合這些行業</h3>
+              <h3 className="font-bold text-[#1a1a1a] mb-3">适合這些行业</h3>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  "身心靈工作室",
-                  "芳療 / 精油品牌",
-                  "瑜伽 / 冥想導師",
-                  "心理諮詢機構",
-                  "中醫 / 養生館",
-                  "企業培訓公司",
+                  "身心灵工作室",
+                  "芳疗 / 精油品牌",
+                  "瑜伽 / 冥想导師",
+                  "心理諮询机构",
+                  "中医 / 养生馆",
+                  "企业培訓公司",
                 ].map((item) => (
                   <div key={item} className="px-3 py-2.5 rounded-lg bg-[#fdf8ed] text-sm text-[#333] text-center">
                     {item}
@@ -230,35 +230,35 @@ export default function B2BDashboardPage() {
                 合作方案
               </h3>
               <div className="space-y-3">
-                {/* 體驗版 */}
+                {/* 体验版 */}
                 <div className="card border border-[#e8e8e8]">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-bold text-[#1a1a1a]">體驗版</h4>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-[#fdf8ed] text-[#c9a84c] font-medium">免費試用</span>
+                    <h4 className="font-bold text-[#1a1a1a]">体验版</h4>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-[#fdf8ed] text-[#c9a84c] font-medium">免费试用</span>
                   </div>
-                  <p className="text-xs text-[#666] mb-2">7天免費體驗，了解平台功能</p>
+                  <p className="text-xs text-[#666] mb-2">7天免费体验，了解平台功能</p>
                   <div className="text-xs text-[#999] space-y-0.5">
-                    <p>✓ 九型人格測評</p>
-                    <p>✓ 7脈輪評估</p>
-                    <p>✓ 易經占卜</p>
-                    <p>✓ 基礎數據面板</p>
+                    <p>✓ 九型人格测评</p>
+                    <p>✓ 7脉轮评估</p>
+                    <p>✓ 易经占卜</p>
+                    <p>✓ 基礎数据面板</p>
                   </div>
                 </div>
-                {/* 專業版 */}
+                {/* 专业版 */}
                 <div className="card border-2 border-[#c9a84c] relative">
                   <div className="absolute -top-2.5 left-4 px-2 py-0.5 rounded-full bg-[#c9a84c] text-white text-[10px] font-bold">推薦</div>
                   <div className="flex items-center justify-between mb-2 mt-1">
-                    <h4 className="font-bold text-[#1a1a1a]">專業版</h4>
-                    <span className="text-sm font-bold text-[#c9a84c]">詳詢</span>
+                    <h4 className="font-bold text-[#1a1a1a]">专业版</h4>
+                    <span className="text-sm font-bold text-[#c9a84c]">詳询</span>
                   </div>
-                  <p className="text-xs text-[#666] mb-2">完整功能 + 深度數據 + 品牌定制</p>
+                  <p className="text-xs text-[#666] mb-2">完整功能 + 深度数据 + 品牌定制</p>
                   <div className="text-xs text-[#999] space-y-0.5">
-                    <p>✓ 體驗版全部功能</p>
+                    <p>✓ 体验版全部功能</p>
                     <p>✓ 孟子塔羅（即將推出）</p>
-                    <p>✓ 進階數據分析</p>
-                    <p>✓ 品牌專屬頁面定制</p>
-                    <p>✓ 專屬客戶服務群</p>
-                    <p>✓ 亦須先生每月線上指導</p>
+                    <p>✓ 进阶数据分析</p>
+                    <p>✓ 品牌专屬页面定制</p>
+                    <p>✓ 专屬客戶服务群</p>
+                    <p>✓ 亦须先生每月线上指导</p>
                   </div>
                 </div>
               </div>
@@ -268,13 +268,13 @@ export default function B2BDashboardPage() {
             <div className="mt-5 card bg-[#fdf8ed]">
               <div className="flex items-center gap-2 mb-2">
                 <MessageCircle size={18} className="text-[#c9a84c]" />
-                <h4 className="font-bold text-[#1a1a1a]">立即洽談</h4>
+                <h4 className="font-bold text-[#1a1a1a]">立即洽谈</h4>
               </div>
               <p className="text-sm text-[#666] mb-3">
-                加微信 <span className="font-mono font-bold text-[#1a1a1a]">859022196</span>，備註「亦須AI合作」
+                加微信 <span className="font-mono font-bold text-[#1a1a1a]">859022196</span>，備註「亦须AI合作」
               </p>
               <p className="text-xs text-[#999]">
-                由亦須先生本人直接洽談，非客服機器人
+                由亦须先生本人直接洽谈，非客服机器人
               </p>
             </div>
 
@@ -283,25 +283,25 @@ export default function B2BDashboardPage() {
               href="/"
               className="mt-4 flex items-center justify-center gap-2 py-3 rounded-xl border border-[#e8e8e8] text-sm text-[#666] hover:bg-[#fafafa] active:scale-[0.98] transition-all"
             >
-              返回亦須AI主頁
+              返回亦须AI主页
               <ChevronRight size={16} />
             </Link>
           </>
         ) : (
-          /* ============ 數據面板（附屬 tab） ============ */
+          /* ============ 数据面板（附屬 tab） ============ */
           <>
             <div className="grid grid-cols-2 gap-3 mt-4">
               <div className="card text-center">
                 <Users size={20} className="mx-auto text-[#c9a84c] mb-1" />
                 <p className="text-3xl font-bold text-[#1a1a1a]">{stats?.totalAssessments || 0}</p>
-                <p className="text-xs text-[#999]">總測評次數</p>
+                <p className="text-xs text-[#999]">总测评次数</p>
               </div>
               <div className="card text-center">
                 <Clock size={20} className="mx-auto text-blue-500 mb-1" />
                 <p className="text-sm font-bold text-[#1a1a1a] mt-1">
-                  {stats?.lastActivity ? fmtDate(stats.lastActivity) : "暫無"}
+                  {stats?.lastActivity ? fmtDate(stats.lastActivity) : "暫无"}
                 </p>
-                <p className="text-xs text-[#999]">最後活動</p>
+                <p className="text-xs text-[#999]">最后活动</p>
               </div>
             </div>
 
@@ -309,7 +309,7 @@ export default function B2BDashboardPage() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-[#1a1a1a] flex items-center gap-2">
                   <BarChart3 size={16} className="text-[#c9a84c]" />
-                  測評分佈
+                  测评分佈
                 </h3>
                 <button onClick={exportCSV} className="flex items-center gap-1 text-xs text-[#c9a84c] font-medium">
                   <Download size={14} /> 匯出
@@ -318,8 +318,8 @@ export default function B2BDashboardPage() {
               <div className="space-y-3">
                 {[
                   { label: "九型人格", count: stats?.byType.enneagram || 0, color: "bg-[#c9a84c]" },
-                  { label: "7脈輪", count: stats?.byType.chakra || 0, color: "bg-purple-500" },
-                  { label: "易經", count: stats?.byType.yijing || 0, color: "bg-blue-500" },
+                  { label: "7脉轮", count: stats?.byType.chakra || 0, color: "bg-purple-500" },
+                  { label: "易经", count: stats?.byType.yijing || 0, color: "bg-blue-500" },
                 ].map((item) => {
                   const max = Math.max(stats?.byType.enneagram || 1, stats?.byType.chakra || 1, stats?.byType.yijing || 1);
                   const pct = (item.count / max) * 100;
@@ -339,10 +339,10 @@ export default function B2BDashboardPage() {
             </div>
 
             <div className="mt-4 card">
-              <h3 className="font-bold text-[#1a1a1a] mb-2">帳戶資訊</h3>
+              <h3 className="font-bold text-[#1a1a1a] mb-2">帳戶资讯</h3>
               <div className="text-sm text-[#666] space-y-1">
                 <p>客戶 ID: <span className="text-[#333] font-mono text-xs">{clientId}</span></p>
-                <p>方案: <span className="text-[#c9a84c] font-bold">試用中</span></p>
+                <p>方案: <span className="text-[#c9a84c] font-bold">试用中</span></p>
               </div>
             </div>
           </>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>分銷商後台 · 亦須AI</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { font-family: "PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif; background: #fafafa; color: #1a1a1a; overscroll-behavior: none; }
+
+/* Header */
+.header { position: sticky; top: 0; z-index: 10; background: linear-gradient(to right,#1a3a2e,#1a2e3a); padding: 12px 16px; }
+.header-inner { display: flex; align-items: center; justify-content: space-between; }
+.header-logo { display: flex; align-items: center; gap: 8px; }
+.header-icon { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg,#c9a84c,#b89430); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: 700; }
+.header-title { font-size: 14px; font-weight: 700; color: #fff; }
+.header-sub { font-size: 10px; color: rgba(255,255,255,.5); }
+.header-btn { padding: 6px; border-radius: 8px; background: rgba(255,255,255,.1); border: none; color: rgba(255,255,255,.7); cursor: pointer; font-size: 14px; }
+
+/* Tab Bar */
+.tab-bar { display: flex; border-bottom: 1px solid #e8e8e8; background: #fff; }
+.tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 0; font-size: 10px; font-weight: 500; color: #999; border: none; background: none; cursor: pointer; transition: color .2s; }
+.tab-item.active { color: #c9a84c; border-bottom: 2px solid #c9a84c; font-weight: 700; }
+
+/* Content */
+.content { padding: 0 16px 32px; }
+
+/* Cards */
+.card { background: #fff; border-radius: 12px; padding: 16px; border: 1px solid #e8e8e8; }
+
+/* KPI */
+.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.kpi-card { background: #fff; border-radius: 12px; padding: 12px; border: 1px solid #e8e8e8; }
+.kpi-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.kpi-change { font-size: 9px; font-weight: 700; }
+.kpi-change.up { color: #10b981; }
+.kpi-change.down { color: #ef4444; }
+.kpi-value { font-size: 22px; font-weight: 700; }
+.kpi-label { font-size: 10px; color: #999; }
+
+/* Stat */
+.stat-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 16px; }
+.stat-card { background: #fff; border-radius: 12px; padding: 10px; border: 1px solid #e8e8e8; text-align: center; }
+.stat-value { font-size: 22px; font-weight: 700; }
+.stat-label { font-size: 10px; color: #999; }
+
+/* Revenue Card */
+.revenue-card { background: linear-gradient(135deg,#1a3a2e,#1a2e3a); border-radius: 12px; padding: 20px; color: #fff; margin-top: 16px; }
+.revenue-label { font-size: 12px; color: rgba(255,255,255,.6); }
+.revenue-amount { font-size: 28px; font-weight: 700; margin-top: 4px; }
+.revenue-sub { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 4px; }
+
+/* Bar */
+.bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; margin-top: 8px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bar-fill { width: 100%; border-radius: 3px 3px 0 0; background: linear-gradient(to top,#c9a84c,#d4b85c); }
+.bar-label { font-size: 9px; color: #999; }
+
+/* Link Box */
+.link-box { background: #fafafa; border-radius: 8px; padding: 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.link-box span { font-size: 14px; flex-shrink: 0; }
+.link-box p { font-size: 12px; color: #666; flex: 1; word-break: break-all; }
+
+/* Buttons */
+.btn { width: 100%; padding: 10px; border-radius: 12px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; }
+.btn-gold { background: linear-gradient(to right,#c9a84c,#b89430); color: #fff; }
+.btn-outline { background: none; border: 1.5px solid #c9a84c; color: #c9a84c; }
+.btn-green { background: #10b981; color: #fff; border: none; }
+
+/* QR placeholder */
+.qr-area { width: 160px; height: 160px; background: #fafafa; border-radius: 12px; border: 1px solid #e8e8e8; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 12px; }
+.qr-area span { font-size: 40px; margin-bottom: 8px; }
+.qr-area p { font-size: 9px; color: #999; }
+
+/* User / Customer Item */
+.user-item { background: #fff; border-radius: 12px; padding: 12px; border: 1px solid #e8e8e8; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.user-avatar { width: 36px; height: 36px; border-radius: 50%; background: #f0f4ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 14px; font-weight: 700; }
+.user-date { font-size: 10px; color: #999; }
+.user-stats { text-align: right; flex-shrink: 0; font-size: 12px; color: #666; }
+.vip-badge { display: inline-block; font-size: 9px; padding: 2px 6px; border-radius: 10px; background: #c9a84c; color: #fff; font-weight: 700; margin-left: 4px; vertical-align: middle; }
+
+/* Commission Row */
+.comm-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f5f5f5; }
+.comm-row:last-child { border-bottom: none; }
+.comm-month { font-size: 12px; font-weight: 700; }
+.comm-rev { font-size: 10px; color: #999; }
+.comm-amount { font-size: 14px; font-weight: 700; color: #c9a84c; }
+.badge { display: inline-block; font-size: 9px; padding: 2px 6px; border-radius: 10px; font-weight: 700; }
+.badge-green { background: #dcfce7; color: #15803d; }
+.badge-yellow { background: #fef3c7; color: #b45309; }
+
+/* Material list */
+.mat-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
+.mat-item:last-child { border-bottom: none; }
+.mat-name { font-size: 12px; font-weight: 700; }
+.mat-meta { font-size: 10px; color: #999; }
+.mat-btn { font-size: 12px; color: #c9a84c; font-weight: 700; background: none; border: none; cursor: pointer; }
+
+/* Section */
+.section-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+
+/* Tab content */
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn .3s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-logo">
+      <div class="header-icon">🤝</div>
+      <div>
+        <div class="header-title">靜心瑜伽工作室</div>
+        <div class="header-sub">分銷商後台 · DSP001-YOGA</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="header-btn">🔄</button>
+      <button class="header-btn" onclick="location.href='/'">🚪</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <button class="tab-item active" onclick="switchTab('overview',this)"><span style="font-size:16px">📊</span>總覽</button>
+  <button class="tab-item" onclick="switchTab('promote',this)"><span style="font-size:16px">🔗</span>推廣</button>
+  <button class="tab-item" onclick="switchTab('customers',this)"><span style="font-size:16px">👥</span>客戶</button>
+  <button class="tab-item" onclick="switchTab('commission',this)"><span style="font-size:16px">💰</span>佣金</button>
+</div>
+
+<!-- ============ 總覽 ============ -->
+<div id="tab-overview" class="tab-content active">
+  <div class="content">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-top"><span>👁</span><span class="kpi-change up">↑18.5%</span></div>
+        <div class="kpi-value">234</div>
+        <div class="kpi-label">點擊量</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-top"><span>👥</span><span class="kpi-change up">↑12.3%</span></div>
+        <div class="kpi-value">45</div>
+        <div class="kpi-label">註冊數</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-top"><span>📈</span><span class="kpi-change down">↓1.8%</span></div>
+        <div class="kpi-value">19.2%</div>
+        <div class="kpi-label">轉化率</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-top"><span>💰</span><span class="kpi-change up">↑8.9%</span></div>
+        <div class="kpi-value">¥134</div>
+        <div class="kpi-label">待結佣金</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="section-title">📈 本週點擊趨勢</div>
+      <div class="bar-chart">
+        <div class="bar-col"><div class="bar-fill" style="height:34%"></div><span class="bar-label">一</span></div>
+        <div class="bar-col"><div class="bar-fill" style="height:51%"></div><span class="bar-label">二</span></div>
+        <div class="bar-col"><div class="bar-fill" style="height:71%"></div><span class="bar-label">三</span></div>
+        <div class="bar-col"><div class="bar-fill" style="height:89%"></div><span class="bar-label">四</span></div>
+        <div class="bar-col"><div class="bar-fill" style="height:80%"></div><span class="bar-label">五</span></div>
+        <div class="bar-col"><div class="bar-fill" style="height:100%"></div><span class="bar-label">六</span></div>
+        <div class="bar-col"><div class="bar-fill" style="height:66%"></div><span class="bar-label">日</span></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="section-title">🔗 快速推廣</div>
+      <div class="link-box">
+        <span>🔗</span>
+        <p>https://yixu-ai.online/?ref=DSP001-YOGA</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 推廣 ============ -->
+<div id="tab-promote" class="tab-content">
+  <div class="content">
+    <div class="card" style="margin-top:16px">
+      <div class="section-title">🔗 推廣連結</div>
+      <div class="link-box" style="margin-bottom:12px">
+        <p style="font-size:10px;color:#999;margin-bottom:4px">你的專屬推廣連結</p>
+        <p style="font-size:13px;font-family:monospace;color:#1a1a1a;word-break:break-all">https://yixu-ai.online/?ref=DSP001-YOGA</p>
+      </div>
+      <button class="btn btn-gold" onclick="navigator.clipboard&&navigator.clipboard.writeText('https://yixu-ai.online/?ref=DSP001-YOGA');this.textContent='✓ 已複製！';setTimeout(()=>this.textContent='📋 複製連結',2000)">📋 複製連結</button>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="section-title">📱 推廣二維碼</div>
+      <div class="qr-area">
+        <span>📱</span>
+        <p>掃碼進入亦須AI</p>
+      </div>
+      <button class="btn btn-outline" style="font-size:12px;padding:8px">下載二維碼</button>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="section-title">📦 推廣素材</div>
+      <div class="mat-item">
+        <div><div class="mat-name">亦須AI 介紹海報</div><div class="mat-meta">圖片 · 2.4 MB</div></div>
+        <button class="mat-btn">下載 ↗</button>
+      </div>
+      <div class="mat-item">
+        <div><div class="mat-name">九型人格測評推廣文</div><div class="mat-meta">文案 · 1.2 KB</div></div>
+        <button class="mat-btn">下載 ↗</button>
+      </div>
+      <div class="mat-item">
+        <div><div class="mat-name">七脈輪體驗分享模板</div><div class="mat-meta">文案 · 0.8 KB</div></div>
+        <button class="mat-btn">下載 ↗</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 客戶 ============ -->
+<div id="tab-customers" class="tab-content">
+  <div class="content">
+    <div class="stat-grid-3">
+      <div class="stat-card"><div class="stat-value" style="color:#c9a84c">5</div><div class="stat-label">總客戶</div></div>
+      <div class="stat-card"><div class="stat-value" style="color:#10b981">2</div><div class="stat-label">VIP</div></div>
+      <div class="stat-card"><div class="stat-value" style="color:#6366f1">15</div><div class="stat-label">測評數</div></div>
+    </div>
+    <div style="margin-top:16px">
+      <div class="user-item">
+        <div class="user-avatar">🧘</div>
+        <div class="user-info"><div class="user-name">小明</div><div class="user-date">來源: 推廣連結 · 2026-05-15</div></div>
+        <div class="user-stats">3 測評</div>
+      </div>
+      <div class="user-item">
+        <div class="user-avatar">🧘</div>
+        <div class="user-info"><div class="user-name">阿靜<span class="vip-badge">VIP</span></div><div class="user-date">來源: 二維碼 · 2026-05-18</div></div>
+        <div class="user-stats">5 測評</div>
+      </div>
+      <div class="user-item">
+        <div class="user-avatar">🧘</div>
+        <div class="user-info"><div class="user-name">修行者A</div><div class="user-date">來源: 推廣連結 · 2026-05-22</div></div>
+        <div class="user-stats">2 測評</div>
+      </div>
+      <div class="user-item">
+        <div class="user-avatar">🧘</div>
+        <div class="user-info"><div class="user-name">瑜伽同學</div><div class="user-date">來源: 二維碼 · 2026-06-01</div></div>
+        <div class="user-stats">1 測評</div>
+      </div>
+      <div class="user-item">
+        <div class="user-avatar">🧘</div>
+        <div class="user-info"><div class="user-name">芳療愛好者<span class="vip-badge">VIP</span></div><div class="user-date">來源: 推廣連結 · 2026-06-08</div></div>
+        <div class="user-stats">4 測評</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 佣金 ============ -->
+<div id="tab-commission" class="tab-content">
+  <div class="content">
+    <div class="revenue-card">
+      <div class="revenue-label">可提現佣金</div>
+      <div class="revenue-amount">¥134</div>
+      <div class="revenue-sub">累計收入: ¥268</div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">已提現</div>
+        <div class="kpi-value" style="color:#10b981;font-size:20px">¥134</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">佣金率</div>
+        <div class="kpi-value" style="color:#c9a84c;font-size:20px">15%</div>
+      </div>
+    </div>
+    <div style="margin-top:16px">
+      <button class="btn btn-gold">申請提現</button>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="section-title">收入明細</div>
+      <div class="comm-row">
+        <div><div class="comm-month">2026-04</div><div class="comm-rev">營收 ¥320</div></div>
+        <div style="text-align:right"><div class="comm-amount">¥48</div><span class="badge badge-green">已結算</span></div>
+      </div>
+      <div class="comm-row">
+        <div><div class="comm-month">2026-05</div><div class="comm-rev">營收 ¥570</div></div>
+        <div style="text-align:right"><div class="comm-amount">¥86</div><span class="badge badge-green">已結算</span></div>
+      </div>
+      <div class="comm-row">
+        <div><div class="comm-month">2026-06</div><div class="comm-rev">營收 ¥890</div></div>
+        <div style="text-align:right"><div class="comm-amount">¥134</div><span class="badge badge-yellow">待結算</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

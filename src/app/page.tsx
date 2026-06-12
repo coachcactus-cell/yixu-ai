@@ -27,7 +27,7 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // 當 URL query 變化時同步 tab
+  // 当 URL query 变化时同步 tab
   useEffect(() => {
     if (tabParam && VALID_TABS.includes(tabParam)) {
       setActiveTab(tabParam);
@@ -45,7 +45,7 @@ function AppContent() {
       )}
       {activeTab === "profile" && <ProfilePage />}
 
-      {/* Bottom Tab Bar — 全屏模式隱藏 */}
+      {/* Bottom Tab Bar — 全屏模式隐藏 */}
       {!isFullscreen && (
       <nav className="tab-bar">
         {TABS.map((tab) => {
