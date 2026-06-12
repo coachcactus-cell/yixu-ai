@@ -11,6 +11,8 @@ import {
   Star,
   Sparkles,
   Building2,
+  Shield,
+  Handshake,
 } from "lucide-react";
 
 const VIP_PLANS = [
@@ -31,20 +33,69 @@ const VIP_PLANS = [
   },
 ];
 
+// ── 邀請碼分流規則 ──
+const INVITE_ROUTES: { pattern: string; label: string; path: string; icon: any; color: string }[] = [
+  { pattern: "cactus-2026", label: "C老大後台", path: "/admin", icon: Shield, color: "#c9a84c" },
+  { pattern: "yixu-founder", label: "C老大後台", path: "/admin", icon: Shield, color: "#c9a84c" },
+  { pattern: "yixu-demo", label: "B2B 數據面板", path: "/b2b-dashboard?clientId=yixu-demo", icon: Building2, color: "#6366f1" },
+];
+
+// 分銷商碼以 DSP- 開頭
+function resolveInviteCode(code: string): { path: string; label: string; icon: any; color: string } | null {
+  const trimmed = code.trim().toLowerCase();
+
+  // 超級管理員
+  for (const route of INVITE_ROUTES) {
+    if (trimmed === route.pattern.toLowerCase()) {
+      return { path: route.path, label: route.label, icon: route.icon, color: route.color };
+    }
+  }
+
+  // 分銷商碼：DSP-xxx
+  if (trimmed.startsWith("dsp-") || trimmed.startsWith("dsp_")) {
+    return { path: `/distributor?code=${encodeURIComponent(code.trim())}`, label: "分銷商後台", icon: Handshake, color: "#10b981" };
+  }
+
+  // B2B 客戶碼：b2b_xxx 或其他
+  if (trimmed.startsWith("b2b_") || trimmed.length > 5) {
+    return { path: `/b2b-dashboard?clientId=${encodeURIComponent(code.trim())}`, label: "B2B 數據面板", icon: Building2, color: "#6366f1" };
+  }
+
+  return null;
+}
+
 export default function ProfilePage() {
   const [showVIP, setShowVIP] = useState(false);
-  const [showB2B, setShowB2B] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
   const [inviteCode, setInviteCode] = useState("");
-  const [b2bError, setB2bError] = useState("");
+  const [inviteError, setInviteError] = useState("");
+  const [resolvedRoute, setResolvedRoute] = useState<{
+    path: string;
+    label: string;
+    icon: any;
+    color: string;
+  } | null>(null);
 
-  // ── 邀請碼驗證 ──
-  const handleB2BLogin = async () => {
+  // ── 邀請碼驗證 + 分流 ──
+  const handleInviteSubmit = () => {
     if (!inviteCode.trim()) {
-      setB2bError("請輸入邀請碼");
+      setInviteError("請輸入邀請碼");
       return;
     }
-    // inviteCode 即係 clientId，直接帶去 Dashboard
-    window.location.href = `/b2b-dashboard?clientId=${encodeURIComponent(inviteCode.trim())}`;
+
+    const route = resolveInviteCode(inviteCode);
+    if (route) {
+      setResolvedRoute(route);
+      setInviteError("");
+    } else {
+      setInviteError("邀請碼無效，請檢查後重試");
+    }
+  };
+
+  const handleConfirmRoute = () => {
+    if (resolvedRoute) {
+      window.location.href = resolvedRoute.path;
+    }
   };
 
   return (
@@ -171,51 +222,126 @@ export default function ProfilePage() {
           ))}
         </div>
 
-        {/* 商務合作入口 */}
+        {/* ── 統一邀請入口（取代舊 B2B 入口）── */}
         <div className="mt-4 space-y-1">
           <button
-            onClick={() => setShowB2B(true)}
+            onClick={() => {
+              setShowInvite(true);
+              setInviteCode("");
+              setInviteError("");
+              setResolvedRoute(null);
+            }}
             className="w-full card flex items-center justify-between py-3"
           >
             <div className="flex items-center gap-3">
-              <Building2 size={18} className="text-[#c9a84c]" />
-              <span className="text-sm text-[#1a1a1a]">B2B 商務合作</span>
+              <Sparkles size={18} className="text-[#c9a84c]" />
+              <span className="text-sm text-[#1a1a1a]">邀請登入</span>
             </div>
             <ChevronRight size={16} className="text-[#999999]" />
           </button>
         </div>
 
-        {/* B2B 邀請碼彈窗 */}
-        {showB2B && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => { setShowB2B(false); setB2bError(""); setInviteCode(""); }}>
-            <div className="bg-white rounded-2xl p-6 m-4 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+        {/* ── 統一邀請碼彈窗（分流邏輯）── */}
+        {showInvite && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+            onClick={() => {
+              setShowInvite(false);
+              setInviteError("");
+              setInviteCode("");
+              setResolvedRoute(null);
+            }}
+          >
+            <div
+              className="bg-white rounded-2xl p-6 m-4 max-w-sm w-full animate-fade-in-up"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="text-center mb-4">
-                <Building2 size={36} className="mx-auto text-[#c9a84c] mb-2" />
-                <h3 className="text-lg font-bold text-[#1a1a1a]">B2B 商務合作</h3>
-                <p className="text-xs text-[#999] mt-1">請輸入邀請碼登入數據面板</p>
+                <div className="w-12 h-12 rounded-full bg-[#fdf8ed] flex items-center justify-center mx-auto mb-2">
+                  <Sparkles size={24} className="text-[#c9a84c]" />
+                </div>
+                <h3 className="text-lg font-bold text-[#1a1a1a]">邀請登入</h3>
+                <p className="text-xs text-[#999] mt-1">輸入邀請碼進入對應後台</p>
               </div>
-              <input
-                type="text"
-                value={inviteCode}
-                onChange={(e) => { setInviteCode(e.target.value); setB2bError(""); }}
-                onKeyDown={(e) => e.key === "Enter" && handleB2BLogin()}
-                placeholder="輸入邀請碼"
-                className="w-full px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-lg tracking-widest outline-none focus:border-[#c9a84c]"
-                autoFocus
-              />
-              {b2bError && <p className="text-xs text-red-500 mt-2 text-center">{b2bError}</p>}
-              <button
-                onClick={handleB2BLogin}
-                className="mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-[#c9a84c] to-[#b89430] text-white font-bold"
-              >
-                登入
-              </button>
-              <p className="text-xs text-[#ccc] mt-3 text-center">
-                未有邀請碼？請加微信 859022196 申請
-              </p>
-              <p className="text-xs text-[#c9a84c] mt-2 text-center font-mono tracking-wider">
-                測試碼：yixu-demo
-              </p>
+
+              {!resolvedRoute ? (
+                <>
+                  {/* 輸入邀請碼 */}
+                  <input
+                    type="text"
+                    value={inviteCode}
+                    onChange={(e) => {
+                      setInviteCode(e.target.value);
+                      setInviteError("");
+                    }}
+                    onKeyDown={(e) => e.key === "Enter" && handleInviteSubmit()}
+                    placeholder="輸入邀請碼"
+                    className="w-full px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-lg tracking-widest outline-none focus:border-[#c9a84c] transition-colors"
+                    autoFocus
+                  />
+                  {inviteError && (
+                    <p className="text-xs text-red-500 mt-2 text-center">{inviteError}</p>
+                  )}
+                  <button
+                    onClick={handleInviteSubmit}
+                    className="mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-[#c9a84c] to-[#b89430] text-white font-bold active:scale-[0.98] transition-transform"
+                  >
+                    驗證
+                  </button>
+
+                  {/* 提示分類 */}
+                  <div className="mt-4 space-y-1.5 text-center">
+                    <p className="text-[10px] text-[#999]">
+                      <Shield size={10} className="inline -mt-0.5" /> 超級碼 → C老大後台
+                    </p>
+                    <p className="text-[10px] text-[#999]">
+                      <Handshake size={10} className="inline -mt-0.5" /> DSP-xxx → 分銷商後台
+                    </p>
+                    <p className="text-[10px] text-[#999]">
+                      <Building2 size={10} className="inline -mt-0.5" /> 其他碼 → B2B 數據面板
+                    </p>
+                  </div>
+
+                  <p className="text-xs text-[#ccc] mt-3 text-center">
+                    未有邀請碼？請加微信 859022196 申請
+                  </p>
+                </>
+              ) : (
+                <>
+                  {/* 確認分流結果 */}
+                  <div className="bg-[#fdf8ed] rounded-xl p-4 text-center">
+                    <div
+                      className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2"
+                      style={{ backgroundColor: resolvedRoute.color + "20" }}
+                    >
+                      <resolvedRoute.icon size={20} style={{ color: resolvedRoute.color }} />
+                    </div>
+                    <p className="text-sm font-bold text-[#1a1a1a]">
+                      即將進入：{resolvedRoute.label}
+                    </p>
+                    <p className="text-xs text-[#999] mt-1">
+                      邀請碼：{inviteCode}
+                    </p>
+                  </div>
+                  <div className="flex gap-3 mt-4">
+                    <button
+                      onClick={() => {
+                        setResolvedRoute(null);
+                        setInviteCode("");
+                      }}
+                      className="flex-1 py-2.5 rounded-xl border border-[#e8e8e8] text-sm text-[#666] font-bold active:scale-[0.98] transition-transform"
+                    >
+                      返回
+                    </button>
+                    <button
+                      onClick={handleConfirmRoute}
+                      className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#c9a84c] to-[#b89430] text-white text-sm font-bold active:scale-[0.98] transition-transform"
+                    >
+                      確認進入
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
