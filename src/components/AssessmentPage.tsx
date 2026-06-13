@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Brain, Heart, Sparkles, Users, ArrowRight, Lock, Hexagon, AlertTriangle, ShieldAlert, Activity, Leaf, Eye, Waves } from "lucide-react";
+import { Brain, Heart, Sparkles, Users, ArrowRight, Lock, Hexagon, AlertTriangle, ShieldAlert, Activity, Leaf, Eye, Waves, Flame } from "lucide-react";
 import ChakraAssessmentPage from "@/components/ChakraAssessmentPage";
 import EnneagramPage from "@/components/EnneagramPage";
 import GAD7AssessmentPage from "@/components/GAD7AssessmentPage";
@@ -10,8 +10,9 @@ import PHQ15AssessmentPage from "@/components/PHQ15AssessmentPage";
 import COREOMAssessmentPage from "@/components/COREOMAssessmentPage";
 import AttachmentTestPage from "@/components/AttachmentTestPage";
 import EmotionInertiaPage from "@/components/EmotionInertiaPage";
+import StarseedPage from "@/components/StarseedPage";
 
-type ViewMode = "list" | "chakra-quiz" | "enneagram-quiz" | "gad7-quiz" | "pcl5-quiz" | "phq15-quiz" | "coreom-quiz" | "attachment-quiz" | "emotion-quiz";
+type ViewMode = "list" | "chakra-quiz" | "enneagram-quiz" | "gad7-quiz" | "pcl5-quiz" | "phq15-quiz" | "coreom-quiz" | "attachment-quiz" | "emotion-quiz" | "starseed-quiz";
 
 const ASSESSMENTS = [
   {
@@ -102,6 +103,17 @@ const ASSESSMENTS = [
     color: "#6b8fb5",
     category: "sino-nlp",
   },
+  {
+    id: "starseed",
+    title: "星宿种子性格测评",
+    desc: "27 题测出你的星人归属 — 你是哪颗星来的？",
+    icon: Flame,
+    price: "¥19.90",
+    count: "已上线",
+    available: true,
+    color: "#6c63ff",
+    category: "new-age",
+  },
 ];
 
 export default function AssessmentPage({
@@ -151,6 +163,11 @@ export default function AssessmentPage({
     onFullscreenChange?.(true);
   }, [onFullscreenChange]);
 
+  const handleStartStarseed = useCallback(() => {
+    setView("starseed-quiz");
+    onFullscreenChange?.(true);
+  }, [onFullscreenChange]);
+
   const handleBackToList = useCallback(() => {
     setView("list");
     onFullscreenChange?.(false);
@@ -165,6 +182,7 @@ export default function AssessmentPage({
     coreom: handleStartCOREOM,
     attachment: handleStartAttachment,
     emotion: handleStartEmotion,
+    starseed: handleStartStarseed,
   };
 
   if (view === "chakra-quiz") {
@@ -197,6 +215,10 @@ export default function AssessmentPage({
 
   if (view === "emotion-quiz") {
     return <EmotionInertiaPage onBack={handleBackToList} />;
+  }
+
+  if (view === "starseed-quiz") {
+    return <StarseedPage onBack={handleBackToList} onFullscreenChange={onFullscreenChange} />;
   }
 
   return (
@@ -354,6 +376,57 @@ export default function AssessmentPage({
                           ) : (
                             <button className="btn-outline text-sm py-2 px-4 opacity-50" disabled>
                               即将推出
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 火热 New Age 专区 */}
+        <div className="mt-4">
+          <h3 className="text-sm font-semibold text-[#888] mb-2 flex items-center gap-1.5">
+            <Flame size={14} className="text-[#6c63ff]" />
+            火热 New Age 🔥
+          </h3>
+          <div className="space-y-3">
+            {ASSESSMENTS.filter((a) => a.category === "new-age").map((a) => {
+              const Icon = a.icon;
+              return (
+                <div key={a.id} className="card relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0B0E1A, #1A1035)", borderColor: "rgba(108,99,255,0.3)" }}>
+                  <div className="flex items-start gap-3">
+                    <div
+                      className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: "rgba(108,99,255,0.2)" }}
+                    >
+                      <Icon size={22} style={{ color: "#6c63ff" }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-white">{a.title}</h3>
+                      </div>
+                      <p className="text-sm text-[rgba(255,255,255,0.7)] mt-1">{a.desc}</p>
+                      <div className="flex items-center justify-between mt-3">
+                        <span className="text-sm text-[rgba(255,255,255,0.5)]">{a.count}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold text-[#B8A9D4]">{a.price}</span>
+                          {a.available && (
+                            <button
+                              className="text-sm py-2 px-4 rounded-lg font-semibold transition-all active:scale-[0.97]"
+                              style={{
+                                background: "linear-gradient(135deg, rgba(240,230,197,0.4), rgba(184,169,212,0.4))",
+                                border: "1px solid rgba(255,255,255,0.2)",
+                                color: "#FFFFFF",
+                              }}
+                              onClick={handleStartMap[a.id]}
+                            >
+                              开始测评
+                              <ArrowRight size={14} className="inline ml-1" />
                             </button>
                           )}
                         </div>

@@ -314,3 +314,96 @@ body {
 .animate-fadeIn {
   animation: fadeIn 0.4s ease-out;
 }
+
+/* ── 星宿种子 New Age 风格 ── */
+@keyframes twinkle1 {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+@keyframes twinkle2 {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.8; }
+}
+@keyframes twinkle3 {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.1; }
+}
+@keyframes shoot {
+  0% { transform: translate(0, 0); opacity: 0; }
+  3% { opacity: 1; }
+  12% { transform: translate(-200px, 150px); opacity: 0; }
+  100% { opacity: 0; }
+}
+.starseed-starfield {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(160deg, #0B0E1A 0%, #1A1035 50%, #0F1B3A 100%);
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.starseed-star {
+  position: absolute;
+  border-radius: 50%;
+}
+.starseed-shooting-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 6px 2px rgba(255,255,255,0.6);
+  animation: shoot 6s linear infinite;
+}
+.starseed-shooting-star:nth-child(2) {
+  top: 30%; left: 70%;
+  animation-delay: 2s;
+  animation-duration: 8s;
+}
+.starseed-shooting-star:nth-child(3) {
+  top: 60%; left: 40%;
+  animation-delay: 4.5s;
+  animation-duration: 7s;
+}
+.starseed-glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+}
+.starseed-btn {
+  background: linear-gradient(135deg, rgba(240,230,197,0.4), rgba(184,169,212,0.4));
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #FFFFFF;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(184,169,212,0.2);
+}
+.starseed-btn:active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+.starseed-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.starseed-result-btn {
+  background: linear-gradient(135deg, #6c63ff, #8b7eff);
+  border: none;
+  color: white;
+  border-radius: 12px;
+  padding: 14px 28px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(108,99,255,0.3);
+}
+.starseed-result-btn:active {
+  transform: scale(0.97);
+}
