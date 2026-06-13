@@ -187,7 +187,7 @@ export default function ProfilePage() {
         <h1 className="text-xl font-bold text-[#1a1a1a] font-song">我的</h1>
       </header>
 
-      <div className="flex-1 px-4 pb-20">
+      <div className="flex-1 px-4 pb-20 content-below-header">
         {/* ── 未登录：显示登录入口 ── */}
         {!isLoggedIn && !showLogin && (
           <>

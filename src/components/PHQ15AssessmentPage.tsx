@@ -106,9 +106,9 @@ function PHQ15Intro({ onStart, onBack }: { onStart: (gender: "male" | "female") 
         </div>
       </header>
 
-      <div className="flex-1 px-4 pb-32">
+      <div className="flex-1 px-4 pb-32 content-below-header">
         {/* 说明卡 */}
-        <div className="mt-6 card">
+        <div className="card">
           <div className="flex items-center gap-2 mb-3">
             <Sparkles size={20} className="text-[#7caacc]" />
             <span className="text-lg font-semibold text-[#1a1a1a]">测评须知</span>
@@ -245,7 +245,7 @@ function PHQ15Quiz({ onComplete, gender }: { onComplete: (answers: Record<number
         </p>
       </nav>
 
-      <section className="flex-1 px-4 pt-6 pb-40">
+      <section className="flex-1 px-4 pb-40 content-below-quiz-nav">
         <div className="mb-2 text-base text-[#7caacc] font-semibold">
           第 {currentQ + 1} 题（共 {TOTAL_PHQ15} 题）
           {currentQuestion.disabled && (
@@ -384,7 +384,7 @@ function PhoneCollectPage({
         </div>
       </header>
 
-      <div className="flex-1 px-4 pt-8">
+      <div className="flex-1 px-4 pt-8 content-below-header">
         <div className="text-center mb-8">
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#e8f2f8] to-[#d0e4f0] flex items-center justify-center mx-auto mb-4">
             <Phone size={32} className="text-[#7caacc]" />
@@ -513,7 +513,7 @@ function PHQ15ResultView({
         </div>
       </nav>
 
-      <div className="flex-1 px-4 pt-4 pb-20">
+      <div className="flex-1 px-4 pb-20 content-below-quiz-nav">
         <div ref={reportRef} className="bg-white">
           <div className="text-center mb-6">
             <h1 className="text-2xl font-bold text-[#1a1a1a] font-song">你的躯体症状水平评估</h1>

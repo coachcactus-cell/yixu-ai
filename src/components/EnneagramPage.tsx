@@ -75,7 +75,7 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
             <h1 className="text-lg font-bold text-[#1a1a1a] font-song">九型人格测试</h1>
           </div>
         </header>
-        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-16">
+        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-16 content-below-header">
           <div className="text-6xl mb-6">🔮</div>
           <h2 className="text-2xl font-bold text-[#1a1a1a] font-song mb-3">九型人格</h2>
           <p className="text-sm text-[#666] text-center max-w-xs leading-relaxed mb-2">Enneagram — 探索你内在最深层的性格驱动力</p>
@@ -122,7 +122,7 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 content-below-header">
           <p className="text-xs text-[#999] text-center mb-2">请根据你的真实情况作答，而非你想成为的样子</p>
           {pageQs.map((q) => (
             <div key={q.id} className="card py-3">
@@ -193,9 +193,9 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto px-4 pb-8">
+      <div className="flex-1 overflow-y-auto px-4 pb-8 content-below-header">
         {/* 主型卡片 */}
-        <div className="mt-4 rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg, #c9a84c, #b89430)" }}>
+        <div className="rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg, #c9a84c, #b89430)" }}>
           <div className="px-5 py-6 text-white">
             <p className="text-sm opacity-80 mb-1">你的核心型号</p>
             <h2 className="text-3xl font-black font-song mb-1">第 {mainType.id} 型 · {mainType.name}</h2>

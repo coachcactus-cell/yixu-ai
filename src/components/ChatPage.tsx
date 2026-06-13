@@ -565,7 +565,7 @@ export default function ChatPage() {
         </header>
 
         {/* Landing Body */}
-        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-16">
+        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-16 content-below-header">
           {/* Greeting */}
           <p className="text-sm text-[#c9a84c] font-medium mb-8 tracking-wide">
             {getGreeting()}
@@ -648,7 +648,7 @@ export default function ChatPage() {
       </header>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 pt-6 pb-4 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-4 content-below-header">
         {messages.map((msg) => (
           <div
             key={msg.id}

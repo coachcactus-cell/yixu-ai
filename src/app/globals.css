@@ -13,6 +13,10 @@
   --color-border: #e8e8e8;
   --color-danger: #c0392b;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* sticky-header 高度 ≈ py-4(32px) + content(~36px) = 68px，加 safe-area-inset-top 做動態適配 */
+  --header-height: calc(68px + env(safe-area-inset-top, 0px));
+  /* quiz nav 高度更高：py-3(24px) + progress(6px) + dim-label(~32px) ≈ 82px */
+  --quiz-nav-height: calc(82px + env(safe-area-inset-top, 0px));
 }
 
 * {
@@ -27,6 +31,13 @@
   position: sticky;
   top: env(safe-area-inset-top, 0px);
   z-index: 10;
+}
+/* 內容區域：抵消 sticky-header 高度，確保不被遮擋 */
+.content-below-header {
+  padding-top: var(--header-height);
+}
+.content-below-quiz-nav {
+  padding-top: var(--quiz-nav-height);
 }
 
 body {

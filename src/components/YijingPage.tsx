@@ -294,9 +294,9 @@ function ReportView({ result, onClose }: { result: DivinationResult; onClose: ()
         </div>
       </header>
 
-      <div className="flex-1 px-4 pb-24">
+      <div className="flex-1 px-4 pb-24 content-below-header">
         {/* 卦象主卡片 */}
-        <div className="card mt-4 border-[#c9a84c]/30 bg-gradient-to-b from-[#fdf8ed]/50 to-white">
+        <div className="card border-[#c9a84c]/30 bg-gradient-to-b from-[#fdf8ed]/50 to-white">
           {/* 季節/课题标籤 */}
           {seasonLabel && (
             <p className="text-sm text-[#c9a84c] font-medium mb-1">{seasonLabel}</p>
@@ -470,9 +470,9 @@ export default function YijingPage() {
         </div>
       </header>
 
-      <div className="flex-1 px-4 pb-24">
+      <div className="flex-1 px-4 pb-24 content-below-header">
         {/* 簡介卡片 */}
-        <div className="card bg-gradient-to-br from-[#c9a84c]/5 to-[#fdf8ed] border-[#c9a84c]/20 mt-4">
+        <div className="card bg-gradient-to-br from-[#c9a84c]/5 to-[#fdf8ed] border-[#c9a84c]/20">
           <div className="flex items-center gap-2 mb-2">
             <Sparkles size={18} className="text-[#c9a84c]" />
             <span className="text-sm font-semibold text-[#c9a84c]">掛住心掛卦</span>

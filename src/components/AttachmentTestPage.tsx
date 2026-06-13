@@ -83,9 +83,9 @@ function AttachmentIntro({ onStart, onBack }: { onStart: () => void; onBack: () 
         </div>
       </header>
 
-      <div className="flex-1 px-4 pb-32">
+      <div className="flex-1 px-4 pb-32 content-below-header">
         {/* 说明卡 */}
-        <div className="mt-6 card">
+        <div className="card">
           <div className="flex items-center gap-2 mb-3">
             <Sparkles size={20} className="text-[#c9a84c]" />
             <span className="text-lg font-semibold text-[#1a1a1a]">测评须知</span>
@@ -204,7 +204,7 @@ function AttachmentQuiz({ onComplete }: { onComplete: (answers: Record<number, n
         </p>
       </nav>
 
-      <section className="flex-1 px-4 pt-6 pb-40">
+      <section className="flex-1 px-4 pt-2 pb-40 content-below-quiz-nav">
         <div className="mb-2 text-base text-[#c9a84c] font-semibold">
           第 {currentQ + 1} 题（共 {TOTAL_ATTACHMENT} 题）
         </div>
@@ -313,7 +313,7 @@ function AttachmentResultView({ result, onRestart }: { result: AttachmentResult;
         </div>
       </nav>
 
-      <div className="flex-1 px-4 pt-4 pb-20">
+      <div className="flex-1 px-4 pb-20 content-below-quiz-nav">
         {/* 总分卡 */}
         <div className="text-center mb-6">
           <div className="text-4xl mb-2">{severityEmojiMap[result.severityClass]}</div>

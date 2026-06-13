@@ -63,9 +63,9 @@ function ChakraIntro({ onStart, onBack }: { onStart: () => void; onBack: () => v
         </div>
       </header>
 
-      <div className="flex-1 px-4 pb-32">
+      <div className="flex-1 px-4 pb-32 content-below-header">
         {/* 人体脉轮图 */}
-        <div className="mt-6 flex justify-center">
+        <div className="flex justify-center">
           <img
             src="/images/chakra-body-diagram.png"
             alt="七脉轮人体图 - Chakra Body Diagram"
@@ -279,7 +279,7 @@ function ChakraQuiz({
         <p className="text-base text-[#666666] mt-1.5">{currentChakraData.description}</p>
       </div>
 
-      <section className="flex-1 px-4 pt-3 pb-40">
+      <section className="flex-1 px-4 pb-40 content-below-quiz-nav">
         <div className="space-y-2.5">
           {currentQuestions.map((q) => {
             const selected = answers[q.id];
@@ -406,7 +406,7 @@ function PhoneCollectPage({
         </div>
       </header>
 
-      <div className="flex-1 px-4 pt-8">
+      <div className="flex-1 px-4 pt-8 content-below-header">
         {/* 甜头说明 */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#fdf8ed] to-[#fef3d0] flex items-center justify-center mx-auto mb-4">
@@ -624,7 +624,7 @@ function ChakraResultView({
         </div>
       </nav>
 
-      <div className="flex-1 px-4 pt-4 pb-52">
+      <div className="flex-1 px-4 pb-52 content-below-quiz-nav">
         {/* 报告内容区（用于截图下载） */}
         <div ref={reportRef} className="bg-white">
           {/* 标题区 */}

@@ -207,10 +207,10 @@ export default function AssessmentPage({
         <p className="text-sm text-[#666666] mt-1">深入了解自己，从测评开始</p>
       </header>
 
-      <div className="flex-1 px-4 pb-24">
+      <div className="flex-1 px-4 pb-24 content-below-header">
         {/* Banner */}
         <div
-          className="mt-4 rounded-xl p-4 text-white"
+          className="rounded-xl p-4 text-white"
           style={{
             background: "linear-gradient(135deg, #c9a84c, #a88830)",
           }}

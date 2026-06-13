@@ -50,7 +50,7 @@ export default function CalendarPage() {
       </header>
 
       {/* Progress Summary */}
-      <div className="px-4 pt-4">
+      <div className="px-4 pt-4 content-below-header">
         <div className="card flex items-center justify-between">
           <div>
             <p className="text-sm text-[#888888]">修行进度</p>

@@ -80,9 +80,9 @@ function COREOMIntro({ onStart, onBack }: { onStart: () => void; onBack: () => v
         </div>
       </header>
 
-      <div className="flex-1 px-4 pb-32">
+      <div className="flex-1 px-4 pb-32 content-below-header">
         {/* 说明卡 */}
-        <div className="mt-6 card">
+        <div className="card">
           <div className="flex items-center gap-2 mb-3">
             <Sparkles size={20} className="text-[#7dba9a]" />
             <span className="text-lg font-semibold text-[#1a1a1a]">测评须知</span>
@@ -174,7 +174,7 @@ function COREOMQuiz({ onComplete }: { onComplete: (answers: Record<number, numbe
         </p>
       </nav>
 
-      <section className="flex-1 px-4 pt-6 pb-40">
+      <section className="flex-1 px-4 pb-40 content-below-quiz-nav">
         <div className="mb-2 text-base text-[#7dba9a] font-semibold">
           第 {currentQ + 1} 题（共 {TOTAL_COREOM} 题）
           {currentQuestion.isReverse && (
@@ -294,7 +294,7 @@ function PhoneCollectPage({
         </div>
       </header>
 
-      <div className="flex-1 px-4 pt-8">
+      <div className="flex-1 px-4 pt-8 content-below-header">
         <div className="text-center mb-8">
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#f0faf5] to-[#d4f0e0] flex items-center justify-center mx-auto mb-4">
             <Phone size={32} className="text-[#7dba9a]" />
@@ -423,7 +423,7 @@ function COREOMResultView({
         </div>
       </nav>
 
-      <div className="flex-1 px-4 pt-4 pb-20">
+      <div className="flex-1 px-4 pb-20 content-below-quiz-nav">
         <div ref={reportRef} className="bg-white">
           <div className="text-center mb-6">
             <h1 className="text-2xl font-bold text-[#1a1a1a] font-song">你的心理健康水平评估</h1>
