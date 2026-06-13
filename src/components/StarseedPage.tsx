@@ -572,85 +572,52 @@ function StarseedQuiz({
     );
   };
 
-  // ─── Date (3 selects) ───
+  // ─── Date (native input[type=date]) ───
   const renderDate = () => {
     const current =
       answers[currentQ] && typeof answers[currentQ] === "object" && "day" in (answers[currentQ] as object)
         ? (answers[currentQ] as { day: string; month: string; year: string })
         : { day: "", month: "", year: "" };
 
-    const update = (field: "day" | "month" | "year", value: string) => {
-      const newDate = { ...current, [field]: value };
-      const newAnswers = [...answers];
-      newAnswers[currentQ] = newDate.day && newDate.month && newDate.year ? newDate : null;
-      setAnswers(newAnswers);
-    };
+    // Convert to YYYY-MM-DD for input value, or empty string
+    const dateValue = current.day && current.month && current.year
+      ? `${current.year}-${current.month.padStart(2, "0")}-${current.day.padStart(2, "0")}`
+      : "";
 
-    const days = Array.from({ length: 31 }, (_, i) => String(i + 1));
-    const months = Array.from({ length: 12 }, (_, i) => String(i + 1));
-    const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: 80 }, (_, i) => String(currentYear - i));
-
-    const selectStyle: React.CSSProperties = {
-      background: "rgba(255,255,255,0.08)",
-      border: "1px solid rgba(255,255,255,0.15)",
-      borderRadius: "10px",
-      color: "#FFFFFF",
-      padding: "12px 8px",
-      fontSize: "16px",
-      flex: 1,
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value; // YYYY-MM-DD or ""
+      if (val) {
+        const [y, m, d] = val.split("-");
+        const newAnswers = [...answers];
+        newAnswers[currentQ] = { day: String(parseInt(d, 10)), month: String(parseInt(m, 10)), year: y };
+        setAnswers(newAnswers);
+      } else {
+        const newAnswers = [...answers];
+        newAnswers[currentQ] = null;
+        setAnswers(newAnswers);
+      }
     };
 
     return (
-      <div className="flex gap-3">
-        <div className="flex-1 flex flex-col items-center gap-1">
-          <select
-            value={current.day}
-            onChange={(e) => update("day", e.target.value)}
-            style={selectStyle}
-            className="w-full"
-          >
-            <option value="" disabled>日</option>
-            {days.map((d) => (
-              <option key={d} value={d} style={{ color: "#000" }}>
-                {d}
-              </option>
-            ))}
-          </select>
-          <span className="text-white/40 text-xs">日</span>
-        </div>
-        <div className="flex-1 flex flex-col items-center gap-1">
-          <select
-            value={current.month}
-            onChange={(e) => update("month", e.target.value)}
-            style={selectStyle}
-            className="w-full"
-          >
-            <option value="" disabled>月</option>
-            {months.map((m) => (
-              <option key={m} value={m} style={{ color: "#000" }}>
-                {m}
-              </option>
-            ))}
-          </select>
-          <span className="text-white/40 text-xs">月</span>
-        </div>
-        <div className="flex-1 flex flex-col items-center gap-1">
-          <select
-            value={current.year}
-            onChange={(e) => update("year", e.target.value)}
-            style={selectStyle}
-            className="w-full"
-          >
-            <option value="" disabled>年</option>
-            {years.map((y) => (
-              <option key={y} value={y} style={{ color: "#000" }}>
-                {y}
-              </option>
-            ))}
-          </select>
-          <span className="text-white/40 text-xs">年</span>
-        </div>
+      <div className="mt-2">
+        <input
+          type="date"
+          value={dateValue}
+          onChange={handleChange}
+          className="w-full px-4 py-3 rounded-xl text-base"
+          style={{
+            background: "rgba(255,255,255,0.1)",
+            border: "1px solid rgba(255,255,255,0.2)",
+            color: "#FFFFFF",
+            colorScheme: "dark",
+          }}
+          max={new Date().toISOString().split("T")[0]}
+        />
+        {dateValue && (
+          <p className="text-[#B8A9D4] text-sm mt-2 text-center">
+            {current.year}年{current.month}月{current.day}日
+          </p>
+        )}
       </div>
     );
   };
