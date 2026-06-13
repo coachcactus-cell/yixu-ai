@@ -572,7 +572,7 @@ function StarseedQuiz({
     );
   };
 
-  // ─── Date (native input[type=date]) ───
+  // ─── Date (native date picker + decade quick-jump) ───
   const renderDate = () => {
     const current =
       answers[currentQ] && typeof answers[currentQ] === "object" && "day" in (answers[currentQ] as object)
@@ -598,13 +598,51 @@ function StarseedQuiz({
       }
     };
 
+    // Quick-jump: set year directly and open date picker
+    const jumpYear = (year: number) => {
+      const newAnswers = [...answers];
+      newAnswers[currentQ] = { day: "1", month: "1", year: String(year) };
+      setAnswers(newAnswers);
+      // Auto-focus the date input to open picker
+      setTimeout(() => {
+        const input = document.querySelector<HTMLInputElement>(".starseed-date-input");
+        input?.showPicker?.();
+      }, 50);
+    };
+
+    // Common birth decades
+    const decades = [2000, 1990, 1980, 1970, 1960, 1950];
+
     return (
       <div className="mt-2">
+        {/* Decade quick-jump buttons */}
+        <p className="text-white/40 text-xs mb-2 text-center">快速选择出生年代，再微调日期：</p>
+        <div className="flex flex-wrap justify-center gap-2 mb-3">
+          {decades.map((decade) => {
+            const isActive = current.year && Math.floor(parseInt(current.year) / 10) * 10 === decade;
+            return (
+              <button
+                key={decade}
+                onClick={() => jumpYear(decade)}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all active:scale-95"
+                style={{
+                  background: isActive ? "rgba(240,230,197,0.25)" : "rgba(255,255,255,0.08)",
+                  border: isActive ? "1px solid #F0E6C5" : "1px solid rgba(255,255,255,0.12)",
+                  color: isActive ? "#F0E6C5" : "rgba(255,255,255,0.7)",
+                }}
+              >
+                {decade}s
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Native date input */}
         <input
           type="date"
           value={dateValue}
           onChange={handleChange}
-          className="w-full px-4 py-3 rounded-xl text-base"
+          className="starseed-date-input w-full px-4 py-3 rounded-xl text-base"
           style={{
             background: "rgba(255,255,255,0.1)",
             border: "1px solid rgba(255,255,255,0.2)",
@@ -614,8 +652,8 @@ function StarseedQuiz({
           max={new Date().toISOString().split("T")[0]}
         />
         {dateValue && (
-          <p className="text-[#B8A9D4] text-sm mt-2 text-center">
-            {current.year}年{current.month}月{current.day}日
+          <p className="text-[#F0E6C5] text-sm mt-2 text-center font-semibold">
+            📅 {current.year}年{current.month}月{current.day}日
           </p>
         )}
       </div>
