@@ -192,23 +192,23 @@ function IntroSlides({ onStart, onBack }: { onStart: () => void; onBack: () => v
           )}
 
           {/* Title */}
-          <h2 className="text-xl font-bold text-white text-center mb-4">
+          <h2 className="text-2xl font-bold text-white text-center mb-4">
             {slide.title}
           </h2>
 
           {/* Text */}
           {slide.text && (
-            <p className="text-white/85 text-sm leading-relaxed mb-3">{slide.text}</p>
+            <p className="text-white/85 text-base leading-relaxed mb-3">{slide.text}</p>
           )}
           {slide.text2 && (
-            <p className="text-white/85 text-sm leading-relaxed mb-3">{slide.text2}</p>
+            <p className="text-white/85 text-base leading-relaxed mb-3">{slide.text2}</p>
           )}
 
           {/* List */}
           {slide.list && (
             <ul className="space-y-2 mb-3">
               {slide.list.map((item, i) => (
-                <li key={i} className="text-white/85 text-sm leading-relaxed flex items-start gap-2">
+                <li key={i} className="text-white/85 text-base leading-relaxed flex items-start gap-2">
                   <span className="text-[#F0E6C5] shrink-0">•</span>
                   <span>{item}</span>
                 </li>
@@ -218,14 +218,14 @@ function IntroSlides({ onStart, onBack }: { onStart: () => void; onBack: () => v
 
           {/* Conclusion */}
           {slide.conclusion && (
-            <p className="text-[#B8A9D4] text-sm font-semibold text-center mt-3 leading-relaxed">
+            <p className="text-[#B8A9D4] text-base font-semibold text-center mt-3 leading-relaxed">
               {slide.conclusion}
             </p>
           )}
 
           {/* Footer */}
           {slide.footer && (
-            <p className="text-[#F0E6C5]/70 text-xs text-center mt-3 leading-relaxed">
+            <p className="text-[#F0E6C5]/70 text-sm text-center mt-3 leading-relaxed">
               {slide.footer}
             </p>
           )}
@@ -261,7 +261,7 @@ function IntroSlides({ onStart, onBack }: { onStart: () => void; onBack: () => v
               border: "1px solid rgba(255,255,255,0.08)",
             }}
           >
-            上一頁
+            上一页
           </button>
 
           {isLast ? (
@@ -270,7 +270,7 @@ function IntroSlides({ onStart, onBack }: { onStart: () => void; onBack: () => v
               className="flex-1 py-3 rounded-xl text-white font-semibold"
               style={glassBtn}
             >
-              開始測驗 ✨
+              开始测验 ✨
             </button>
           ) : (
             <button
@@ -278,7 +278,7 @@ function IntroSlides({ onStart, onBack }: { onStart: () => void; onBack: () => v
               className="flex-1 py-3 rounded-xl text-white font-semibold"
               style={glassBtn}
             >
-              下一頁
+              下一页
             </button>
           )}
         </div>
@@ -325,9 +325,9 @@ function GenderSelect({ onSelect, onBack }: { onSelect: () => void; onBack: () =
 
       {/* Content */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6">
-        <h2 className="text-2xl font-bold text-white mb-2">請選擇你的性別</h2>
+        <h2 className="text-2xl font-bold text-white mb-2">请选择你的性别</h2>
         <p className="text-white/60 text-sm mb-8">
-          這會影響部分測評結果的解讀
+          这会影响部分测评结果的解读
         </p>
 
         <div className="flex gap-4 w-full max-w-md">
@@ -446,7 +446,7 @@ function StarseedQuiz({
     const selected = (answers[currentQ] as number[]) || [];
     return (
       <div>
-        <p className="text-white/50 text-xs mb-3">已選 {selected.length} 項（至少選 1 項）</p>
+        <p className="text-white/50 text-xs mb-3">已选 {selected.length} 项（至少选 1 项）</p>
         <div className="space-y-3">
           {q.options?.map((opt, oi) => {
             const isSelected = selected.includes(oi);
@@ -596,11 +596,9 @@ function StarseedQuiz({
       border: "1px solid rgba(255,255,255,0.15)",
       borderRadius: "10px",
       color: "#FFFFFF",
-      padding: "10px 8px",
-      fontSize: "14px",
+      padding: "12px 8px",
+      fontSize: "16px",
       flex: 1,
-      appearance: "none",
-      WebkitAppearance: "none",
     };
 
     return (
@@ -691,7 +689,7 @@ function StarseedQuiz({
           ) : (
             <>
               <span className="text-3xl mb-2">📸</span>
-              <span className="text-white/60 text-sm">點擊上載手掌相片</span>
+              <span className="text-white/60 text-sm">点击上传手掌照片</span>
             </>
           )}
         </div>
@@ -713,7 +711,7 @@ function StarseedQuiz({
             }}
             className="mt-3 text-white/40 text-sm underline"
           >
-            跳過此題
+            跳过此题
           </button>
         )}
       </div>
@@ -799,7 +797,7 @@ function StarseedQuiz({
               border: "1px solid rgba(255,255,255,0.08)",
             }}
           >
-            上一題
+            上一题
           </button>
           <button
             onClick={handleNext}
@@ -810,7 +808,7 @@ function StarseedQuiz({
               opacity: answered ? 1 : 0.3,
             }}
           >
-            {isLast ? "完成 ✅" : "下一題"}
+            {isLast ? "完成 ✅" : "下一题"}
           </button>
         </div>
       </div>
@@ -842,7 +840,7 @@ function StarseedResultView({
           onClick={onBack}
           className="text-[#6c63ff] text-sm flex items-center gap-1 mb-2"
         >
-          <span>←</span> 返回測評列表
+          <span>←</span> 返回测评列表
         </button>
       </div>
 
@@ -856,7 +854,7 @@ function StarseedResultView({
               color: "#6c63ff",
             }}
           >
-            ✨ 你的星宿種子類型
+            ✨ 你的星宿种子类型
           </div>
           <div
             className="text-6xl mb-3"
@@ -878,7 +876,7 @@ function StarseedResultView({
           }}
         >
           <h3 className="text-base font-bold text-[#1a1a2e] mb-2">
-            性格特徵
+            性格特征
           </h3>
           <p className="text-sm text-[#555] leading-relaxed mb-3">
             {freeReport.summary}
@@ -904,7 +902,7 @@ function StarseedResultView({
           <div className="text-center mb-3">
             <span className="text-2xl">🔒</span>
             <h3 className="text-base font-bold mt-1">
-              噢！你的完整報告鎖在你的星球裡
+              噢！你的完整报告锁在你的星球里
             </h3>
           </div>
           <ul className="space-y-2.5">
@@ -925,7 +923,7 @@ function StarseedResultView({
           }}
         >
           <h3 className="text-base font-bold text-[#1a1a2e] mb-4">
-            分數分佈
+            分数分布
           </h3>
           <div className="space-y-3">
             {sortedScores.map((item, i) => {
@@ -966,13 +964,13 @@ function StarseedResultView({
 
         {/* Unlock button */}
         <button
-          onClick={() => alert("即將上線，敬請期待！")}
+          onClick={() => alert("即将上线，敬请期待！")}
           className="w-full py-4 rounded-xl text-white text-lg font-semibold mb-3 transition-all active:scale-[0.98]"
           style={{
             background: "linear-gradient(135deg, #6c63ff, #8b7eff)",
           }}
         >
-          解鎖完整報告 🔓
+          解锁完整报告 🔓
         </button>
 
         {/* Back button */}
@@ -980,16 +978,16 @@ function StarseedResultView({
           onClick={onBack}
           className="w-full py-3 rounded-xl text-[#999] text-sm"
         >
-          返回測評列表
+          返回测评列表
         </button>
 
         {/* Footer */}
         <div className="text-center pt-4 pb-2">
           <p className="text-sm text-[#6c63ff] font-semibold">
-            YIXU HEALING · 亦須療愈
+            YIXU HEALING · 亦须疗愈
           </p>
           <p className="text-xs text-[#999]">
-            Sino-NLP 中華身心語言學 · 星宿種子測評
+            Sino-NLP 中华身心语言学 · 星宿种子测评
           </p>
         </div>
       </div>
