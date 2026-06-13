@@ -69,7 +69,7 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
   if (phase === "intro") {
     return (
       <div className="flex flex-col min-h-screen bg-white">
-        <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
+        <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
           <div className="flex items-center gap-3">
             <button onClick={onBack} className="p-1"><ArrowLeft size={20} className="text-[#666]" /></button>
             <h1 className="text-lg font-bold text-[#1a1a1a] font-song">九型人格测试</h1>
@@ -107,7 +107,7 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
   if (phase === "quiz") {
     return (
       <div className="flex flex-col min-h-screen bg-white">
-        <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
+        <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
           <div className="flex items-center justify-between">
             <button onClick={onBack} className="p-1"><ArrowLeft size={20} className="text-[#666]" /></button>
             <h1 className="text-base font-bold text-[#1a1a1a]">九型人格测试</h1>
@@ -186,7 +186,7 @@ export default function EnneagramPage({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
+      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
         <div className="flex items-center gap-3">
           <button onClick={onBack} className="p-1"><ArrowLeft size={20} className="text-[#666]" /></button>
           <h1 className="text-lg font-bold text-[#1a1a1a] font-song">测试结果</h1>

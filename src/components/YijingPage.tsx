@@ -279,7 +279,7 @@ function ReportView({ result, onClose }: { result: DivinationResult; onClose: ()
   return (
     <div className="flex flex-col min-h-screen bg-white animate-fade-in-up">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
+      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Compass size={20} className="text-[#c9a84c]" />
@@ -458,7 +458,7 @@ export default function YijingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
+      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
         <div className="flex items-center gap-2">
           <Compass size={22} className="text-[#c9a84c]" />
           <div>

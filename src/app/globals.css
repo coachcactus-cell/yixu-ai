@@ -19,6 +19,16 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Safe Area Support — iPhone Notch / Dynamic Island */
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.sticky-header {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 10;
+}
+
 body {
   font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", "Hiragino Sans GB", "STHeiti", "SimHei", sans-serif;
   background: var(--color-bg);

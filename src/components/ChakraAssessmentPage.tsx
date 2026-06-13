@@ -50,7 +50,7 @@ function ChakraIntro({ onStart, onBack }: { onStart: () => void; onBack: () => v
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
+      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
         <div className="flex items-center gap-2">
           <button onClick={onBack} className="text-[#c9a84c]">
             <ChevronLeft size={24} />
@@ -201,7 +201,7 @@ function ChakraQuiz({
 
   return (
     <div className="flex flex-col min-h-screen bg-white quiz-protected">
-      <nav className="sticky top-0 z-30 border-b border-[#e8e8e8] bg-white/95 backdrop-blur-md px-4 py-3">
+      <nav className="sticky-header z-30 border-b border-[#e8e8e8] bg-white/95 backdrop-blur-md px-4 py-3">
         <div className="flex items-center gap-2 mb-2">
           <HomeLink />
           <Sparkles size={20} className="text-[#c9a84c]" />
@@ -399,7 +399,7 @@ function PhoneCollectPage({
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
+      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
         <div className="flex items-center gap-2">
           <Sparkles size={18} className="text-[#c9a84c]" />
           <h1 className="text-xl font-bold text-[#1a1a1a] font-song">解锁完整报告</h1>
@@ -600,7 +600,7 @@ function ChakraResultView({
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
-      <nav className="sticky top-0 z-30 border-b border-[#e8e8e8] bg-white/95 backdrop-blur-md px-4 py-3">
+      <nav className="sticky-header z-30 border-b border-[#e8e8e8] bg-white/95 backdrop-blur-md px-4 py-3">
         <div className="flex items-center gap-2">
           <Sparkles size={18} className="text-[#c9a84c]" />
           <span className="text-sm font-semibold text-[#1a1a1a]">测评结果</span>

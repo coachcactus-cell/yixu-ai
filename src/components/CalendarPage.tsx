@@ -44,7 +44,7 @@ export default function CalendarPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
+      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
         <h1 className="text-xl font-bold text-[#1a1a1a] font-song">修行日课</h1>
         <p className="text-sm text-[#888888] mt-1">中华经学每日一练 · 六经轮替</p>
       </header>

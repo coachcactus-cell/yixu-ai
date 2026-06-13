@@ -67,7 +67,7 @@ function HomeLink() {
 function COREOMIntro({ onStart, onBack }: { onStart: () => void; onBack: () => void }) {
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
+      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
         <div className="flex items-center gap-2">
           <button onClick={onBack} className="text-[#7dba9a]">
             <ChevronLeft size={24} />
@@ -151,7 +151,7 @@ function COREOMQuiz({ onComplete }: { onComplete: (answers: Record<number, numbe
 
   return (
     <div className="flex flex-col min-h-screen bg-white quiz-protected">
-      <nav className="sticky top-0 z-30 border-b border-[#e8e8e8] bg-white/95 backdrop-blur-md px-4 py-3">
+      <nav className="sticky-header z-30 border-b border-[#e8e8e8] bg-white/95 backdrop-blur-md px-4 py-3">
         <div className="flex items-center gap-2 mb-2">
           <HomeLink />
           <Sparkles size={20} className="text-[#7dba9a]" />
@@ -286,7 +286,7 @@ function PhoneCollectPage({
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
+      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-4 border-b border-[#e8e8e8]">
         <div className="flex items-center gap-2">
           <HomeLink />
           <Sparkles size={20} className="text-[#7dba9a]" />
@@ -411,7 +411,7 @@ function COREOMResultView({
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <nav className="sticky top-0 z-30 border-b border-[#e8e8e8] bg-white/95 backdrop-blur-md px-4 py-3">
+      <nav className="sticky-header z-30 border-b border-[#e8e8e8] bg-white/95 backdrop-blur-md px-4 py-3">
         <div className="flex items-center gap-2">
           <HomeLink />
           <Sparkles size={20} className="text-[#7dba9a]" />
