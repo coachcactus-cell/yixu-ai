@@ -380,13 +380,14 @@ function StarseedQuiz({
   // Check if current question is answered
   const isAnswered = (): boolean => {
     const a = answers[currentQ];
+    // voluntary questions (e.g. file upload) can be skipped — check BEFORE null/undefined guard
+    if (question.isVoluntary) return true;
     if (a === null || a === undefined) return false;
     if (question.type === "multi" && Array.isArray(a)) return (a as number[]).length > 0;
     if (question.type === "date" && typeof a === "object" && a !== null && "day" in a) {
       const d = a as { day: string; month: string; year: string };
       return !!(d.day && d.month && d.year);
     }
-    if (question.type === "file" && question.isVoluntary) return true; // can skip
     if (question.type === "file" && a !== null) return true;
     return a !== null;
   };
