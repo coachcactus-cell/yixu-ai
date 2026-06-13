@@ -1,15 +1,17 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Brain, Heart, Sparkles, Users, ArrowRight, Lock, Hexagon, AlertTriangle, ShieldAlert, Activity, Leaf } from "lucide-react";
+import { Brain, Heart, Sparkles, Users, ArrowRight, Lock, Hexagon, AlertTriangle, ShieldAlert, Activity, Leaf, Eye, Waves } from "lucide-react";
 import ChakraAssessmentPage from "@/components/ChakraAssessmentPage";
 import EnneagramPage from "@/components/EnneagramPage";
 import GAD7AssessmentPage from "@/components/GAD7AssessmentPage";
 import PCL5AssessmentPage from "@/components/PCL5AssessmentPage";
 import PHQ15AssessmentPage from "@/components/PHQ15AssessmentPage";
 import COREOMAssessmentPage from "@/components/COREOMAssessmentPage";
+import AttachmentTestPage from "@/components/AttachmentTestPage";
+import EmotionInertiaPage from "@/components/EmotionInertiaPage";
 
-type ViewMode = "list" | "chakra-quiz" | "enneagram-quiz" | "gad7-quiz" | "pcl5-quiz" | "phq15-quiz" | "coreom-quiz";
+type ViewMode = "list" | "chakra-quiz" | "enneagram-quiz" | "gad7-quiz" | "pcl5-quiz" | "phq15-quiz" | "coreom-quiz" | "attachment-quiz" | "emotion-quiz";
 
 const ASSESSMENTS = [
   {
@@ -81,24 +83,24 @@ const ASSESSMENTS = [
   {
     id: "attachment",
     title: "心念执念检测",
-    desc: "唯识学 × 行为心理：识别你深层的执着模式",
-    icon: Heart,
+    desc: "唯识学 × Sino-NLP：识别你深层的执着模式",
+    icon: Eye,
     price: "¥19.90",
-    count: "即将上线",
-    available: false,
-    color: "#888888",
-    category: "coming",
+    count: "已上线",
+    available: true,
+    color: "#d4a060",
+    category: "sino-nlp",
   },
   {
     id: "emotion",
     title: "情绪惯性模式",
     desc: "Sino-NLP × 四体模型：揭露你的情绪反应惯性",
-    icon: Brain,
+    icon: Waves,
     price: "¥19.90",
-    count: "即将上线",
-    available: false,
-    color: "#888888",
-    category: "coming",
+    count: "已上线",
+    available: true,
+    color: "#6b8fb5",
+    category: "sino-nlp",
   },
 ];
 
@@ -139,6 +141,16 @@ export default function AssessmentPage({
     onFullscreenChange?.(true);
   }, [onFullscreenChange]);
 
+  const handleStartAttachment = useCallback(() => {
+    setView("attachment-quiz");
+    onFullscreenChange?.(true);
+  }, [onFullscreenChange]);
+
+  const handleStartEmotion = useCallback(() => {
+    setView("emotion-quiz");
+    onFullscreenChange?.(true);
+  }, [onFullscreenChange]);
+
   const handleBackToList = useCallback(() => {
     setView("list");
     onFullscreenChange?.(false);
@@ -151,6 +163,8 @@ export default function AssessmentPage({
     pcl5: handleStartPCL5,
     phq15: handleStartPHQ15,
     coreom: handleStartCOREOM,
+    attachment: handleStartAttachment,
+    emotion: handleStartEmotion,
   };
 
   if (view === "chakra-quiz") {
@@ -175,6 +189,14 @@ export default function AssessmentPage({
 
   if (view === "coreom-quiz") {
     return <COREOMAssessmentPage onBack={handleBackToList} />;
+  }
+
+  if (view === "attachment-quiz") {
+    return <AttachmentTestPage onBack={handleBackToList} />;
+  }
+
+  if (view === "emotion-quiz") {
+    return <EmotionInertiaPage onBack={handleBackToList} />;
   }
 
   return (
@@ -294,31 +316,46 @@ export default function AssessmentPage({
           </div>
         </div>
 
-        {/* 即将上线 */}
+        {/* Sino-NLP 原创测评专区 */}
         <div className="mt-4">
-          <h3 className="text-sm font-semibold text-[#888] mb-2">即将上线</h3>
+          <h3 className="text-sm font-semibold text-[#888] mb-2 flex items-center gap-1.5">
+            <Brain size={14} className="text-[#6b8fb5]" />
+            Sino-NLP 原创测评
+          </h3>
           <div className="space-y-3">
-            {ASSESSMENTS.filter((a) => a.category === "coming").map((a) => {
+            {ASSESSMENTS.filter((a) => a.category === "sino-nlp").map((a) => {
               const Icon = a.icon;
               return (
-                <div key={a.id} className="card" style={{ opacity: 0.6 }}>
+                <div key={a.id} className="card" style={{ opacity: a.available ? 1 : 0.6 }}>
                   <div className="flex items-start gap-3">
-                    <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-[#f5f5f5]">
-                      <Icon size={22} style={{ color: a.color }} />
+                    <div
+                      className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: a.available ? a.color + "15" : "#f5f5f5" }}
+                    >
+                      <Icon size={22} style={{ color: a.available ? a.color : "#999" }} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className="font-semibold text-[#1a1a1a]">{a.title}</h3>
-                        <Lock size={14} className="text-[#999999] flex-shrink-0" />
                       </div>
                       <p className="text-sm text-[#666666] mt-1">{a.desc}</p>
                       <div className="flex items-center justify-between mt-3">
                         <span className="text-sm text-[#777777]">{a.count}</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-[#999]">{a.price}</span>
-                          <button className="btn-outline text-sm py-2 px-4 opacity-50" disabled>
-                            即将推出
-                          </button>
+                          <span className="text-sm font-bold text-[#c9a84c]">{a.price}</span>
+                          {a.available ? (
+                            <button
+                              className="btn-primary text-sm py-2 px-4"
+                              onClick={handleStartMap[a.id]}
+                            >
+                              开始测评
+                              <ArrowRight size={14} />
+                            </button>
+                          ) : (
+                            <button className="btn-outline text-sm py-2 px-4 opacity-50" disabled>
+                              即将推出
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -328,6 +365,7 @@ export default function AssessmentPage({
             })}
           </div>
         </div>
+
       </div>
     </div>
   );
