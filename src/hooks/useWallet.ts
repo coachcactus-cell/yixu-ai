@@ -4,16 +4,16 @@ import { useState, useEffect, useCallback } from "react";
 
 // ─── 定價表（單位：分）───
 export const ASSESSMENT_PRICES: Record<string, number> = {
-  chakra: 1290,       // ¥12.90
-  attachment: 1290,
-  emotion: 1290,
-  starseed: 1290,
-  gad7: 1290,
-  pcl5: 1290,
-  phq15: 1290,
-  coreom: 1290,
-  yijing: 1290,
-  enneagram: 0,       // 免費
+  chakra: 1230,       // ¥12.30
+  attachment: 1230,
+  emotion: 1230,
+  starseed: 1230,
+  gad7: 1230,
+  pcl5: 1230,
+  phq15: 1230,
+  coreom: 1230,
+  yijing: 1230,
+  enneagram: 1230,
 };
 
 // ─── 測評名稱映射 ───
@@ -145,7 +145,6 @@ export function useWallet() {
 
   // 是否已解鎖
   const isUnlocked = useCallback((assessmentId: string): boolean => {
-    if (ASSESSMENT_PRICES[assessmentId] === 0) return true; // 免費測評
     return !!unlocked[assessmentId];
   }, [unlocked]);
 
@@ -160,7 +159,7 @@ export function useWallet() {
     const price = getPrice(assessmentId);
 
     if (price === 0) {
-      return { success: true, message: "免费测评，无需购买" };
+      return { success: true, message: "无需购买" };
     }
 
     if (isUnlocked(assessmentId)) {
@@ -244,6 +243,35 @@ export function useWallet() {
     return { success: true, message: `充值成功！${codeInfo.desc}，当前余额 ${formatAmount(newWallet.balance)}` };
   }, [wallet]);
 
+  // ── 新用戶紅包（註冊獎勵）───
+  const WELCOME_BONUS_KEY = "yixu-welcome-bonus-granted";
+  const WELCOME_BONUS_AMOUNT = 1230; // ¥12.30
+
+  const grantWelcomeBonus = useCallback((): boolean => {
+    // 檢查是否已領過
+    if (typeof window === "undefined") return false;
+    const granted = localStorage.getItem(WELCOME_BONUS_KEY);
+    if (granted) return false;
+
+    const tx: Transaction = {
+      id: generateId(),
+      type: "topup",
+      amount: WELCOME_BONUS_AMOUNT,
+      description: "🧧 新学员红包 ¥12.30",
+      createdAt: new Date().toISOString(),
+    };
+
+    const newWallet: WalletData = {
+      balance: wallet.balance + WELCOME_BONUS_AMOUNT,
+      transactions: [tx, ...wallet.transactions].slice(0, 100),
+    };
+
+    localStorage.setItem(WELCOME_BONUS_KEY, "1");
+    saveWallet(newWallet);
+    setWallet(newWallet);
+    return true;
+  }, [wallet]);
+
   return {
     balance: wallet.balance,
     transactions: wallet.transactions,
@@ -253,6 +281,7 @@ export function useWallet() {
     canAfford,
     purchase,
     redeemCode,
+    grantWelcomeBonus,
     formatAmount,
   };
 }

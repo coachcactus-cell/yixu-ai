@@ -179,11 +179,12 @@ function Avatar({
 // ─── 主组件 ───
 export default function ProfilePage() {
   const { user, history, isLoggedIn, loginWithPhone, setWechatId, setAvatar, logout } = useUser();
-  const { balance, transactions, isUnlocked } = useWallet();
+  const { balance, transactions, isUnlocked, grantWelcomeBonus } = useWallet();
   const [showVIP, setShowVIP] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showTopup, setShowTopup] = useState(false);
+  const [showWelcomeBonus, setShowWelcomeBonus] = useState(false);
   const [inviteCode, setInviteCode] = useState("");
   const [inviteError, setInviteError] = useState("");
   const [resolvedRoute, setResolvedRoute] = useState<{
@@ -196,9 +197,13 @@ export default function ProfilePage() {
 
   // ── 手机号登录 ──
   const handlePhoneLogin = (phone: string, wechat: string) => {
-    loginWithPhone(phone);
+    const isNewUser = loginWithPhone(phone);
     if (wechat) setWechatId(wechat);
     setShowLogin(false);
+    // 新用戶 → 彈紅包選擇
+    if (isNewUser) {
+      setShowWelcomeBonus(true);
+    }
   };
 
   // ── 头像上传 ──
@@ -732,6 +737,44 @@ export default function ProfilePage() {
           visible={showTopup}
           onClose={() => setShowTopup(false)}
         />
+
+        {/* ── 新學員紅包彈窗 ── */}
+        {showWelcomeBonus && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            onClick={() => setShowWelcomeBonus(false)}
+          >
+            <div
+              className="bg-white rounded-2xl p-6 m-6 max-w-sm w-full animate-fade-in-up text-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-5xl mb-3">🧧</div>
+              <h3 className="text-xl font-bold text-[#1a1a1a] font-song mb-2">新学员红包</h3>
+              <p className="text-sm text-[#666] mb-1">恭喜你注册成功！</p>
+              <p className="text-3xl font-bold text-[#c9a84c] font-song mb-1">¥12.30</p>
+              <p className="text-xs text-[#999] mb-4">可抵扣任意测评解锁</p>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowWelcomeBonus(false)}
+                  className="flex-1 py-3 rounded-xl border border-[#e8e8e8] text-sm text-[#666] font-semibold active:scale-[0.98] transition-transform"
+                >
+                  不用了
+                </button>
+                <button
+                  onClick={() => {
+                    grantWelcomeBonus();
+                    setShowWelcomeBonus(false);
+                  }}
+                  className="flex-1 py-3 rounded-xl text-white text-sm font-bold active:scale-[0.98] transition-transform"
+                  style={{ background: "linear-gradient(135deg, #c9a84c, #b89430)" }}
+                >
+                  🧧 领取红包
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="mt-8 text-center pb-4">

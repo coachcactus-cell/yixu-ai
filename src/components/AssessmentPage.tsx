@@ -21,7 +21,7 @@ const ASSESSMENTS = [
     title: "七脉轮能量评估",
     desc: "56 题深度检测，了解你七个能量中心状态",
     icon: Sparkles,
-    price: "¥12.90",
+    price: "¥12.30",
     count: "1,286+ 人已测",
     available: true,
     color: "#c9a84c",
@@ -32,7 +32,7 @@ const ASSESSMENTS = [
     title: "九型人格测试",
     desc: "126 题精准定位你的核心型号 + Wing 翼型",
     icon: Hexagon,
-    price: "免费",
+    price: "¥12.30",
     count: "1,500+ 人已测",
     available: true,
     color: "#c9a84c",
@@ -87,7 +87,7 @@ const ASSESSMENTS = [
     title: "心念执念检测",
     desc: "唯识学 × Sino-NLP：识别你深层的执着模式",
     icon: Eye,
-    price: "¥12.90",
+    price: "¥12.30",
     count: "已上线",
     available: true,
     color: "#d4a060",
@@ -98,7 +98,7 @@ const ASSESSMENTS = [
     title: "情绪惯性模式",
     desc: "Sino-NLP × 四体模型：揭露你的情绪反应惯性",
     icon: Waves,
-    price: "¥12.90",
+    price: "¥12.30",
     count: "已上线",
     available: true,
     color: "#6b8fb5",
@@ -109,7 +109,7 @@ const ASSESSMENTS = [
     title: "星宿种子性格测评",
     desc: "27 题测出你的星人归属 — 你是哪颗星来的？",
     icon: Flame,
-    price: "¥12.90",
+    price: "¥12.30",
     count: "已上线",
     available: true,
     color: "#6c63ff",
@@ -281,7 +281,7 @@ export default function AssessmentPage({
                         <span className="text-sm text-[#777777]">{a.count}</span>
                         <div className="flex items-center gap-2">
                           {!unlocked && (
-                            <span className="text-sm font-bold text-[#c9a84c]">深度解读 ¥12.90</span>
+                            <span className="text-sm font-bold text-[#c9a84c]">深度解读 ¥12.30</span>
                           )}
                           {a.available && (
                             <button

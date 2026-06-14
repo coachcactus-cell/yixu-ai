@@ -108,13 +108,14 @@ export function useUser() {
   }, []);
 
   // ── 手机号登录/注册 ──
-  const loginWithPhone = useCallback((phone: string) => {
+  const loginWithPhone = useCallback((phone: string): boolean => {
     if (!user) return false;
+    const isNewUser = !user.phone; // 首次綁定手機 = 新註冊
     const updated: YixuUser = { ...user, phone, nickname: "修行者" };
     saveUser(updated);
     setUser(updated);
     setIsLoggedIn(true);
-    return true;
+    return isNewUser; // 返回是否為新用戶
   }, [user]);
 
   // ── 补充微信ID ──
