@@ -5,6 +5,8 @@ import { ChevronLeft, Sparkles, Download, Share2, Phone, Home } from "lucide-rea
 import html2canvas from "html2canvas";
 import { PHQ15_QUESTIONS, PHQ15_OPTIONS, TOTAL_PHQ15, calcPHQ15Result, type PHQ15Result } from "@/data/phq15";
 import { useUser } from "@/hooks/useUser";
+import PurchaseModal from "@/components/PurchaseModal";
+import { useWallet } from "@/hooks/useWallet";
 
 type Stage = "intro" | "quiz" | "result" | "collect-phone";
 
@@ -453,6 +455,9 @@ function PHQ15ResultView({
 }) {
   const [isDownloading, setIsDownloading] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
+  const { isUnlocked } = useWallet();
+  const unlocked = isUnlocked("phq15");
+  const [showPurchase, setShowPurchase] = useState(false);
 
   const testDate = useMemo(
     () =>
@@ -572,27 +577,70 @@ function PHQ15ResultView({
         </div>
 
         {/* 付费解锁 */}
-        <div className="mt-4 rounded-xl border border-[#7caacc30] bg-gradient-to-br from-[#e8f2f8] to-white p-5">
-          <div className="text-center mb-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7caacc15] mb-2">
-              <Sparkles size={16} className="text-[#7caacc]" />
-              <span className="text-base font-semibold text-[#7caacc]">解锁深度解读</span>
+        {!unlocked ? (
+          <div className="mt-4 rounded-xl border border-[#7caacc30] bg-gradient-to-br from-[#e8f2f8] to-white p-5">
+            <div className="text-center mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7caacc15] mb-2">
+                <Sparkles size={16} className="text-[#7caacc]" />
+                <span className="text-base font-semibold text-[#7caacc]">解锁深度解读</span>
+              </div>
+              <h3 className="text-xl font-bold text-[#1a1a1a] font-song">获取专属躯体症状舒缓方案</h3>
             </div>
-            <h3 className="text-xl font-bold text-[#1a1a1a] font-song">获取专属躯体症状舒缓方案</h3>
+            <div className="space-y-2 mb-4">
+              {["躯体症状来源深度分析", "个性化身心调节指引", "七日身体觉察练习", "亦须先生亲自解读"].map((f, i) => (
+                <div key={i} className="flex items-center gap-2 text-base text-[#555]"><span className="text-[#7caacc] text-sm">✦</span>{f}</div>
+              ))}
+            </div>
+            <div className="text-center mb-3">
+              <span className="text-2xl font-bold text-[#7caacc]">¥9.90</span>
+              <span className="text-base text-[#666] ml-1">/ 永久解锁</span>
+            </div>
+            <button
+              onClick={() => setShowPurchase(true)}
+              className="w-full rounded-xl py-3 text-lg font-semibold text-white transition-all active:scale-[0.98]"
+              style={{ background: `linear-gradient(135deg, ${PRIMARY_COLOR}, #6a99bb)` }}
+            >
+              解锁完整报告
+            </button>
           </div>
-          <div className="space-y-2 mb-4">
-            {["躯体症状来源深度分析", "个性化身心调节指引", "七日身体觉察练习", "亦须先生亲自解读"].map((f, i) => (
-              <div key={i} className="flex items-center gap-2 text-base text-[#555]"><span className="text-[#7caacc] text-sm">✦</span>{f}</div>
-            ))}
+        ) : (
+          <div className="mt-4 rounded-xl border border-[#7caacc30] bg-gradient-to-br from-[#e8f2f8] to-white p-5">
+            <div className="text-center mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7caacc15] mb-2">
+                <Sparkles size={16} className="text-[#7caacc]" />
+                <span className="text-base font-semibold text-[#7caacc]">深度解读</span>
+              </div>
+              <h3 className="text-xl font-bold text-[#1a1a1a] font-song">专属躯体症状舒缓方案</h3>
+            </div>
+            <div className="space-y-3 mb-4">
+              <div>
+                <h4 className="text-base font-bold text-[#1a1a1a] mb-1">躯体症状来源深度分析</h4>
+                <p className="text-base text-[#555] leading-relaxed">你的躯体症状可能与长期的情绪压力有关，身体的不适往往是内心困扰的信号。建议关注症状背后的情绪根源。</p>
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-[#1a1a1a] mb-1">个性化身心调节指引</h4>
+                <p className="text-base text-[#555] leading-relaxed">通过正念呼吸、渐进式肌肉放松等身心练习，可以有效缓解躯体化症状，重建身心平衡。</p>
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-[#1a1a1a] mb-1">七日身体觉察练习</h4>
+                <p className="text-base text-[#555] leading-relaxed">每日15分钟的觉察练习，帮助你重新连接身体感受，逐步释放积压的身心压力。</p>
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-[#1a1a1a] mb-1">亦须先生亲自解读</h4>
+                <p className="text-base text-[#555] leading-relaxed">亦须先生将根据你的评估结果，为你提供更加个性化的解读与建议。</p>
+              </div>
+            </div>
           </div>
-          <div className="text-center mb-3">
-            <span className="text-2xl font-bold text-[#7caacc]">¥9.90</span>
-            <span className="text-base text-[#666] ml-1">/ 永久解锁</span>
-          </div>
-          <button className="w-full rounded-xl py-3 text-lg font-semibold text-white transition-all active:scale-[0.98]" style={{ background: `linear-gradient(135deg, ${PRIMARY_COLOR}, #6a99bb)` }}>
-            解锁完整报告
-          </button>
-        </div>
+        )}
+
+        {/* PurchaseModal */}
+        <PurchaseModal
+          assessmentId="phq15"
+          assessmentName="PHQ-15 躯体症状量表"
+          visible={showPurchase}
+          onPurchased={() => setShowPurchase(false)}
+          onClose={() => setShowPurchase(false)}
+        />
 
         <div className="mt-4 mb-2 text-center">
           <button onClick={onRestart} className="text-base text-[#999] underline underline-offset-4">重新测评</button>

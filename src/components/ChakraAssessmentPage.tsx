@@ -13,6 +13,8 @@ import {
   type ChakraResult,
 } from "@/data/chakra";
 import { useUser } from "@/hooks/useUser";
+import PurchaseModal from "@/components/PurchaseModal";
+import { useWallet } from "@/hooks/useWallet";
 
 // ─── 阶段枚舉 ───
 type Stage = "intro" | "quiz" | "result" | "collect-phone";
@@ -498,7 +500,9 @@ function ChakraResultView({
   phone?: string;
   wechatId?: string;
 }) {
-  const [showPaywall, setShowPaywall] = useState(false);
+  const { isUnlocked } = useWallet();
+  const [showPurchase, setShowPurchase] = useState(false);
+  const chakraUnlocked = isUnlocked("chakra");
   const [isDownloading, setIsDownloading] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
 
@@ -702,48 +706,76 @@ function ChakraResultView({
           </div>
         </div>
 
-        {/* 付费解锁区 */}
-        <div className="mt-4 rounded-xl border border-[#c9a84c30] bg-gradient-to-br from-[#fdf8ed] to-white p-5">
-          <div className="text-center mb-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c9a84c15] mb-2">
-              <Sparkles size={14} className="text-[#c9a84c]" />
-              <span className="text-sm font-semibold text-[#c9a84c]">解锁完整分析</span>
-            </div>
-            <h3 className="text-lg font-bold text-[#1a1a1a] font-song">获取深度脉轮解读</h3>
-            <p className="text-sm text-[#666666] mt-1">
-              了解每个脉轮的深层含义，获得专属冥想指引
-            </p>
-          </div>
-
-          <div className="space-y-2 mb-4">
-            {[
-              "7 脉轮 × 200+ 字深度解读",
-              "对应梵咒冥想音频指引",
-              "七日脉轮平衡练习计划",
-              "专属脉轮能量提升技巧",
-            ].map((f, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm text-[#555555]">
-                <span className="text-[#c9a84c] text-xs">✦</span>
-                {f}
+        {/* 付费解锁区 / 深度解读 */}
+        {chakraUnlocked ? (
+          <div className="mt-4 rounded-xl border border-[#27ae6030] bg-gradient-to-br from-[#f0faf0] to-white p-5">
+            <div className="text-center mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#27ae6015] mb-2">
+                <Sparkles size={14} className="text-[#27ae60]" />
+                <span className="text-sm font-semibold text-[#27ae60]">已解锁</span>
               </div>
-            ))}
+              <h3 className="text-lg font-bold text-[#1a1a1a] font-song">深度脉轮解读</h3>
+            </div>
+            <div className="space-y-3">
+              {results.map((r) => (
+                <div key={r.chakra.id} className="rounded-lg border border-[#e8e8e8] p-3">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div
+                      className="size-2.5 rounded-full"
+                      style={{
+                        background: `linear-gradient(135deg, ${r.chakra.gradient[0]}, ${r.chakra.gradient[1]})`,
+                      }}
+                    />
+                    <span className="text-sm font-semibold text-[#1a1a1a]">{r.chakra.nameZh}</span>
+                    <span className="text-xs text-[#999999]">{r.chakra.sanskrit}</span>
+                  </div>
+                  <p className="text-sm text-[#555555] leading-relaxed">
+                    {r.status.level === "low" && `${r.chakra.nameZh}能量不活跃，建议通过冥想和自然连接来唤醒此脉轮的能量。`}
+                    {r.status.level === "mid" && `${r.chakra.nameZh}能量适度活跃，保持当前的平衡状态，适当增强即可。`}
+                    {r.status.level === "high" && `${r.chakra.nameZh}能量过度活跃，建议通过 grounding 练习来平衡此脉轮的能量。`}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
+        ) : (
+          <div className="mt-4 rounded-xl border border-[#c9a84c30] bg-gradient-to-br from-[#fdf8ed] to-white p-5">
+            <div className="text-center mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c9a84c15] mb-2">
+                <Sparkles size={14} className="text-[#c9a84c]" />
+                <span className="text-sm font-semibold text-[#c9a84c]">解锁完整分析</span>
+              </div>
+              <h3 className="text-lg font-bold text-[#1a1a1a] font-song">获取深度脉轮解读</h3>
+              <p className="text-sm text-[#666666] mt-1">
+                了解每个脉轮的深层含义，获得专属冥想指引
+              </p>
+            </div>
 
-          <div className="text-center mb-3">
-            <span className="text-2xl font-bold text-[#c9a84c]">¥9.90</span>
-            <span className="text-sm text-[#666666] ml-1">/ 永久解锁</span>
+            <div className="space-y-2 mb-4">
+              {[
+                "7 脉轮 × 200+ 字深度解读",
+                "对应梵咒冥想音频指引",
+                "七日脉轮平衡练习计划",
+                "专属脉轮能量提升技巧",
+              ].map((f, i) => (
+                <div key={i} className="flex items-center gap-2 text-sm text-[#555555]">
+                  <span className="text-[#c9a84c] text-xs">✦</span>
+                  {f}
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowPurchase(true)}
+              className="w-full rounded-xl py-3 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+              style={{
+                background: "linear-gradient(135deg, #c9a84c, #b8943a)",
+              }}
+            >
+              解锁完整报告
+            </button>
           </div>
-
-          <button
-            onClick={() => setShowPaywall(true)}
-            className="w-full rounded-xl py-3 text-sm font-semibold text-white transition-all active:scale-[0.98]"
-            style={{
-              background: "linear-gradient(135deg, #c9a84c, #b8943a)",
-            }}
-          >
-            解锁完整报告
-          </button>
-        </div>
+        )}
 
         {/* 重新测试 */}
         <div className="mt-4 mb-2 text-center">
@@ -756,57 +788,14 @@ function ChakraResultView({
         </div>
       </div>
 
-      {/* 付费弹窗 */}
-      {showPaywall && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setShowPaywall(false)} />
-          <div className="relative w-full sm:max-w-sm bg-white rounded-t-2xl sm:rounded-2xl p-6 animate-fade-in-up">
-            <div className="text-center">
-              <Sparkles size={32} className="text-[#c9a84c] mx-auto mb-2" />
-              <h2 className="text-xl font-bold text-[#1a1a1a] font-song">解锁完整报告</h2>
-              <p className="text-sm text-[#888888] mt-1 mb-4">
-                支付 ¥9.90 即可获得深度脉轮解读与七日平衡计划
-              </p>
-
-              <div className="bg-[#fdf8ed] rounded-xl p-4 mb-4 text-left space-y-2">
-                {[
-                  "每个脉轮的 200+ 字专业解读",
-                  "不活跃/过度活跃的具体改善建议",
-                  "对应梵咒冥想音频指引",
-                  "七日脉轮平衡练习计划",
-                  "可保存为 PDF 永久留存",
-                ].map((f, i) => (
-                  <div key={i} className="flex items-start gap-2 text-sm text-[#555555]">
-                    <span className="text-[#c9a84c] mt-0.5">✦</span>
-                    {f}
-                  </div>
-                ))}
-              </div>
-
-              <div className="mb-4">
-                <span className="text-3xl font-bold text-[#c9a84c]">¥9.90</span>
-              </div>
-
-              <button
-                className="w-full rounded-xl py-3.5 text-base font-semibold text-white mb-2 transition-all active:scale-[0.98]"
-                style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}
-                onClick={() => {
-                  // TODO: 接入微信支付
-                  setShowPaywall(false);
-                }}
-              >
-                立即解锁
-              </button>
-              <button
-                onClick={() => setShowPaywall(false)}
-                className="w-full text-base text-[#666666] py-2"
-              >
-                稍后再说
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* 购买弹窗 */}
+      <PurchaseModal
+        assessmentId="chakra"
+        assessmentName="七脉轮能量评估"
+        visible={showPurchase}
+        onPurchased={() => setShowPurchase(false)}
+        onClose={() => setShowPurchase(false)}
+      />
     </div>
   );
 }

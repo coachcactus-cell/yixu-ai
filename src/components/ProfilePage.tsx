@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import {
   Crown,
   MessageCircle,
@@ -18,8 +18,13 @@ import {
   TrendingUp,
   History,
   Download,
+  Wallet,
+  Camera,
+  Check,
 } from "lucide-react";
 import { useUser } from "@/hooks/useUser";
+import { useWallet, formatAmount, ASSESSMENT_NAMES, ASSESSMENT_PRICES } from "@/hooks/useWallet";
+import TopupModal from "@/components/TopupModal";
 
 const VIP_PLANS = [
   {
@@ -131,14 +136,54 @@ function PhoneLogin({
       </div>
     </div>
   );
+};
+
+// ─── 头像组件 ───
+function Avatar({
+  src,
+  size = 56,
+  onClick,
+}: {
+  src?: string;
+  size?: number;
+  onClick?: () => void;
+}) {
+  return (
+    <div
+      className="relative shrink-0"
+      style={{ width: size, height: size }}
+      onClick={onClick}
+    >
+      <div
+        className="w-full h-full rounded-full overflow-hidden border-2 border-[#c9a84c] bg-[#fdf8ed] flex items-center justify-center"
+      >
+        {src ? (
+          <img src={src} alt="头像" className="w-full h-full object-cover" />
+        ) : (
+          <img
+            src="/app-avatar.png"
+            alt="亦须先生"
+            className="w-full h-full object-cover"
+          />
+        )}
+      </div>
+      {onClick && (
+        <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-[#c9a84c] rounded-full flex items-center justify-center">
+          <Camera size={10} className="text-white" />
+        </div>
+      )}
+    </div>
+  );
 }
 
 // ─── 主组件 ───
 export default function ProfilePage() {
-  const { user, history, isLoggedIn, loginWithPhone, setWechatId, logout } = useUser();
+  const { user, history, isLoggedIn, loginWithPhone, setWechatId, setAvatar, logout } = useUser();
+  const { balance, transactions, isUnlocked } = useWallet();
   const [showVIP, setShowVIP] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [showTopup, setShowTopup] = useState(false);
   const [inviteCode, setInviteCode] = useState("");
   const [inviteError, setInviteError] = useState("");
   const [resolvedRoute, setResolvedRoute] = useState<{
@@ -147,6 +192,7 @@ export default function ProfilePage() {
     icon: any;
     color: string;
   } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ── 手机号登录 ──
   const handlePhoneLogin = (phone: string, wechat: string) => {
@@ -154,6 +200,59 @@ export default function ProfilePage() {
     if (wechat) setWechatId(wechat);
     setShowLogin(false);
   };
+
+  // ── 头像上传 ──
+  const handleAvatarClick = () => {
+    if (isLoggedIn) {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const handleAvatarFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // 壓縮圖片
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const size = 200;
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        // 裁剪為正方形
+        const minDim = Math.min(img.width, img.height);
+        const sx = (img.width - minDim) / 2;
+        const sy = (img.height - minDim) / 2;
+        ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+
+        // 壓縮為 JPEG
+        let quality = 0.7;
+        let dataUrl = canvas.toDataURL("image/jpeg", quality);
+
+        // 確保不超過 100KB
+        while (dataUrl.length > 100 * 1024 * 1.37 && quality > 0.1) {
+          quality -= 0.1;
+          dataUrl = canvas.toDataURL("image/jpeg", quality);
+        }
+
+        if (dataUrl.length <= 100 * 1024 * 1.37) {
+          setAvatar(dataUrl);
+        } else {
+          alert("图片过大，请选择更小的图片");
+        }
+      };
+      img.src = ev.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+
+    // 重置 input 以便再次選擇同一文件
+    e.target.value = "";
+  }, [setAvatar]);
 
   // ── 邀请码验证 + 分流 ──
   const handleInviteSubmit = () => {
@@ -180,6 +279,11 @@ export default function ProfilePage() {
   const chakraCount = history.chakraRecords.length;
   const yijingCount = history.yijingRecords.length;
 
+  // 已解鎖測評
+  const unlockedList = Object.keys(ASSESSMENT_PRICES).filter(
+    (id) => ASSESSMENT_PRICES[id] > 0 && isUnlocked(id)
+  );
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
@@ -188,19 +292,23 @@ export default function ProfilePage() {
       </header>
 
       <div className="flex-1 px-4 pb-20 content-below-header">
+        {/* 隱藏的文件上傳 input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          capture="user"
+          className="hidden"
+          onChange={handleAvatarFile}
+        />
+
         {/* ── 未登录：显示登录入口 ── */}
         {!isLoggedIn && !showLogin && (
           <>
             {/* 用户卡（匿名） */}
             <div className="card mt-4">
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[#c9a84c] flex items-center justify-center bg-[#fdf8ed]">
-                  <img
-                    src="/app-avatar.png"
-                    alt="亦须先生"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                <Avatar />
                 <div>
                   <h2 className="font-bold text-lg text-[#1a1a1a] font-song">修行者</h2>
                   <div className="flex items-center gap-1 mt-1">
@@ -224,24 +332,6 @@ export default function ProfilePage() {
               </div>
               <ChevronRight size={16} className="text-[#999999]" />
             </button>
-
-            {/* Stats（匿名） */}
-            <div className="card mt-3">
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <p className="text-2xl font-bold text-[#c9a84c] font-song">{chakraCount}</p>
-                  <p className="text-sm text-[#666666] mt-1">测评记录</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-[#c9a84c] font-song">0</p>
-                  <p className="text-sm text-[#666666] mt-1">收藏对话</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-[#c9a84c] font-song">0</p>
-                  <p className="text-sm text-[#666666] mt-1">完成练习</p>
-                </div>
-              </div>
-            </div>
           </>
         )}
 
@@ -253,16 +343,13 @@ export default function ProfilePage() {
         {/* ── 已登录状态 ── */}
         {isLoggedIn && (
           <>
-            {/* 用户卡（已登录） */}
+            {/* 用户卡（已登录）— 帶頭像上載 */}
             <div className="card mt-4">
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[#c9a84c] flex items-center justify-center bg-[#fdf8ed]">
-                  <img
-                    src="/app-avatar.png"
-                    alt="亦须先生"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                <Avatar
+                  src={user?.avatar}
+                  onClick={handleAvatarClick}
+                />
                 <div className="flex-1">
                   <h2 className="font-bold text-lg text-[#1a1a1a] font-song">
                     {user?.nickname || "修行者"}
@@ -295,6 +382,38 @@ export default function ProfilePage() {
                   </button>
                 </div>
               </div>
+            </div>
+
+            {/* ── 钱包卡片 ── */}
+            <div className="card mt-3 bg-gradient-to-br from-[#fdf8ed] to-[#fefaf0] border border-[#c9a84c]/20">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Wallet size={18} className="text-[#c9a84c]" />
+                  <span className="text-sm font-semibold text-[#1a1a1a]">我的余额</span>
+                </div>
+                <button
+                  onClick={() => setShowTopup(true)}
+                  className="text-xs py-1 px-3 rounded-full bg-[#c9a84c] text-white font-semibold active:scale-[0.96] transition-transform"
+                >
+                  充值
+                </button>
+              </div>
+              <p className="text-3xl font-bold text-[#c9a84c] font-song">
+                {formatAmount(balance)}
+              </p>
+              {/* 最近交易 */}
+              {transactions.length > 0 && (
+                <div className="mt-2 pt-2 border-t border-[#c9a84c]/10">
+                  {transactions.slice(0, 3).map((tx) => (
+                    <div key={tx.id} className="flex items-center justify-between py-1">
+                      <span className="text-xs text-[#666] truncate flex-1 mr-2">{tx.description}</span>
+                      <span className={`text-xs font-semibold ${tx.type === "topup" ? "text-green-600" : "text-[#c9a84c]"}`}>
+                        {tx.type === "topup" ? "+" : "-"}{formatAmount(tx.amount)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* VIP Plans (expandable) */}
@@ -353,11 +472,29 @@ export default function ProfilePage() {
                   <p className="text-sm text-[#666666] mt-1">占卜记录</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-[#c9a84c] font-song">0</p>
-                  <p className="text-sm text-[#666666] mt-1">收藏对话</p>
+                  <p className="text-2xl font-bold text-[#c9a84c] font-song">{unlockedList.length}</p>
+                  <p className="text-sm text-[#666666] mt-1">已解锁测评</p>
                 </div>
               </div>
             </div>
+
+            {/* ── 已解锁测评 ── */}
+            {unlockedList.length > 0 && (
+              <div className="mt-4">
+                <h3 className="section-header">已解锁测评</h3>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {unlockedList.map((id) => (
+                    <span
+                      key={id}
+                      className="text-xs px-2.5 py-1 rounded-full bg-[#fdf8ed] text-[#c9a84c] font-medium flex items-center gap-1"
+                    >
+                      <Check size={10} />
+                      {ASSESSMENT_NAMES[id] || id}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* ── 历史记录 ── */}
             <div className="mt-4">
@@ -589,6 +726,12 @@ export default function ProfilePage() {
             </div>
           </div>
         )}
+
+        {/* ── 充值彈窗 ── */}
+        <TopupModal
+          visible={showTopup}
+          onClose={() => setShowTopup(false)}
+        />
 
         {/* Footer */}
         <div className="mt-8 text-center pb-4">

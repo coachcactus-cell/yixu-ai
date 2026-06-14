@@ -5,6 +5,8 @@ import { ChevronLeft, Sparkles, Download, Share2, Phone, Home } from "lucide-rea
 import html2canvas from "html2canvas";
 import { PCL5_QUESTIONS, PCL5_OPTIONS, TOTAL_PCL5, calcPCL5Result, type PCL5Result } from "@/data/pcl5";
 import { useUser } from "@/hooks/useUser";
+import PurchaseModal from "@/components/PurchaseModal";
+import { useWallet } from "@/hooks/useWallet";
 
 type Stage = "intro" | "quiz" | "result" | "collect-phone";
 
@@ -339,6 +341,9 @@ function PCL5ResultView({
   phone?: string;
 }) {
   const [isDownloading, setIsDownloading] = useState(false);
+  const [showPurchase, setShowPurchase] = useState(false);
+  const { isUnlocked } = useWallet();
+  const unlocked = isUnlocked("pcl5");
   const reportRef = useRef<HTMLDivElement>(null);
 
   const testDate = useMemo(
@@ -460,32 +465,64 @@ function PCL5ResultView({
         </div>
 
         {/* 付费解锁 */}
-        <div className="mt-4 rounded-xl border border-[#c9a84c30] bg-gradient-to-br from-[#fdf8ed] to-white p-5">
-          <div className="text-center mb-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c9a84c15] mb-2">
-              <Sparkles size={16} className="text-[#c9a84c]" />
-              <span className="text-base font-semibold text-[#c9a84c]">解锁深度解读</span>
+        {unlocked ? (
+          <div className="mt-4 rounded-xl border border-[#27ae6030] bg-gradient-to-br from-[#e3f2e8] to-white p-5">
+            <div className="text-center mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#27ae6015] mb-2">
+                <Sparkles size={16} className="text-[#27ae60]" />
+                <span className="text-base font-semibold text-[#27ae60]">已解锁</span>
+              </div>
+              <h3 className="text-xl font-bold text-[#1a1a1a] font-song">专属创伤疗愈方案</h3>
             </div>
-            <h3 className="text-xl font-bold text-[#1a1a1a] font-song">获取专属创伤疗愈方案</h3>
+            <div className="space-y-2 mb-4">
+              {["创伤来源深度分析", "个性化疗愈冥想指引", "七日心理重建练习", "亦须先生亲自解读"].map((f, i) => (
+                <div key={i} className="flex items-center gap-2 text-base text-[#555]"><span className="text-[#27ae60] text-sm">✦</span>{f}</div>
+              ))}
+            </div>
+            <div className="rounded-xl bg-white/80 p-4 text-base text-[#555577] leading-relaxed">
+              根据您的 PCL-5 评估结果，我们为您定制了个性化的创伤疗愈方案。持续的练习将帮助您逐步重建心理韧性，走向疗愈之路。
+            </div>
           </div>
-          <div className="space-y-2 mb-4">
-            {["创伤来源深度分析", "个性化疗愈冥想指引", "七日心理重建练习", "亦须先生亲自解读"].map((f, i) => (
-              <div key={i} className="flex items-center gap-2 text-base text-[#555]"><span className="text-[#c9a84c] text-sm">✦</span>{f}</div>
-            ))}
+        ) : (
+          <div className="mt-4 rounded-xl border border-[#c9a84c30] bg-gradient-to-br from-[#fdf8ed] to-white p-5">
+            <div className="text-center mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c9a84c15] mb-2">
+                <Sparkles size={16} className="text-[#c9a84c]" />
+                <span className="text-base font-semibold text-[#c9a84c]">解锁深度解读</span>
+              </div>
+              <h3 className="text-xl font-bold text-[#1a1a1a] font-song">获取专属创伤疗愈方案</h3>
+            </div>
+            <div className="space-y-2 mb-4">
+              {["创伤来源深度分析", "个性化疗愈冥想指引", "七日心理重建练习", "亦须先生亲自解读"].map((f, i) => (
+                <div key={i} className="flex items-center gap-2 text-base text-[#555]"><span className="text-[#c9a84c] text-sm">✦</span>{f}</div>
+              ))}
+            </div>
+            <div className="text-center mb-3">
+              <span className="text-2xl font-bold text-[#c9a84c]">¥9.90</span>
+              <span className="text-base text-[#666] ml-1">/ 永久解锁</span>
+            </div>
+            <button
+              onClick={() => setShowPurchase(true)}
+              className="w-full rounded-xl py-3 text-lg font-semibold text-white transition-all active:scale-[0.98]"
+              style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}
+            >
+              解锁完整报告
+            </button>
           </div>
-          <div className="text-center mb-3">
-            <span className="text-2xl font-bold text-[#c9a84c]">¥9.90</span>
-            <span className="text-base text-[#666] ml-1">/ 永久解锁</span>
-          </div>
-          <button className="w-full rounded-xl py-3 text-lg font-semibold text-white transition-all active:scale-[0.98]" style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}>
-            解锁完整报告
-          </button>
-        </div>
+        )}
 
         <div className="mt-4 mb-2 text-center">
           <button onClick={onRestart} className="text-base text-[#999] underline underline-offset-4">重新测评</button>
         </div>
       </div>
+
+      <PurchaseModal
+        assessmentId="pcl5"
+        assessmentName="PTSD 创伤压力筛查"
+        visible={showPurchase}
+        onPurchased={() => setShowPurchase(false)}
+        onClose={() => setShowPurchase(false)}
+      />
     </div>
   );
 }

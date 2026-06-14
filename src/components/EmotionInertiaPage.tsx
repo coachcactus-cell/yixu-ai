@@ -10,6 +10,8 @@ import {
   calcEmotionResult,
   type EmotionResult,
 } from "@/data/emotionInertia";
+import PurchaseModal from "@/components/PurchaseModal";
+import { useWallet } from "@/hooks/useWallet";
 
 type Stage = "intro" | "quiz" | "result";
 
@@ -298,7 +300,23 @@ function EmotionQuiz({ onComplete }: { onComplete: (answers: Record<number, numb
 }
 
 // ─── 结果页 ───
-function EmotionResultView({ result, onRestart }: { result: EmotionResult; onRestart: () => void }) {
+function EmotionResultView({
+  result,
+  onRestart,
+  showPurchase,
+  onShowPurchase,
+  onClosePurchase,
+  onPurchased,
+  isUnlockedEmotion,
+}: {
+  result: EmotionResult;
+  onRestart: () => void;
+  showPurchase: boolean;
+  onShowPurchase: () => void;
+  onClosePurchase: () => void;
+  onPurchased: () => void;
+  isUnlockedEmotion: boolean;
+}) {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <nav className="sticky-header z-30 border-b border-[#e8e8e8] bg-white/95 backdrop-blur-md px-4 py-3">
@@ -392,15 +410,38 @@ function EmotionResultView({ result, onRestart }: { result: EmotionResult; onRes
             <h3 className="text-xl font-bold text-[#1a1a1a] font-song">Sino-NLP 课程</h3>
           </div>
           <p className="text-base text-[#666] text-center mb-4 leading-relaxed">{result.ctaText}</p>
-          <button
-            className="w-full rounded-xl py-3.5 text-lg font-semibold text-white transition-all active:scale-[0.98]"
-            style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}
-            onClick={() => {
-              alert("课程详情即将上线，敬请期待！");
-            }}
-          >
-            了解 Sino-NLP 课程
-          </button>
+          {isUnlockedEmotion ? (
+            <div className="text-center">
+              <p className="text-base text-[#666] mb-3 leading-relaxed">
+                恭喜你已解锁完整课程内容！基于你的情绪惯性分析，Sino-NLP 课程将为你提供针对性的情绪调节方法。
+              </p>
+              <button
+                className="w-full rounded-xl py-3.5 text-lg font-semibold text-white transition-all active:scale-[0.98]"
+                style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}
+                onClick={() => {
+                  // TODO: 导航到课程详情页
+                }}
+              >
+                进入 Sino-NLP 课程
+              </button>
+            </div>
+          ) : (
+            <button
+              className="w-full rounded-xl py-3.5 text-lg font-semibold text-white transition-all active:scale-[0.98]"
+              style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}
+              onClick={onShowPurchase}
+            >
+              了解 Sino-NLP 课程
+            </button>
+          )}
+
+          <PurchaseModal
+            assessmentId="emotion"
+            assessmentName="情绪惯性模式"
+            visible={showPurchase}
+            onPurchased={onPurchased}
+            onClose={onClosePurchase}
+          />
         </div>
 
         <div className="text-center pt-2 pb-2">
@@ -423,6 +464,8 @@ export default function EmotionInertiaPage({ onBack }: { onBack?: () => void }) 
   const [stage, setStage] = useState<Stage>("intro");
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [result, setResult] = useState<EmotionResult | null>(null);
+  const [showPurchase, setShowPurchase] = useState(false);
+  const { isUnlocked } = useWallet();
 
   const handleStart = useCallback(() => setStage("quiz"), []);
 
@@ -447,7 +490,17 @@ export default function EmotionInertiaPage({ onBack }: { onBack?: () => void }) 
     <>
       {stage === "intro" && <EmotionIntro onStart={handleStart} onBack={handleBack} />}
       {stage === "quiz" && <EmotionQuiz onComplete={handleComplete} />}
-      {stage === "result" && result && <EmotionResultView result={result} onRestart={handleRestart} />}
+      {stage === "result" && result && (
+        <EmotionResultView
+          result={result}
+          onRestart={handleRestart}
+          showPurchase={showPurchase}
+          onShowPurchase={() => setShowPurchase(true)}
+          onClosePurchase={() => setShowPurchase(false)}
+          onPurchased={() => setShowPurchase(false)}
+          isUnlockedEmotion={isUnlocked("emotion")}
+        />
+      )}
     </>
   );
 }

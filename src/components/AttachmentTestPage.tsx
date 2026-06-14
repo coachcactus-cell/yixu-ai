@@ -2,6 +2,8 @@
 
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { ChevronLeft, Sparkles, Home } from "lucide-react";
+import PurchaseModal from "@/components/PurchaseModal";
+import { useWallet } from "@/hooks/useWallet";
 import {
   ATTACHMENT_QUESTIONS,
   ATTACHMENT_OPTIONS,
@@ -303,6 +305,10 @@ function AttachmentQuiz({ onComplete }: { onComplete: (answers: Record<number, n
 
 // ─── 结果页 ───
 function AttachmentResultView({ result, onRestart }: { result: AttachmentResult; onRestart: () => void }) {
+  const { isUnlocked } = useWallet();
+  const [showPurchase, setShowPurchase] = useState(false);
+  const [purchased, setPurchased] = useState(isUnlocked("attachment"));
+  const unlocked = purchased || isUnlocked("attachment");
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <nav className="sticky-header z-30 border-b border-[#e8e8e8] bg-white/95 backdrop-blur-md px-4 py-3">
@@ -400,12 +406,25 @@ function AttachmentResultView({ result, onRestart }: { result: AttachmentResult;
             className="w-full rounded-xl py-3.5 text-lg font-semibold text-white transition-all active:scale-[0.98]"
             style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}
             onClick={() => {
-              // 课程链接待补充
-              alert("课程详情即将上线，敬请期待！");
+              if (unlocked) {
+                // 已解锁，直接展示课程/付费内容
+                return;
+              }
+              setShowPurchase(true);
             }}
           >
-            了解 Sino-NLP 课程
+            {unlocked ? "查看 Sino-NLP 课程" : "了解 Sino-NLP 课程"}
           </button>
+          <PurchaseModal
+            assessmentId="attachment"
+            assessmentName="心念执念检测"
+            visible={showPurchase}
+            onPurchased={() => {
+              setPurchased(true);
+              setShowPurchase(false);
+            }}
+            onClose={() => setShowPurchase(false)}
+          />
         </div>
 
         <div className="text-center pt-2 pb-2">

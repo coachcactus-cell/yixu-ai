@@ -13,6 +13,8 @@ import {
 } from "@/lib/divination";
 import type { DivinationResult, YaoReport } from "@/lib/divination";
 import { HEXAGRAMS, LOGICAL_LEVELS } from "@/data/yijing";
+import PurchaseModal from "@/components/PurchaseModal";
+import { useWallet } from "@/hooks/useWallet";
 
 /* ── 人生十项 ── */
 const LIFE_TOPICS = [
@@ -270,7 +272,7 @@ function YaoCard({ report, hexagramName }: { report: YaoReport; hexagramName: st
 }
 
 /* ── 完整报告页 ── */
-function ReportView({ result, onClose }: { result: DivinationResult; onClose: () => void }) {
+function ReportView({ result, onClose, unlocked, onUnlock }: { result: DivinationResult; onClose: () => void; unlocked: boolean; onUnlock: () => void }) {
   const { hexagram, upperGuaName, lowerGuaName, dongYao, season, topic } = result;
   const yaoReports = generateYaoReports(result);
 
@@ -348,17 +350,33 @@ function ReportView({ result, onClose }: { result: DivinationResult; onClose: ()
           </div>
         </div>
 
-        {/* 付费詳细报告入口 */}
-        <div className="card mt-6 bg-gradient-to-r from-[#fdf8ed] to-white border-[#c9a84c]/30 text-center">
-          <Sparkles size={20} className="mx-auto text-[#c9a84c] mb-2" />
-          <p className="text-base font-bold text-[#1a1a1a] mb-1">获取详细报告</p>
-          <p className="text-sm text-[#666666] mb-3">
-            包含1000字深度解读，结合Sino-NLP体系与易经智慧的完整分析
-          </p>
-          <button className="btn-primary text-sm py-2.5 px-8">
-            解锁详细报告 · 付费
-          </button>
-        </div>
+        {/* 付费詳細报告 / 深度解读 */}
+        {unlocked ? (
+          <div className="card mt-6 bg-gradient-to-r from-[#f0faf0] to-white border-[#27ae60]/30 text-center">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#27ae6015] mb-2">
+              <Sparkles size={14} className="text-[#27ae60]" />
+              <span className="text-sm font-semibold text-[#27ae60]">已解锁</span>
+            </div>
+            <p className="text-base font-bold text-[#1a1a1a] mb-1">深度解读报告</p>
+            <p className="text-sm text-[#555555] leading-relaxed text-left mt-3">
+              结合Sino-NLP体系与易经智慧，您的卦象揭示了深层的身心指引。请结合上方六爻理解层次的解读，深入体会每一爻在您生命中的映射。
+            </p>
+          </div>
+        ) : (
+          <div className="card mt-6 bg-gradient-to-r from-[#fdf8ed] to-white border-[#c9a84c]/30 text-center">
+            <Sparkles size={20} className="mx-auto text-[#c9a84c] mb-2" />
+            <p className="text-base font-bold text-[#1a1a1a] mb-1">获取详细报告</p>
+            <p className="text-sm text-[#666666] mb-3">
+              包含1000字深度解读，结合Sino-NLP体系与易经智慧的完整分析
+            </p>
+            <button
+              onClick={onUnlock}
+              className="btn-primary text-sm py-2.5 px-8"
+            >
+              解锁详细报告 · 付费
+            </button>
+          </div>
+        )}
 
         {/* 分享按鈕 */}
         <div className="mt-3 flex gap-3">
@@ -389,6 +407,9 @@ function ReportView({ result, onClose }: { result: DivinationResult; onClose: ()
 export default function YijingPage() {
   const [activeModule, setActiveModule] = useState<"none" | "phone" | "life">("none");
   const [result, setResult] = useState<DivinationResult | null>(null);
+  const { isUnlocked } = useWallet();
+  const [showPurchase, setShowPurchase] = useState(false);
+  const yijingUnlocked = isUnlocked("yijing");
 
   // 入口一狀態
   const [phoneInput, setPhoneInput] = useState("");
@@ -451,7 +472,7 @@ export default function YijingPage() {
 
   /* ── 如果有结果，显示报告 ── */
   if (result) {
-    return <ReportView result={result} onClose={() => setResult(null)} />;
+    return <ReportView result={result} onClose={() => setResult(null)} unlocked={yijingUnlocked} onUnlock={() => setShowPurchase(true)} />;
   }
 
   /* ── 主页面 ── */
@@ -666,6 +687,15 @@ export default function YijingPage() {
           </p>
         </div>
       </div>
+
+      {/* 购买弹窗 */}
+      <PurchaseModal
+        assessmentId="yijing"
+        assessmentName="易卦占卜"
+        visible={showPurchase}
+        onPurchased={() => setShowPurchase(false)}
+        onClose={() => setShowPurchase(false)}
+      />
     </div>
   );
 }

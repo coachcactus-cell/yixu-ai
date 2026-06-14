@@ -35,6 +35,7 @@ export interface YixuUser {
   phone?: string;       // 手机号（主键）
   wechatId?: string;    // 微信ID（选填）
   nickname: string;
+  avatar?: string;      // base64 data URL，≤100KB
   createdAt: string;
   vipLevel: "free" | "monthly" | "yearly";
 }
@@ -124,6 +125,14 @@ export function useUser() {
     setUser(updated);
   }, [user]);
 
+  // ── 设置头像 ──
+  const setAvatar = useCallback((avatar: string) => {
+    if (!user) return;
+    const updated = { ...user, avatar };
+    saveUser(updated);
+    setUser(updated);
+  }, [user]);
+
   // ── 登出 ──
   const logout = useCallback(() => {
     if (!user) return;
@@ -185,6 +194,7 @@ export function useUser() {
     isLoggedIn,
     loginWithPhone,
     setWechatId,
+    setAvatar,
     logout,
     addChakraRecord,
     addYijingRecord,

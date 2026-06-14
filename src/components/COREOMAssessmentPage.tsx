@@ -5,6 +5,8 @@ import { ChevronLeft, Sparkles, Download, Share2, Phone, Home, AlertTriangle } f
 import html2canvas from "html2canvas";
 import { COREOM_QUESTIONS, COREOM_OPTIONS, TOTAL_COREOM, calcCOREOMResult, type COREOMResult } from "@/data/coreom";
 import { useUser } from "@/hooks/useUser";
+import PurchaseModal from "@/components/PurchaseModal";
+import { useWallet } from "@/hooks/useWallet";
 
 type Stage = "intro" | "quiz" | "result" | "collect-phone";
 
@@ -363,6 +365,9 @@ function COREOMResultView({
 }) {
   const [isDownloading, setIsDownloading] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
+  const { isUnlocked } = useWallet();
+  const unlocked = isUnlocked("coreom");
+  const [showPurchase, setShowPurchase] = useState(false);
 
   const testDate = useMemo(
     () =>
@@ -510,27 +515,70 @@ function COREOMResultView({
         </div>
 
         {/* 付费解锁 */}
-        <div className="mt-4 rounded-xl border border-[#7dba9a30] bg-gradient-to-br from-[#f0faf5] to-white p-5">
-          <div className="text-center mb-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7dba9a15] mb-2">
-              <Sparkles size={16} className="text-[#7dba9a]" />
-              <span className="text-base font-semibold text-[#7dba9a]">解锁深度解读</span>
+        {!unlocked ? (
+          <div className="mt-4 rounded-xl border border-[#7dba9a30] bg-gradient-to-br from-[#f0faf5] to-white p-5">
+            <div className="text-center mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7dba9a15] mb-2">
+                <Sparkles size={16} className="text-[#7dba9a]" />
+                <span className="text-base font-semibold text-[#7dba9a]">解锁深度解读</span>
+              </div>
+              <h3 className="text-xl font-bold text-[#1a1a1a] font-song">获取专属心理健康方案</h3>
             </div>
-            <h3 className="text-xl font-bold text-[#1a1a1a] font-song">获取专属心理健康方案</h3>
+            <div className="space-y-2 mb-4">
+              {["心理健康深度分析", "个性化正念冥想指引", "七日情绪管理练习", "亦须先生亲自解读"].map((f, i) => (
+                <div key={i} className="flex items-center gap-2 text-base text-[#555]"><span className="text-[#7dba9a] text-sm">✦</span>{f}</div>
+              ))}
+            </div>
+            <div className="text-center mb-3">
+              <span className="text-2xl font-bold text-[#7dba9a]">¥9.90</span>
+              <span className="text-base text-[#666] ml-1">/ 永久解锁</span>
+            </div>
+            <button
+              onClick={() => setShowPurchase(true)}
+              className="w-full rounded-xl py-3 text-lg font-semibold text-white transition-all active:scale-[0.98]"
+              style={{ background: "linear-gradient(135deg, #7dba9a, #5da07a)" }}
+            >
+              解锁完整报告
+            </button>
           </div>
-          <div className="space-y-2 mb-4">
-            {["心理健康深度分析", "个性化正念冥想指引", "七日情绪管理练习", "亦须先生亲自解读"].map((f, i) => (
-              <div key={i} className="flex items-center gap-2 text-base text-[#555]"><span className="text-[#7dba9a] text-sm">✦</span>{f}</div>
-            ))}
+        ) : (
+          <div className="mt-4 rounded-xl border border-[#7dba9a30] bg-gradient-to-br from-[#f0faf5] to-white p-5">
+            <div className="text-center mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7dba9a15] mb-2">
+                <Sparkles size={16} className="text-[#7dba9a]" />
+                <span className="text-base font-semibold text-[#7dba9a]">深度解读</span>
+              </div>
+              <h3 className="text-xl font-bold text-[#1a1a1a] font-song">专属心理健康方案</h3>
+            </div>
+            <div className="space-y-3 mb-4">
+              <div>
+                <h4 className="text-base font-bold text-[#1a1a1a] mb-1">心理健康深度分析</h4>
+                <p className="text-base text-[#555] leading-relaxed">你的评估结果显示了当前的心理健康状态，建议从多个维度关注自身心理变化，逐步建立积极的心理韧性。</p>
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-[#1a1a1a] mb-1">个性化正念冥想指引</h4>
+                <p className="text-base text-[#555] leading-relaxed">通过每日正念冥想练习，帮助你觉察内在情绪，培养心理弹性，逐步改善心理健康状态。</p>
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-[#1a1a1a] mb-1">七日情绪管理练习</h4>
+                <p className="text-base text-[#555] leading-relaxed">每日安排情绪觉察与调节练习，帮助你识别情绪模式，建立健康的情绪表达与管理方式。</p>
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-[#1a1a1a] mb-1">亦须先生亲自解读</h4>
+                <p className="text-base text-[#555] leading-relaxed">亦须先生将根据你的评估结果，为你提供更加个性化的解读与建议。</p>
+              </div>
+            </div>
           </div>
-          <div className="text-center mb-3">
-            <span className="text-2xl font-bold text-[#7dba9a]">¥9.90</span>
-            <span className="text-base text-[#666] ml-1">/ 永久解锁</span>
-          </div>
-          <button className="w-full rounded-xl py-3 text-lg font-semibold text-white transition-all active:scale-[0.98]" style={{ background: "linear-gradient(135deg, #7dba9a, #5da07a)" }}>
-            解锁完整报告
-          </button>
-        </div>
+        )}
+
+        {/* PurchaseModal */}
+        <PurchaseModal
+          assessmentId="coreom"
+          assessmentName="CORE-OM 临床结果评量"
+          visible={showPurchase}
+          onPurchased={() => setShowPurchase(false)}
+          onClose={() => setShowPurchase(false)}
+        />
 
         <div className="mt-4 mb-2 text-center">
           <button onClick={onRestart} className="text-base text-[#999] underline underline-offset-4">重新测评</button>

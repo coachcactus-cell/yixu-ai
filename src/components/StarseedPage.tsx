@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import PurchaseModal from "@/components/PurchaseModal";
+import { useWallet } from "@/hooks/useWallet";
 import {
   INTRO_SLIDES,
   QUESTIONS,
@@ -833,7 +835,11 @@ function StarseedResultView({
 }) {
   const { star, report, sortedScores } = result;
   const freeReport = report.free;
+  const premiumReport = report.premium;
   const maxScore = sortedScores[0]?.score || 1;
+  const { isUnlocked } = useWallet();
+  const unlocked = isUnlocked("starseed");
+  const [showPurchase, setShowPurchase] = useState(false);
 
   return (
     <div
@@ -897,28 +903,175 @@ function StarseedResultView({
           </ul>
         </div>
 
-        {/* Unlock reasons card */}
-        <div
-          className="rounded-2xl p-5 mb-4"
-          style={{
-            background: "linear-gradient(135deg, #1a1035, #2d1b69)",
-            color: "#FFFFFF",
-          }}
-        >
-          <div className="text-center mb-3">
-            <span className="text-2xl">🔒</span>
-            <h3 className="text-base font-bold mt-1">
-              噢！你的完整报告锁在你的星球里
-            </h3>
+        {/* Unlock reasons card (only when not unlocked) */}
+        {!unlocked && (
+          <div
+            className="rounded-2xl p-5 mb-4"
+            style={{
+              background: "linear-gradient(135deg, #1a1035, #2d1b69)",
+              color: "#FFFFFF",
+            }}
+          >
+            <div className="text-center mb-3">
+              <span className="text-2xl">🔒</span>
+              <h3 className="text-base font-bold mt-1">
+                噢！你的完整报告锁在你的星球里
+              </h3>
+            </div>
+            <ul className="space-y-2.5">
+              {freeReport.unlockReasons.map((reason, i) => (
+                <li key={i} className="text-sm text-white/80 leading-relaxed">
+                  {reason}
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="space-y-2.5">
-            {freeReport.unlockReasons.map((reason, i) => (
-              <li key={i} className="text-sm text-white/80 leading-relaxed">
-                {reason}
-              </li>
-            ))}
-          </ul>
-        </div>
+        )}
+
+        {/* Premium content (only when unlocked) */}
+        {unlocked && (
+          <>
+            {/* Profile */}
+            <div
+              className="rounded-2xl p-5 mb-4"
+              style={{
+                background: "#FFFFFF",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+              }}
+            >
+              <h3 className="text-base font-bold text-[#1a1a2e] mb-2">
+                星际档案
+              </h3>
+              <p className="text-sm text-[#6c63ff] font-medium mb-1">
+                {premiumReport.profile.galaxy}
+              </p>
+              <p className="text-sm text-[#555] leading-relaxed">
+                {premiumReport.profile.summary}
+              </p>
+            </div>
+
+            {/* Strengths */}
+            <div
+              className="rounded-2xl p-5 mb-4"
+              style={{
+                background: "#FFFFFF",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+              }}
+            >
+              <h3 className="text-base font-bold text-[#1a1a2e] mb-3">
+                核心优势
+              </h3>
+              <ul className="space-y-3">
+                {premiumReport.strengths.map((s, i) => (
+                  <li key={i}>
+                    <p className="text-sm font-semibold text-[#6c63ff]">{s.name}</p>
+                    <p className="text-sm text-[#555] leading-relaxed">{s.detail}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Growth Topics */}
+            <div
+              className="rounded-2xl p-5 mb-4"
+              style={{
+                background: "#FFFFFF",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+              }}
+            >
+              <h3 className="text-base font-bold text-[#1a1a2e] mb-3">
+                成长课题
+              </h3>
+              <div className="space-y-4">
+                {premiumReport.growthTopics.map((g, i) => (
+                  <div key={i} className="border-l-2 border-[#6c63ff] pl-3">
+                    <p className="text-sm font-semibold text-[#1a1a2e]">{g.weakness}</p>
+                    <p className="text-sm text-[#555] leading-relaxed mt-1">{g.detail}</p>
+                    <p className="text-sm text-[#6c63ff] mt-1">转化方向：{g.opposite}</p>
+                    <p className="text-sm text-[#999] mt-0.5">练习：{g.practice}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Action Plan */}
+            <div
+              className="rounded-2xl p-5 mb-4"
+              style={{
+                background: "#FFFFFF",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+              }}
+            >
+              <h3 className="text-base font-bold text-[#1a1a2e] mb-3">
+                行动计划
+              </h3>
+              <div className="space-y-2">
+                <div className="flex items-start gap-2">
+                  <span className="text-[#6c63ff] shrink-0 text-sm">☀️ 每日</span>
+                  <p className="text-sm text-[#555] leading-relaxed">{premiumReport.actionPlan.daily}</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-[#6c63ff] shrink-0 text-sm">📆 每周</span>
+                  <p className="text-sm text-[#555] leading-relaxed">{premiumReport.actionPlan.weekly}</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-[#6c63ff] shrink-0 text-sm">🚀 突破</span>
+                  <p className="text-sm text-[#555] leading-relaxed">{premiumReport.actionPlan.breakLimit}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Pairing */}
+            <div
+              className="rounded-2xl p-5 mb-4"
+              style={{
+                background: "#FFFFFF",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+              }}
+            >
+              <h3 className="text-base font-bold text-[#1a1a2e] mb-3">
+                星际配对
+              </h3>
+              <div className="space-y-2">
+                <p className="text-sm text-[#555]">
+                  <span className="text-[#6c63ff] font-medium">最佳拍档：</span>
+                  {premiumReport.pairing.best}
+                </p>
+                <p className="text-sm text-[#555]">
+                  <span className="text-[#6c63ff] font-medium">挑战组合：</span>
+                  {premiumReport.pairing.challenge}
+                </p>
+              </div>
+            </div>
+
+            {/* Guidance */}
+            <div
+              className="rounded-2xl p-5 mb-4"
+              style={{
+                background: "#FFFFFF",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+              }}
+            >
+              <h3 className="text-base font-bold text-[#1a1a2e] mb-3">
+                灵性指引
+              </h3>
+              <div className="space-y-2">
+                <p className="text-sm text-[#555]">
+                  <span className="text-[#6c63ff] font-medium">脉轮：</span>
+                  {premiumReport.guidance.chakra}
+                </p>
+                <p className="text-sm text-[#555]">
+                  <span className="text-[#6c63ff] font-medium">水晶：</span>
+                  {premiumReport.guidance.crystal}
+                </p>
+                <p className="text-sm text-[#555]">
+                  <span className="text-[#6c63ff] font-medium">星座：</span>
+                  {premiumReport.guidance.zodiac}
+                </p>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Score distribution */}
         <div
@@ -968,16 +1121,27 @@ function StarseedResultView({
           </div>
         </div>
 
-        {/* Unlock button */}
-        <button
-          onClick={() => alert("即将上线，敬请期待！")}
-          className="w-full py-4 rounded-xl text-white text-lg font-semibold mb-3 transition-all active:scale-[0.98]"
-          style={{
-            background: "linear-gradient(135deg, #6c63ff, #8b7eff)",
-          }}
-        >
-          解锁完整报告 🔓
-        </button>
+        {/* Unlock button (only when not unlocked) */}
+        {!unlocked && (
+          <button
+            onClick={() => setShowPurchase(true)}
+            className="w-full py-4 rounded-xl text-white text-lg font-semibold mb-3 transition-all active:scale-[0.98]"
+            style={{
+              background: "linear-gradient(135deg, #6c63ff, #8b7eff)",
+            }}
+          >
+            解锁完整报告 🔓
+          </button>
+        )}
+
+        {/* PurchaseModal */}
+        <PurchaseModal
+          assessmentId="starseed"
+          assessmentName="星宿种子性格测评"
+          visible={showPurchase}
+          onPurchased={() => setShowPurchase(false)}
+          onClose={() => setShowPurchase(false)}
+        />
 
         {/* Back button */}
         <button

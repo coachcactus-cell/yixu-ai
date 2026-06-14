@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Brain, Heart, Sparkles, Users, ArrowRight, Lock, Hexagon, AlertTriangle, ShieldAlert, Activity, Leaf, Eye, Waves, Flame } from "lucide-react";
+import { Brain, Heart, Sparkles, Users, ArrowRight, Lock, Hexagon, AlertTriangle, ShieldAlert, Activity, Leaf, Eye, Waves, Flame, Check } from "lucide-react";
 import ChakraAssessmentPage from "@/components/ChakraAssessmentPage";
 import EnneagramPage from "@/components/EnneagramPage";
 import GAD7AssessmentPage from "@/components/GAD7AssessmentPage";
@@ -11,6 +11,7 @@ import COREOMAssessmentPage from "@/components/COREOMAssessmentPage";
 import AttachmentTestPage from "@/components/AttachmentTestPage";
 import EmotionInertiaPage from "@/components/EmotionInertiaPage";
 import StarseedPage from "@/components/StarseedPage";
+import { useWallet, ASSESSMENT_PRICES } from "@/hooks/useWallet";
 
 type ViewMode = "list" | "chakra-quiz" | "enneagram-quiz" | "gad7-quiz" | "pcl5-quiz" | "phq15-quiz" | "coreom-quiz" | "attachment-quiz" | "emotion-quiz" | "starseed-quiz";
 
@@ -20,7 +21,7 @@ const ASSESSMENTS = [
     title: "七脉轮能量评估",
     desc: "56 题深度检测，了解你七个能量中心状态",
     icon: Sparkles,
-    price: "¥9.90",
+    price: "¥12.90",
     count: "1,286+ 人已测",
     available: true,
     color: "#c9a84c",
@@ -86,7 +87,7 @@ const ASSESSMENTS = [
     title: "心念执念检测",
     desc: "唯识学 × Sino-NLP：识别你深层的执着模式",
     icon: Eye,
-    price: "¥19.90",
+    price: "¥12.90",
     count: "已上线",
     available: true,
     color: "#d4a060",
@@ -97,7 +98,7 @@ const ASSESSMENTS = [
     title: "情绪惯性模式",
     desc: "Sino-NLP × 四体模型：揭露你的情绪反应惯性",
     icon: Waves,
-    price: "¥19.90",
+    price: "¥12.90",
     count: "已上线",
     available: true,
     color: "#6b8fb5",
@@ -108,7 +109,7 @@ const ASSESSMENTS = [
     title: "星宿种子性格测评",
     desc: "27 题测出你的星人归属 — 你是哪颗星来的？",
     icon: Flame,
-    price: "¥19.90",
+    price: "¥12.90",
     count: "已上线",
     available: true,
     color: "#6c63ff",
@@ -122,6 +123,7 @@ export default function AssessmentPage({
   onFullscreenChange?: (fullscreen: boolean) => void;
 }) {
   const [view, setView] = useState<ViewMode>("list");
+  const { isUnlocked } = useWallet();
 
   const handleStartChakra = useCallback(() => {
     setView("chakra-quiz");
@@ -255,6 +257,7 @@ export default function AssessmentPage({
           <div className="space-y-3">
             {ASSESSMENTS.filter((a) => a.category === "clinical").map((a) => {
               const Icon = a.icon;
+              const unlocked = isUnlocked(a.id);
               return (
                 <div key={a.id} className="card" style={{ opacity: a.available ? 1 : 0.6 }}>
                   <div className="flex items-start gap-3">
@@ -267,12 +270,19 @@ export default function AssessmentPage({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className="font-semibold text-[#1a1a1a]">{a.title}</h3>
+                        {unlocked && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 font-medium flex items-center gap-0.5">
+                            <Check size={8} /> 已解锁
+                          </span>
+                        )}
                       </div>
                       <p className="text-sm text-[#666666] mt-1">{a.desc}</p>
                       <div className="flex items-center justify-between mt-3">
                         <span className="text-sm text-[#777777]">{a.count}</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-[#c9a84c]">免费测评</span>
+                          {!unlocked && (
+                            <span className="text-sm font-bold text-[#c9a84c]">深度解读 ¥12.90</span>
+                          )}
                           {a.available && (
                             <button
                               className="btn-primary text-sm py-2 px-4"
@@ -301,6 +311,7 @@ export default function AssessmentPage({
           <div className="space-y-3">
             {ASSESSMENTS.filter((a) => a.category === "yixu").map((a) => {
               const Icon = a.icon;
+              const unlocked = isUnlocked(a.id);
               return (
                 <div key={a.id} className="card" style={{ opacity: a.available ? 1 : 0.6 }}>
                   <div className="flex items-start gap-3">
@@ -313,12 +324,17 @@ export default function AssessmentPage({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className="font-semibold text-[#1a1a1a]">{a.title}</h3>
+                        {unlocked && ASSESSMENT_PRICES[a.id] > 0 && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 font-medium flex items-center gap-0.5">
+                            <Check size={8} /> 已解锁
+                          </span>
+                        )}
                       </div>
                       <p className="text-sm text-[#666666] mt-1">{a.desc}</p>
                       <div className="flex items-center justify-between mt-3">
                         <span className="text-sm text-[#777777]">{a.count}</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-[#c9a84c]">免费测评</span>
+                          <span className="text-sm font-bold text-[#c9a84c]">{a.price === "免费" ? "免费" : (unlocked ? "已解锁" : a.price)}</span>
                           {a.available && (
                             <button
                               className="btn-primary text-sm py-2 px-4"
@@ -347,6 +363,7 @@ export default function AssessmentPage({
           <div className="space-y-3">
             {ASSESSMENTS.filter((a) => a.category === "sino-nlp").map((a) => {
               const Icon = a.icon;
+              const unlocked = isUnlocked(a.id);
               return (
                 <div key={a.id} className="card" style={{ opacity: a.available ? 1 : 0.6 }}>
                   <div className="flex items-start gap-3">
@@ -359,12 +376,17 @@ export default function AssessmentPage({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className="font-semibold text-[#1a1a1a]">{a.title}</h3>
+                        {unlocked && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 font-medium flex items-center gap-0.5">
+                            <Check size={8} /> 已解锁
+                          </span>
+                        )}
                       </div>
                       <p className="text-sm text-[#666666] mt-1">{a.desc}</p>
                       <div className="flex items-center justify-between mt-3">
                         <span className="text-sm text-[#777777]">{a.count}</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-[#c9a84c]">{a.price}</span>
+                          <span className="text-sm font-bold text-[#c9a84c]">{unlocked ? "已解锁" : a.price}</span>
                           {a.available ? (
                             <button
                               className="btn-primary text-sm py-2 px-4"
@@ -397,6 +419,7 @@ export default function AssessmentPage({
           <div className="space-y-3">
             {ASSESSMENTS.filter((a) => a.category === "new-age").map((a) => {
               const Icon = a.icon;
+              const unlocked = isUnlocked(a.id);
               return (
                 <div key={a.id} className="card relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0B0E1A, #1A1035)", borderColor: "rgba(108,99,255,0.3)" }}>
                   <div className="flex items-start gap-3">
@@ -409,12 +432,17 @@ export default function AssessmentPage({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className="font-semibold text-white">{a.title}</h3>
+                        {unlocked && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 font-medium flex items-center gap-0.5">
+                            <Check size={8} /> 已解锁
+                          </span>
+                        )}
                       </div>
                       <p className="text-sm text-[rgba(255,255,255,0.7)] mt-1">{a.desc}</p>
                       <div className="flex items-center justify-between mt-3">
                         <span className="text-sm text-[rgba(255,255,255,0.5)]">{a.count}</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-[#B8A9D4]">{a.price}</span>
+                          <span className="text-sm font-bold text-[#B8A9D4]">{unlocked ? "已解锁" : a.price}</span>
                           {a.available && (
                             <button
                               className="text-sm py-2 px-4 rounded-lg font-semibold transition-all active:scale-[0.97]"

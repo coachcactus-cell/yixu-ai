@@ -16,10 +16,14 @@ import {
   QrCode,
   ArrowUpRight,
   ArrowDownRight,
+  Ticket,
+  Copy,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 
-type Tab = "overview" | "users" | "revenue" | "distributors" | "content";
+type Tab = "overview" | "users" | "revenue" | "distributors" | "content" | "topup-codes";
 
 // ── Mock 数据 ──
 const MOCK_OVERVIEW = {
@@ -73,6 +77,7 @@ export default function AdminDashboard() {
     { key: "revenue", label: "收入", icon: DollarSign },
     { key: "distributors", label: "分銷", icon: Handshake },
     { key: "content", label: "内容", icon: FileText },
+    { key: "topup-codes", label: "充值码", icon: Ticket },
   ];
 
   return (
@@ -132,6 +137,7 @@ export default function AdminDashboard() {
         {activeTab === "revenue" && <RevenueTab />}
         {activeTab === "distributors" && <DistributorsTab />}
         {activeTab === "content" && <ContentTab />}
+        {activeTab === "topup-codes" && <TopupCodesTab />}
       </div>
     </div>
   );
@@ -506,5 +512,186 @@ function StatusBadge({ status }: { status: string }) {
     <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${styles[status] || "bg-gray-100 text-gray-600"}`}>
       {labels[status] || status}
     </span>
+  );
+}
+
+// ── 充值码管理 Tab ──
+interface TopupCodeEntry {
+  code: string;
+  amount: number;     // 分
+  desc: string;
+  createdAt: string;
+  used: boolean;
+  usedBy?: string;
+  usedAt?: string;
+}
+
+const INITIAL_TOPUP_CODES: TopupCodeEntry[] = [
+  { code: "YIXU50", amount: 5000, desc: "充值 ¥50", createdAt: "2026-06-14", used: false },
+  { code: "YIXU100", amount: 10000, desc: "充值 ¥100", createdAt: "2026-06-14", used: false },
+  { code: "YIXU200", amount: 20000, desc: "充值 ¥200", createdAt: "2026-06-14", used: false },
+];
+
+function TopupCodesTab() {
+  const [codes, setCodes] = useState<TopupCodeEntry[]>(INITIAL_TOPUP_CODES);
+  const [newAmount, setNewAmount] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+  const handleGenerate = () => {
+    const amount = parseInt(newAmount);
+    if (!amount || amount <= 0) return;
+
+    const code = `YX${Date.now().toString(36).toUpperCase().slice(-6)}`;
+    const entry: TopupCodeEntry = {
+      code,
+      amount: amount * 100, // 轉為分
+      desc: newDesc || `充值 ¥${amount}`,
+      createdAt: new Date().toISOString().split("T")[0],
+      used: false,
+    };
+    setCodes([entry, ...codes]);
+    setNewAmount("");
+    setNewDesc("");
+  };
+
+  const handleDelete = (code: string) => {
+    setCodes(codes.filter((c) => c.code !== code));
+  };
+
+  const handleCopy = (code: string) => {
+    navigator.clipboard.writeText(code).then(() => {
+      setCopiedCode(code);
+      setTimeout(() => setCopiedCode(null), 1500);
+    });
+  };
+
+  // 統計
+  const totalCodes = codes.length;
+  const usedCodes = codes.filter((c) => c.used).length;
+  const totalValue = codes.reduce((a, c) => a + c.amount, 0);
+
+  return (
+    <>
+      {/* 統計 */}
+      <div className="mt-4 grid grid-cols-3 gap-3">
+        <div className="bg-white rounded-xl p-3 border border-[#e8e8e8] text-center">
+          <p className="text-xl font-bold text-[#c9a84c]">{totalCodes}</p>
+          <p className="text-[10px] text-[#999]">总码数</p>
+        </div>
+        <div className="bg-white rounded-xl p-3 border border-[#e8e8e8] text-center">
+          <p className="text-xl font-bold text-[#10b981]">{usedCodes}</p>
+          <p className="text-[10px] text-[#999]">已使用</p>
+        </div>
+        <div className="bg-white rounded-xl p-3 border border-[#e8e8e8] text-center">
+          <p className="text-xl font-bold text-[#6366f1]">¥{(totalValue / 100).toFixed(0)}</p>
+          <p className="text-[10px] text-[#999]">总面值</p>
+        </div>
+      </div>
+
+      {/* 生成新碼 */}
+      <div className="mt-4 bg-white rounded-xl p-4 border border-[#e8e8e8]">
+        <h3 className="text-sm font-bold text-[#1a1a1a] mb-3 flex items-center gap-2">
+          <Plus size={14} className="text-[#c9a84c]" />
+          生成充值码
+        </h3>
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <input
+              type="number"
+              value={newAmount}
+              onChange={(e) => setNewAmount(e.target.value)}
+              placeholder="金额（元）"
+              className="flex-1 px-3 py-2.5 rounded-lg border border-[#e8e8e8] text-sm outline-none focus:border-[#c9a84c] transition-colors"
+            />
+            <input
+              type="text"
+              value={newDesc}
+              onChange={(e) => setNewDesc(e.target.value)}
+              placeholder="备注（选填）"
+              className="flex-1 px-3 py-2.5 rounded-lg border border-[#e8e8e8] text-sm outline-none focus:border-[#c9a84c] transition-colors"
+            />
+          </div>
+          <button
+            onClick={handleGenerate}
+            className="w-full py-2.5 rounded-lg text-white text-sm font-bold active:scale-[0.98] transition-transform"
+            style={{ background: "linear-gradient(135deg, #c9a84c, #b89430)" }}
+          >
+            生成充值码
+          </button>
+        </div>
+      </div>
+
+      {/* 充值码列表 */}
+      <div className="mt-4 bg-white rounded-xl p-4 border border-[#e8e8e8]">
+        <h3 className="text-sm font-bold text-[#1a1a1a] mb-3">充值码列表</h3>
+        <div className="space-y-2">
+          {codes.map((c) => (
+            <div
+              key={c.code}
+              className={`flex items-center justify-between py-2.5 px-3 rounded-lg border ${
+                c.used ? "bg-[#fafafa] border-[#e8e8e8]" : "bg-white border-[#c9a84c]/30"
+              }`}
+            >
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className={`text-sm font-mono font-bold ${c.used ? "text-[#999]" : "text-[#1a1a1a]"}`}>
+                    {c.code}
+                  </span>
+                  {c.used ? (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 font-medium">
+                      已使用
+                    </span>
+                  ) : (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-medium">
+                      可用
+                    </span>
+                  )}
+                </div>
+                <p className="text-[10px] text-[#999] mt-0.5">
+                  {c.desc} · 创建: {c.createdAt}
+                  {c.usedBy && ` · 使用者: ${c.usedBy}`}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                <span className="text-sm font-bold text-[#c9a84c]">¥{(c.amount / 100).toFixed(0)}</span>
+                {!c.used && (
+                  <>
+                    <button
+                      onClick={() => handleCopy(c.code)}
+                      className="p-1.5 rounded-lg bg-[#fdf8ed] text-[#c9a84c] active:scale-95 transition-transform"
+                      title="复制"
+                    >
+                      {copiedCode === c.code ? (
+                        <span className="text-[10px] font-bold">✓</span>
+                      ) : (
+                        <Copy size={12} />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(c.code)}
+                      className="p-1.5 rounded-lg bg-red-50 text-red-400 active:scale-95 transition-transform"
+                      title="删除"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+          {codes.length === 0 && (
+            <p className="text-xs text-[#999] text-center py-4">暂无充值码</p>
+          )}
+        </div>
+      </div>
+
+      {/* 提示 */}
+      <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-xl p-3">
+        <p className="text-xs text-yellow-700">
+          💡 Phase 1 充值码为前端硬编码管理。生成新码后，需手动同步到 <code className="bg-yellow-100 px-1 rounded">useWallet.ts</code> 中的 TOPUP_CODES 常量，方可生效。
+        </p>
+      </div>
+    </>
   );
 }
