@@ -101,9 +101,9 @@ function PhoneLogin({
         <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#fdf8ed] to-[#fef3d0] flex items-center justify-center mx-auto mb-3">
           <Phone size={28} className="text-[#c9a84c]" />
         </div>
-        <h3 className="font-bold text-[#1a1a1a]">登录查看你的修行记录</h3>
+        <h3 className="font-bold text-[#1a1a1a]">注册 / 登录</h3>
         <p className="text-xs text-[#999999] mt-1">
-          输入手机号，历史报告随时查看
+          输入手机号即可注册，已有账号直接登录
         </p>
       </div>
 
@@ -131,7 +131,7 @@ function PhoneLogin({
           className="w-full rounded-xl py-3 text-sm font-semibold text-white transition-all active:scale-[0.98]"
           style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}
         >
-          登录
+          注册 / 登录
         </button>
       </div>
     </div>
@@ -307,7 +307,7 @@ export default function ProfilePage() {
           onChange={handleAvatarFile}
         />
 
-        {/* ── 未登录：显示登录入口 ── */}
+        {/* ── 未登录：显示注册/登录入口 ── */}
         {!isLoggedIn && !showLogin && (
           <>
             {/* 用户卡（匿名） */}
@@ -323,7 +323,23 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* 登录入口 */}
+            {/* 注册/登录大按钮 */}
+            <button
+              onClick={() => setShowLogin(true)}
+              className="w-full mt-4 rounded-2xl py-4 text-base font-bold text-white active:scale-[0.98] transition-transform"
+              style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}
+            >
+              注册 / 登录
+            </button>
+
+            {/* 功能提示 */}
+            <div className="mt-3 px-1">
+              <p className="text-xs text-[#999] text-center">
+                注册即送 🧧 新学员红包，可抵扣测评解锁
+              </p>
+            </div>
+
+            {/* 其他入口 */}
             <button
               onClick={() => setShowLogin(true)}
               className="w-full mt-3 card flex items-center justify-between py-4"
@@ -331,7 +347,7 @@ export default function ProfilePage() {
               <div className="flex items-center gap-3">
                 <Phone size={20} className="text-[#c9a84c]" />
                 <div className="text-left">
-                  <p className="text-sm font-medium text-[#1a1a1a]">手机号登录</p>
+                  <p className="text-sm font-medium text-[#1a1a1a]">手机号注册</p>
                   <p className="text-xs text-[#999999]">登录后查看历史记录与报告</p>
                 </div>
               </div>
