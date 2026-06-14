@@ -44,30 +44,57 @@ const VIP_PLANS = [
   },
 ];
 
-// ── 邀请码分流规则 ──
-const INVITE_ROUTES: { pattern: string; label: string; path: string; icon: any; color: string }[] = [
-  { pattern: "cactus-2026", label: "C老大后台", path: "/admin", icon: Shield, color: "#c9a84c" },
-  { pattern: "yixu-founder", label: "C老大后台", path: "/admin", icon: Shield, color: "#c9a84c" },
-  { pattern: "yixu-demo", label: "B2B 数据面板", path: "/b2b-dashboard?clientId=yixu-demo", icon: Building2, color: "#6366f1" },
-];
+// ── 邀请码 & 权限系统 ──
 
+// C老大后台密码（可自行修改）
+const ADMIN_PASSWORD = "yixu2026";
+
+// 已发布的 B2B 邀请码（合作伙伴用，每码对应一个 clientId）
+const B2B_INVITE_CODES: Record<string, { clientId: string; label: string; note: string }> = {
+  "yixu-demo": { clientId: "yixu-demo", label: "亦须演示", note: "演示用B2B面板" },
+  // 新增 B2B 合作伙伴在这里加，例如：
+  // "healing-zen": { clientId: "healing-zen", label: "禅愈工作室", note: "张老师" },
+};
+
+// 已授权的 B2B 合作伙伴密码（正式合作后用密码登录）
+const B2B_PASSWORDS: Record<string, string> = {
+  "yixu-demo": "demo2026",
+  // 正式合作伙伴的密码，例如：
+  // "healing-zen": "zen2026",
+};
+
+// 邀请码验证：严格模式，只有明确列出的码才有效
 function resolveInviteCode(code: string): { path: string; label: string; icon: any; color: string } | null {
-  const trimmed = code.trim().toLowerCase();
+  const trimmed = code.trim();
 
-  for (const route of INVITE_ROUTES) {
-    if (trimmed === route.pattern.toLowerCase()) {
-      return { path: route.path, label: route.label, icon: route.icon, color: route.color };
+  // 1. C老大后台：固定密码
+  if (trimmed === ADMIN_PASSWORD) {
+    return { path: "/admin", label: "管理后台", icon: Shield, color: "#c9a84c" };
+  }
+
+  // 2. 已发布的 B2B 邀请码
+  const lower = trimmed.toLowerCase();
+  if (B2B_INVITE_CODES[lower]) {
+    const info = B2B_INVITE_CODES[lower];
+    return { path: `/b2b-dashboard?clientId=${encodeURIComponent(info.clientId)}`, label: info.label, icon: Building2, color: "#6366f1" };
+  }
+
+  // 3. B2B 合作伙伴密码登录
+  if (B2B_PASSWORDS[lower]) {
+    // 通过密码反查 clientId
+    const clientId = Object.entries(B2B_PASSWORDS).find(([_, pwd]) => pwd === lower)?.[0];
+    if (clientId) {
+      const info = B2B_INVITE_CODES[clientId];
+      return { path: `/b2b-dashboard?clientId=${encodeURIComponent(clientId)}`, label: info?.label || "B2B 后台", icon: Building2, color: "#6366f1" };
     }
   }
 
-  if (trimmed.startsWith("dsp-") || trimmed.startsWith("dsp_")) {
-    return { path: `/distributor?code=${encodeURIComponent(code.trim())}`, label: "分销商后台", icon: Handshake, color: "#10b981" };
+  // 4. 分销商邀请码（以 dsp- 或 dsp_ 开头）
+  if (lower.startsWith("dsp-") || lower.startsWith("dsp_")) {
+    return { path: `/distributor?code=${encodeURIComponent(trimmed)}`, label: "分销商后台", icon: Handshake, color: "#10b981" };
   }
 
-  if (trimmed.startsWith("b2b_") || trimmed.length > 5) {
-    return { path: `/b2b-dashboard?clientId=${encodeURIComponent(code.trim())}`, label: "B2B 数据面板", icon: Building2, color: "#6366f1" };
-  }
-
+  // 其他一切输入：无效
   return null;
 }
 
@@ -681,8 +708,8 @@ export default function ProfilePage() {
                 <div className="w-12 h-12 rounded-full bg-[#fdf8ed] flex items-center justify-center mx-auto mb-2">
                   <Sparkles size={24} className="text-[#c9a84c]" />
                 </div>
-                <h3 className="text-lg font-bold text-[#1a1a1a]">邀请登入</h3>
-                <p className="text-xs text-[#999] mt-1">输入邀请码进入对应后台</p>
+                <h3 className="text-lg font-bold text-[#1a1a1a]">邀请码 / 后台入口</h3>
+                <p className="text-xs text-[#999] mt-1">输入邀请码或密码进入对应后台</p>
               </div>
 
               {!resolvedRoute ? (
@@ -695,7 +722,7 @@ export default function ProfilePage() {
                       setInviteError("");
                     }}
                     onKeyDown={(e) => e.key === "Enter" && handleInviteSubmit()}
-                    placeholder="输入邀请码"
+                    placeholder="输入邀请码或密码"
                     className="w-full px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-lg tracking-widest outline-none focus:border-[#c9a84c] transition-colors"
                     autoFocus
                   />
@@ -711,14 +738,15 @@ export default function ProfilePage() {
 
                   <div className="mt-4 space-y-1.5 text-center">
                     <p className="text-[10px] text-[#999]">
-                      <Shield size={10} className="inline -mt-0.5" /> 超级码 → C老大后台
+                      <Shield size={10} className="inline -mt-0.5" /> 管理密码 → 管理后台
+                    </p>
+                    <p className="text-[10px] text-[#999]">
+                      <Building2 size={10} className="inline -mt-0.5" /> B2B邀请码 / 合作密码 → B2B面板
                     </p>
                     <p className="text-[10px] text-[#999]">
                       <Handshake size={10} className="inline -mt-0.5" /> DSP-xxx → 分销商后台
                     </p>
-                    <p className="text-[10px] text-[#999]">
-                      <Building2 size={10} className="inline -mt-0.5" /> 其他码 → B2B 数据面板
-                    </p>
+                    <p className="text-[10px] text-[#ccc] mt-2">无邀请码？请加微信 859022196 申请</p>
                   </div>
 
                   <p className="text-xs text-[#ccc] mt-3 text-center">
