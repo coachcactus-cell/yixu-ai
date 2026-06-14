@@ -80,6 +80,7 @@ function PhoneLogin({
   const [phone, setPhone] = useState("");
   const [wechatId, setWechatId] = useState("");
   const [error, setError] = useState("");
+  const [agreed, setAgreed] = useState(false);
 
   const handleSubmit = () => {
     const trimmed = phone.trim();
@@ -87,8 +88,13 @@ function PhoneLogin({
       setError("请输入手机号");
       return;
     }
-    if (!/^1[3-9]\d{9}$/.test(trimmed)) {
-      setError("请输入有效的11位手机号");
+    // 接受任意位数的手机号（大陆11位/港澳8位/其他地区均可）
+    if (!/^\d{6,15}$/.test(trimmed)) {
+      setError("请输入有效的手机号（6-15位数字）");
+      return;
+    }
+    if (!agreed) {
+      setError("请先同意用户协议和隐私政策");
       return;
     }
     setError("");
@@ -112,10 +118,10 @@ function PhoneLogin({
           type="tel"
           value={phone}
           onChange={(e) => {
-            setPhone(e.target.value.replace(/\D/g, "").slice(0, 11));
+            setPhone(e.target.value.replace(/\D/g, "").slice(0, 15));
             setError("");
           }}
-          placeholder="输入手机号"
+          placeholder="手机号（6-15位数字）"
           className="w-full px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-lg tracking-widest outline-none focus:border-[#c9a84c] transition-colors"
         />
         <input
@@ -126,10 +132,20 @@ function PhoneLogin({
           className="w-full px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-base outline-none focus:border-[#c9a84c] transition-colors"
         />
         {error && <p className="text-xs text-red-500 text-center">{error}</p>}
+        <label className="flex items-start gap-2 text-xs text-[#999] px-1">
+          <input
+            type="checkbox"
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
+            className="mt-0.5 shrink-0"
+          />
+          <span>注册即同意《用户协议》和《隐私政策》，我们不会把你的数据卖给任何人。</span>
+        </label>
         <button
           onClick={handleSubmit}
-          className="w-full rounded-xl py-3 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+          className="w-full rounded-xl py-3 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-50"
           style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}
+          disabled={!agreed}
         >
           注册 / 登录
         </button>
