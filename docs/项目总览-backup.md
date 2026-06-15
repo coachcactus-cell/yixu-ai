@@ -1,6 +1,6 @@
 # 亦須AI — 項目總覽 (Backup)
 
-> 最後更新: 2026-06-11
+> 最後更新: 2026-06-15
 > Session: C老大 + 小B
 
 ---
@@ -13,7 +13,7 @@
 | Vercel Dashboard | vercel.com → coachcactus-4808 |
 | GitHub | github.com/coachcactus-cell/yixu-ai |
 | 本地路徑 | /workspace/yixu-app |
-| 最新 commit | d051caf |
+| 最新 commit | 04f0f6b |
 
 ---
 
@@ -37,12 +37,14 @@
 
 | 文件 | 用途 |
 |------|------|
-| cartoon-casual.png | Landing 頁全身（現代襯衫+iPad，吸引年輕人） |
+| cartoon-casual.png | Landing 頁全身（現代襯衫+iPad） |
 | cartoon-head.png | Header logo（唐裝長衫大頭） |
 | cartoon-formal.jpg | 個人頁（唐裝長衫全身） |
-| icon-192.png / icon-512.png | PWA icon（卡通頭像） |
+| app-avatar.png | App 頭像（同 cartoon-head.png） |
+| icon-192/512.png | PWA icon（卡通頭像） |
 | apple-touch-icon.png | iOS 主屏 icon |
 | favicon-32.png | 瀏覽器 favicon |
+| og-image.png | 微信分享預覽圖 |
 
 ---
 
@@ -50,20 +52,46 @@
 
 - Next.js 14 (App Router) + TypeScript
 - Tailwind CSS v4
-- DeepSeek API (deepseek-chat, temp=0.6, max_tokens=500)
+- DeepSeek API (deepseek-chat, temp=0.5, max_tokens=200)
 - Vercel 部署（GitHub 自動）
 - PWA ready (manifest.json)
 
 ---
 
-## 📱 App 結構（4 Tab）
+## 📱 App 結構（5 Tab）
 
-| Tab | 路徑 | 功能 | 狀態 |
+| Tab | 組件 | 功能 | 狀態 |
 |-----|------|------|------|
 | 首頁 | ChatPage.tsx | Landing → AI 對話（15分/日限額） | ✅ |
-| 修行 | CalendarPage.tsx | 六經日課（目前5天靜態） | ⚠️ 需擴充 |
-| 測評 | AssessmentPage.tsx | 脈輪/執念/情緒（只有脈輪有入口） | ⚠️ 需接入題目 |
-| 我的 | ProfilePage.tsx | VIP/記錄/設定 | ⚠️ 需真實化 |
+| 修行 | CalendarPage.tsx | 六經日課 | ⚠️ 需擴充 |
+| 測評 | AssessmentPage.tsx | 脈輪/九型/執念/情緒入口 | ✅ 有入口 |
+| 易卦 | YijingPage.tsx | 掛住心掛卦 + 孟子塔羅5張 | ✅ |
+| 我的 | ProfilePage.tsx | VIP/記錄/B2B入口 | ✅ |
+
+---
+
+## 🧩 功能組件
+
+| 組件 | 功能 | 狀態 |
+|------|------|------|
+| ChakraAssessmentPage.tsx | 七脈輪測評（已整合入App） | ✅ |
+| EnneagramPage.tsx | 九型人格測評 | ✅ |
+| ShareCard.tsx | 分享金句卡 | ✅ 已建，待整合入ChatPage |
+| YijingPage.tsx | 易卦問事 + 孟子塔羅 | ✅ |
+
+---
+
+## 🔌 API 路由
+
+| 路由 | 功能 |
+|------|------|
+| /api/chat | DeepSeek AI 對話 |
+| /api/b2b/register | B2B 合作夥伴註冊 |
+| /api/b2b/check-access | B2B 訪問權限檢查 |
+| /api/b2b/clients | B2B 客戶列表 |
+| /api/b2b/record-assessment | B2B 測評記錄 |
+| /api/b2b/stats | B2B 統計數據 |
+| /api/b2b/update-client | B2B 客戶更新 |
 
 ---
 
@@ -71,26 +99,36 @@
 
 - 身份: 亦須先生的分身
 - 風格: 慈父般的修行導師，溫暖沉穩，智慧的化身
-- 惜字如金，字字珠璣，100-250字
+- 惜字如金，字字珠璣，temp=0.5, max_tokens=200
 - 簡體中文，不炫學，不油滑，不說教
 - Sino-NLP: 儒釋道易心唯識 × NLP × 行為心理學
 
 ---
 
-## 📋 待辦任務（優先級）
+## 🏢 B2B 系統
 
-| # | 任務 | 狀態 |
-|---|------|------|
-| 1 | 對話歷史 localStorage | 待做 |
-| 2 | 智慧建議按時段輪替 | 待做 |
-| 3 | 七脈輪56題接入 + 結果頁 | 待做 |
-| 4 | 分享金句卡 | 待做 |
-| 5 | 修行日課擴充至30天 + 打卡 | 待做 |
-| 6 | AI推薦用香邏輯 | 待做 |
-| 7 | 易卦問事tab（Gemini代碼待提供） | 待做 |
-| 8 | 個人頁真實化（收藏/記錄/群二維碼） | 待做 |
-| 9 | 測評結果分享卡 | 待做 |
-| 10 | 微信支付接入 | 待做 |
+- Dashboard: /b2b-dashboard
+- 註冊頁: /b2b-register
+- 管理頁: /b2b-admin
+- 永久邀請碼: founder + demo
+- 功能: 客戶數據面板、測評分佈圖表、CSV匯出
+
+---
+
+## 📋 待辦任務
+
+| # | 任務 | 優先級 |
+|---|------|--------|
+| 1 | 微信掃碼註冊 + 郵箱註冊（二選一） | 🔴高 |
+| 2 | 充值碼半自動系統 | 🔴高 |
+| 3 | C人外賣推送（晨間/宵夜） | 🟡中 |
+| 4 | 塔羅孟子補完 | 🟡中 |
+| 5 | ShareCard 整合到 ChatPage | 🟢低 |
+| 6 | 對話歷史 localStorage | 🟡中 |
+| 7 | 智慧建議按時段輪替 | 🟡中 |
+| 8 | AI推薦用香邏輯 | 🟡中 |
+| 9 | 修行日課擴充至30天 + 打卡 | 🟢低 |
+| 10 | 微信支付接入 | 🟢低 |
 
 ---
 
@@ -101,6 +139,8 @@
 - 單次測評: ¥9.90
 - 加時包: ¥6.90/30分鐘
 - 1對1諮詢: ¥299-599/次
+- 紅包: ¥12.30 新學員
+- 邀請碼後台密碼: yixu2026
 
 ---
 
@@ -115,8 +155,8 @@
 
 ## 🔑 Token 記錄
 
-| 用途 | Token | 備註 |
-|------|-------|------|
-| DeepSeek API | (已設於 .env.local, gitignored) | 需重新提供 |
-| GitHub | (需重新提供 Personal Access Token) | push 用 |
-| Vercel | (需重新提供 Personal Access Token) | CLI/部署用 |
+| 用途 | 備註 |
+|------|------|
+| DeepSeek API | 已設於 .env.local (gitignored)，需重新提供 |
+| GitHub | 需重新提供 Personal Access Token |
+| Vercel | 需重新提供 Personal Access Token |
