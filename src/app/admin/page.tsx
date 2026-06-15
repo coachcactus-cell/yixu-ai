@@ -20,6 +20,7 @@ import {
   Copy,
   Plus,
   Trash2,
+  Check,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -516,47 +517,56 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 // ── 充值码管理 Tab ──
-interface TopupCodeEntry {
-  code: string;
-  amount: number;     // 分
-  desc: string;
-  createdAt: string;
-  used: boolean;
-  usedBy?: string;
-  usedAt?: string;
-}
-
-const INITIAL_TOPUP_CODES: TopupCodeEntry[] = [
-  { code: "YIXU50", amount: 5000, desc: "充值 ¥50", createdAt: "2026-06-14", used: false },
-  { code: "YIXU100", amount: 10000, desc: "充值 ¥100", createdAt: "2026-06-14", used: false },
-  { code: "YIXU200", amount: 20000, desc: "充值 ¥200", createdAt: "2026-06-14", used: false },
-];
-
 function TopupCodesTab() {
-  const [codes, setCodes] = useState<TopupCodeEntry[]>(INITIAL_TOPUP_CODES);
-  const [newAmount, setNewAmount] = useState("");
-  const [newDesc, setNewDesc] = useState("");
+  const [confirmCode, setConfirmCode] = useState("");
+  const [confirmUserId, setConfirmUserId] = useState("");
+  const [confirmAmount, setConfirmAmount] = useState("");
+  const [confirmMsg, setConfirmMsg] = useState<{ text: string; success: boolean } | null>(null);
+  const [confirmedList, setConfirmedList] = useState<Record<string, { amount: number; userId: string; confirmedAt: string }>>({});
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
-  const handleGenerate = () => {
-    const amount = parseInt(newAmount);
-    if (!amount || amount <= 0) return;
+  // 读取已确认码列表
+  const loadList = () => {
+    try {
+      const raw = localStorage.getItem("yixu-confirmed-topup-codes");
+      if (raw) setConfirmedList(JSON.parse(raw));
+      else setConfirmedList({});
+    } catch { setConfirmedList({}); }
+  };
 
-    const code = `YX${Date.now().toString(36).toUpperCase().slice(-6)}`;
-    const entry: TopupCodeEntry = {
-      code,
-      amount: amount * 100, // 轉為分
-      desc: newDesc || `充值 ¥${amount}`,
-      createdAt: new Date().toISOString().split("T")[0],
-      used: false,
-    };
-    setCodes([entry, ...codes]);
-    setNewAmount("");
-    setNewDesc("");
+  useState(() => { loadList(); });
+
+  const handleConfirm = () => {
+    const code = confirmCode.trim().toUpperCase();
+    const userId = confirmUserId.trim();
+    const amountFen = Math.round(parseFloat(confirmAmount) * 100);
+
+    if (!code || !userId || !amountFen) {
+      setConfirmMsg({ text: "请填写所有字段", success: false });
+      return;
+    }
+
+    const current = confirmedList;
+    if (current[code]) {
+      setConfirmMsg({ text: "此码已确认，请勿重复操作", success: false });
+      return;
+    }
+
+    current[code] = { amount: amountFen, userId, confirmedAt: new Date().toISOString() };
+    localStorage.setItem("yixu-confirmed-topup-codes", JSON.stringify(current));
+    setConfirmedList({ ...current });
+    setConfirmMsg({ text: `已确认 ${code}，¥${(amountFen / 100).toFixed(2)} 到账用户 ${userId}`, success: true });
+    setConfirmCode("");
+    setConfirmUserId("");
+    setConfirmAmount("");
+    setTimeout(() => setConfirmMsg(null), 3000);
   };
 
   const handleDelete = (code: string) => {
-    setCodes(codes.filter((c) => c.code !== code));
+    const current = { ...confirmedList };
+    delete current[code];
+    localStorage.setItem("yixu-confirmed-topup-codes", JSON.stringify(current));
+    setConfirmedList(current);
   };
 
   const handleCopy = (code: string) => {
@@ -566,22 +576,20 @@ function TopupCodesTab() {
     });
   };
 
-  // 統計
-  const totalCodes = codes.length;
-  const usedCodes = codes.filter((c) => c.used).length;
-  const totalValue = codes.reduce((a, c) => a + c.amount, 0);
+  const entries = Object.entries(confirmedList);
+  const totalValue = entries.reduce((a, [, v]) => a + v.amount, 0);
 
   return (
     <>
-      {/* 統計 */}
+      {/* 统计 */}
       <div className="mt-4 grid grid-cols-3 gap-3">
         <div className="bg-white rounded-xl p-3 border border-[#e8e8e8] text-center">
-          <p className="text-xl font-bold text-[#c9a84c]">{totalCodes}</p>
-          <p className="text-[10px] text-[#999]">总码数</p>
+          <p className="text-xl font-bold text-[#c9a84c]">{entries.length}</p>
+          <p className="text-[10px] text-[#999]">已确认码</p>
         </div>
         <div className="bg-white rounded-xl p-3 border border-[#e8e8e8] text-center">
-          <p className="text-xl font-bold text-[#10b981]">{usedCodes}</p>
-          <p className="text-[10px] text-[#999]">已使用</p>
+          <p className="text-xl font-bold text-[#10b981]">{entries.filter(([k]) => { const used = localStorage.getItem("yixu-used-topup-codes"); return used ? !JSON.parse(used).includes(k) : true; }).length}</p>
+          <p className="text-[10px] text-[#999]">待兑换</p>
         </div>
         <div className="bg-white rounded-xl p-3 border border-[#e8e8e8] text-center">
           <p className="text-xl font-bold text-[#6366f1]">¥{(totalValue / 100).toFixed(0)}</p>
@@ -589,107 +597,113 @@ function TopupCodesTab() {
         </div>
       </div>
 
-      {/* 生成新碼 */}
+      {/* 确认充值码 */}
       <div className="mt-4 bg-white rounded-xl p-4 border border-[#e8e8e8]">
         <h3 className="text-sm font-bold text-[#1a1a1a] mb-3 flex items-center gap-2">
-          <Plus size={14} className="text-[#c9a84c]" />
-          生成充值码
+          <Check size={14} className="text-[#10b981]" />
+          确认充值码（收款后操作）
         </h3>
         <div className="space-y-2">
-          <div className="flex gap-2">
-            <input
-              type="number"
-              value={newAmount}
-              onChange={(e) => setNewAmount(e.target.value)}
-              placeholder="金额（元）"
-              className="flex-1 px-3 py-2.5 rounded-lg border border-[#e8e8e8] text-sm outline-none focus:border-[#c9a84c] transition-colors"
-            />
-            <input
-              type="text"
-              value={newDesc}
-              onChange={(e) => setNewDesc(e.target.value)}
-              placeholder="备注（选填）"
-              className="flex-1 px-3 py-2.5 rounded-lg border border-[#e8e8e8] text-sm outline-none focus:border-[#c9a84c] transition-colors"
-            />
-          </div>
+          <input
+            type="text"
+            value={confirmCode}
+            onChange={(e) => { setConfirmCode(e.target.value.toUpperCase()); setConfirmMsg(null); }}
+            placeholder="充值码（如 YX50-ABCD）"
+            className="w-full px-3 py-2.5 rounded-lg border border-[#e8e8e8] text-sm font-mono outline-none focus:border-[#c9a84c] transition-colors"
+          />
+          <input
+            type="text"
+            value={confirmUserId}
+            onChange={(e) => { setConfirmUserId(e.target.value); setConfirmMsg(null); }}
+            placeholder="用户ID（如 yx_xxx）"
+            className="w-full px-3 py-2.5 rounded-lg border border-[#e8e8e8] text-sm outline-none focus:border-[#c9a84c] transition-colors"
+          />
+          <input
+            type="number"
+            value={confirmAmount}
+            onChange={(e) => { setConfirmAmount(e.target.value); setConfirmMsg(null); }}
+            placeholder="金额（元，如 50）"
+            className="w-full px-3 py-2.5 rounded-lg border border-[#e8e8e8] text-sm outline-none focus:border-[#c9a84c] transition-colors"
+          />
+          {confirmMsg && (
+            <p className={`text-xs text-center ${confirmMsg.success ? "text-green-600" : "text-red-500"}`}>
+              {confirmMsg.text}
+            </p>
+          )}
           <button
-            onClick={handleGenerate}
+            onClick={handleConfirm}
             className="w-full py-2.5 rounded-lg text-white text-sm font-bold active:scale-[0.98] transition-transform"
-            style={{ background: "linear-gradient(135deg, #c9a84c, #b89430)" }}
+            style={{ background: "linear-gradient(135deg, #10b981, #059669)" }}
           >
-            生成充值码
+            确认到账
           </button>
         </div>
       </div>
 
-      {/* 充值码列表 */}
+      {/* 已确认码列表 */}
       <div className="mt-4 bg-white rounded-xl p-4 border border-[#e8e8e8]">
-        <h3 className="text-sm font-bold text-[#1a1a1a] mb-3">充值码列表</h3>
+        <h3 className="text-sm font-bold text-[#1a1a1a] mb-3">已确认码列表</h3>
         <div className="space-y-2">
-          {codes.map((c) => (
-            <div
-              key={c.code}
-              className={`flex items-center justify-between py-2.5 px-3 rounded-lg border ${
-                c.used ? "bg-[#fafafa] border-[#e8e8e8]" : "bg-white border-[#c9a84c]/30"
-              }`}
-            >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className={`text-sm font-mono font-bold ${c.used ? "text-[#999]" : "text-[#1a1a1a]"}`}>
-                    {c.code}
-                  </span>
-                  {c.used ? (
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 font-medium">
-                      已使用
+          {entries.length === 0 ? (
+            <p className="text-xs text-[#999] text-center py-4">暂无已确认的充值码</p>
+          ) : entries.map(([code, info]) => {
+            // 检查是否已被用户兑换
+            let isUsed = false;
+            try {
+              const used = localStorage.getItem("yixu-used-topup-codes");
+              if (used) isUsed = JSON.parse(used).includes(code);
+            } catch {}
+            return (
+              <div
+                key={code}
+                className={`flex items-center justify-between py-2.5 px-3 rounded-lg border ${
+                  isUsed ? "bg-[#fafafa] border-[#e8e8e8]" : "bg-white border-[#10b981]/30"
+                }`}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className={`text-sm font-mono font-bold ${isUsed ? "text-[#999]" : "text-[#1a1a1a]"}`}>
+                      {code}
                     </span>
-                  ) : (
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-medium">
-                      可用
-                    </span>
+                    {isUsed ? (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 font-medium">已兑换</span>
+                    ) : (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-medium">待兑换</span>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-[#999] mt-0.5">
+                    ¥{(info.amount / 100).toFixed(2)} · 用户: {info.userId} · 确认: {new Date(info.confirmedAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                  <span className="text-sm font-bold text-[#c9a84c]">¥{(info.amount / 100).toFixed(2)}</span>
+                  {!isUsed && (
+                    <>
+                      <button
+                        onClick={() => handleCopy(code)}
+                        className="p-1.5 rounded-lg bg-[#fdf8ed] text-[#c9a84c] active:scale-95 transition-transform"
+                      >
+                        {copiedCode === code ? <span className="text-[10px] font-bold">✓</span> : <Copy size={12} />}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(code)}
+                        className="p-1.5 rounded-lg bg-red-50 text-red-400 active:scale-95 transition-transform"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </>
                   )}
                 </div>
-                <p className="text-[10px] text-[#999] mt-0.5">
-                  {c.desc} · 创建: {c.createdAt}
-                  {c.usedBy && ` · 使用者: ${c.usedBy}`}
-                </p>
               </div>
-              <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-                <span className="text-sm font-bold text-[#c9a84c]">¥{(c.amount / 100).toFixed(0)}</span>
-                {!c.used && (
-                  <>
-                    <button
-                      onClick={() => handleCopy(c.code)}
-                      className="p-1.5 rounded-lg bg-[#fdf8ed] text-[#c9a84c] active:scale-95 transition-transform"
-                      title="复制"
-                    >
-                      {copiedCode === c.code ? (
-                        <span className="text-[10px] font-bold">✓</span>
-                      ) : (
-                        <Copy size={12} />
-                      )}
-                    </button>
-                    <button
-                      onClick={() => handleDelete(c.code)}
-                      className="p-1.5 rounded-lg bg-red-50 text-red-400 active:scale-95 transition-transform"
-                      title="删除"
-                    >
-                      <Trash2 size={12} />
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          ))}
-          {codes.length === 0 && (
-            <p className="text-xs text-[#999] text-center py-4">暂无充值码</p>
-          )}
+            );
+          })}
         </div>
       </div>
 
-      {/* 提示 */}
-      <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-xl p-3">
-        <p className="text-xs text-yellow-700">
-          💡 Phase 1 充值码为前端硬编码管理。生成新码后，需手动同步到 <code className="bg-yellow-100 px-1 rounded">useWallet.ts</code> 中的 TOPUP_CODES 常量，方可生效。
+      {/* 流程提示 */}
+      <div className="mt-4 bg-[#fdf8ed] border border-[#c9a84c]/20 rounded-xl p-3">
+        <p className="text-xs text-[#666] leading-relaxed">
+          💡 充值流程：客户选金额 → 生成专属码 → 客户扫码付款备注码 → 你确认收款 → 在这里输入码+用户ID+金额 → 点「确认到账」→ 客户APP兑换码即到账。
         </p>
       </div>
     </>

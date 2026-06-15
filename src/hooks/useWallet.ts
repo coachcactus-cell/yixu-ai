@@ -30,12 +30,23 @@ export const ASSESSMENT_NAMES: Record<string, string> = {
   enneagram: "九型人格测试",
 };
 
-// ─── 充值碼（Phase 1 硬編碼）───
-const TOPUP_CODES: Record<string, { amount: number; desc: string }> = {
-  "YIXU50": { amount: 5000, desc: "充值 ¥50" },
-  "YIXU100": { amount: 10000, desc: "充值 ¥100" },
-  "YIXU200": { amount: 20000, desc: "充值 ¥200" },
-};
+// ─── 充值码系统 ───
+// Phase 1：半自动流程
+// 客户选金额 → 生成专属充值码 → 客户扫码付款备注码 → C老大确认 → 余额到账
+// 管理员确认码存放在 localStorage（后续迁移到后端）
+
+export const TOPUP_AMOUNTS = [
+  { fen: 3000, label: "¥30" },
+  { fen: 5000, label: "¥50" },
+  { fen: 10000, label: "¥100" },
+  { fen: 20000, label: "¥200" },
+  { fen: 50000, label: "¥500" },
+  { fen: 100000, label: "¥1000" },
+];
+
+// 已确认的充值码（管理员后台操作后写入）
+// 格式：{ "YX50-ABCD": { amount: 5000, userId: "yx_xxx", confirmedAt: "..." } }
+const CONFIRMED_CODES_KEY = "yixu-confirmed-topup-codes";
 
 // ─── localStorage Keys ───
 const WALLET_KEY = "yixu-wallet";
@@ -128,6 +139,39 @@ function saveUsedCodes(codes: string[]): void {
   } catch { /* ignore */ }
 }
 
+// ── 已确认充值码读写 ──
+interface ConfirmedCodeInfo {
+  amount: number;      // 金额（分）
+  userId: string;      // 对应用户ID
+  confirmedAt: string; // 确认时间
+}
+
+function loadConfirmedCodes(): Record<string, ConfirmedCodeInfo> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(CONFIRMED_CODES_KEY);
+    if (!raw) return {};
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+}
+
+function saveConfirmedCodes(codes: Record<string, ConfirmedCodeInfo>): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(CONFIRMED_CODES_KEY, JSON.stringify(codes));
+  } catch { /* ignore */ }
+}
+
+// 生成专属充值码
+export function generateTopupCode(userId: string, amountFen: number): string {
+  const prefix = "YX";
+  const amountTag = amountFen >= 10000 ? `${amountFen / 100}` : `${amountFen / 100}`;
+  const random = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `${prefix}${amountTag}-${random}`;
+}
+
 // ─── Hook ───
 export function useWallet() {
   const [wallet, setWallet] = useState<WalletData>({ balance: 0, transactions: [] });
@@ -201,7 +245,7 @@ export function useWallet() {
     return { success: true, message: `已解锁「${ASSESSMENT_NAMES[assessmentId] || assessmentId}」` };
   }, [wallet, unlocked, getPrice, isUnlocked]);
 
-  // 兌換充值碼
+  // 兑换充值码（从已确认列表中查）
   const redeemCode = useCallback((code: string): { success: boolean; message: string } => {
     const upperCode = code.trim().toUpperCase();
 
@@ -209,23 +253,25 @@ export function useWallet() {
       return { success: false, message: "请输入充值码" };
     }
 
-    // 檢查是否已用
+    // 检查是否已用
     const usedCodes = loadUsedCodes();
     if (usedCodes.includes(upperCode)) {
       return { success: false, message: "此充值码已被使用" };
     }
 
-    const codeInfo = TOPUP_CODES[upperCode];
+    // 从已确认码列表中查找
+    const confirmedCodes = loadConfirmedCodes();
+    const codeInfo = confirmedCodes[upperCode];
     if (!codeInfo) {
       return { success: false, message: "无效充值码，请联系亦须先生获取" };
     }
 
-    // 加餘額
+    // 加余额
     const tx: Transaction = {
       id: generateId(),
       type: "topup",
       amount: codeInfo.amount,
-      description: codeInfo.desc,
+      description: `充值 ¥${(codeInfo.amount / 100).toFixed(2)}`,
       createdAt: new Date().toISOString(),
     };
 
@@ -234,13 +280,13 @@ export function useWallet() {
       transactions: [tx, ...wallet.transactions].slice(0, 100),
     };
 
-    // 標記碼已用
+    // 标记码已用
     usedCodes.push(upperCode);
     saveUsedCodes(usedCodes);
     saveWallet(newWallet);
     setWallet(newWallet);
 
-    return { success: true, message: `充值成功！${codeInfo.desc}，当前余额 ${formatAmount(newWallet.balance)}` };
+    return { success: true, message: `充值成功！¥${(codeInfo.amount / 100).toFixed(2)}，当前余额 ${formatAmount(newWallet.balance)}` };
   }, [wallet]);
 
   // ── 新用戶紅包（註冊獎勵）───
@@ -272,6 +318,22 @@ export function useWallet() {
     return true;
   }, [wallet]);
 
+  // ── 管理员确认充值码（后台用）───
+  const confirmTopupCode = useCallback((code: string, userId: string, amountFen: number): { success: boolean; message: string } => {
+    const upperCode = code.trim().toUpperCase();
+    const confirmedCodes = loadConfirmedCodes();
+    if (confirmedCodes[upperCode]) {
+      return { success: false, message: "此码已确认" };
+    }
+    confirmedCodes[upperCode] = {
+      amount: amountFen,
+      userId,
+      confirmedAt: new Date().toISOString(),
+    };
+    saveConfirmedCodes(confirmedCodes);
+    return { success: true, message: `已确认充值码 ${upperCode}，金额 ¥${(amountFen / 100).toFixed(2)}` };
+  }, []);
+
   return {
     balance: wallet.balance,
     transactions: wallet.transactions,
@@ -281,6 +343,7 @@ export function useWallet() {
     canAfford,
     purchase,
     redeemCode,
+    confirmTopupCode,
     grantWelcomeBonus,
     formatAmount,
   };

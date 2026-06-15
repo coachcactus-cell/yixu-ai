@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { X, Gift, Phone } from "lucide-react";
-import { useWallet, formatAmount } from "@/hooks/useWallet";
+import { X, Gift, Phone, Check } from "lucide-react";
+import { useWallet, formatAmount, TOPUP_AMOUNTS, generateTopupCode } from "@/hooks/useWallet";
+import { useUser } from "@/hooks/useUser";
 
 interface TopupModalProps {
   visible: boolean;
@@ -11,11 +12,22 @@ interface TopupModalProps {
 
 export default function TopupModal({ visible, onClose }: TopupModalProps) {
   const { balance, redeemCode } = useWallet();
+  const { user } = useUser();
   const [code, setCode] = useState("");
   const [message, setMessage] = useState<{ text: string; success: boolean } | null>(null);
   const [redeeming, setRedeeming] = useState(false);
+  const [step, setStep] = useState<"select" | "paycode" | "redeem">("select");
+  const [selectedAmount, setSelectedAmount] = useState<number>(0);
+  const [payCode, setPayCode] = useState("");
 
   if (!visible) return null;
+
+  const handleSelectAmount = (fen: number) => {
+    setSelectedAmount(fen);
+    const newCode = generateTopupCode(user?.id || "guest", fen);
+    setPayCode(newCode);
+    setStep("paycode");
+  };
 
   const handleRedeem = async () => {
     if (!code.trim()) {
@@ -29,7 +41,6 @@ export default function TopupModal({ visible, onClose }: TopupModalProps) {
     setMessage({ text: result.message, success: result.success });
     if (result.success) {
       setCode("");
-      // 2 秒後自動關閉
       setTimeout(() => {
         setMessage(null);
       }, 2000);
@@ -58,9 +69,9 @@ export default function TopupModal({ visible, onClose }: TopupModalProps) {
           </button>
         </div>
 
-        {/* 內容 */}
+        {/* 内容 */}
         <div className="px-5 pb-5">
-          {/* 當前餘額 */}
+          {/* 当前余额 */}
           <div className="bg-[#fdf8ed] rounded-xl p-4 mb-4 text-center">
             <p className="text-xs text-[#999] mb-1">当前余额</p>
             <p className="text-3xl font-bold text-[#c9a84c] font-song">
@@ -68,51 +79,121 @@ export default function TopupModal({ visible, onClose }: TopupModalProps) {
             </p>
           </div>
 
-          {/* 充值碼輸入 */}
-          <div className="mb-4">
-            <label className="text-sm font-medium text-[#1a1a1a] mb-2 block">
-              输入充值码
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={code}
-                onChange={(e) => {
-                  setCode(e.target.value.toUpperCase());
-                  setMessage(null);
-                }}
-                onKeyDown={(e) => e.key === "Enter" && handleRedeem()}
-                placeholder="输入充值码"
-                className="flex-1 px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-base tracking-widest outline-none focus:border-[#c9a84c] transition-colors"
-                autoFocus
-              />
-              <button
-                onClick={handleRedeem}
-                disabled={redeeming}
-                className="px-5 py-3 rounded-xl text-white text-sm font-semibold active:scale-[0.98] transition-transform disabled:opacity-50"
-                style={{ background: "linear-gradient(135deg, #c9a84c, #b89430)" }}
-              >
-                {redeeming ? "..." : "兑换"}
-              </button>
-            </div>
-            {message && (
-              <p className={`text-xs mt-2 text-center ${message.success ? "text-green-600" : "text-red-500"}`}>
-                {message.text}
-              </p>
-            )}
+          {/* Tab切换 */}
+          <div className="flex gap-1 mb-4 bg-[#f5f5f5] rounded-xl p-1">
+            <button
+              onClick={() => setStep("select")}
+              className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                step === "select" || step === "paycode"
+                  ? "bg-white text-[#1a1a1a] shadow-sm"
+                  : "text-[#999]"
+              }`}
+            >
+              扫码充值
+            </button>
+            <button
+              onClick={() => { setStep("redeem"); setMessage(null); }}
+              className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                step === "redeem"
+                  ? "bg-white text-[#1a1a1a] shadow-sm"
+                  : "text-[#999]"
+              }`}
+            >
+              兑换充值码
+            </button>
           </div>
 
-          {/* 獲取充值碼 */}
-          <div className="bg-[#f9f9f9] rounded-xl p-4">
-            <p className="text-sm font-semibold text-[#1a1a1a] mb-2">获取充值码</p>
-            <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2.5 mb-2">
-              <Phone size={16} className="text-[#c9a84c]" />
-              <span className="text-base font-mono text-[#1a1a1a]">859022196</span>
+          {/* 扫码充值：选金额 */}
+          {step === "select" && (
+            <div className="space-y-3">
+              <p className="text-sm text-[#666] text-center">选择充值金额</p>
+              <div className="grid grid-cols-3 gap-2">
+                {TOPUP_AMOUNTS.map((item) => (
+                  <button
+                    key={item.fen}
+                    onClick={() => handleSelectAmount(item.fen)}
+                    className="py-3 rounded-xl border border-[#e8e8e8] text-center text-base font-semibold text-[#1a1a1a] active:scale-[0.95] transition-transform"
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
             </div>
-            <p className="text-xs text-[#999]">
-              微信联系亦须先生，转账后发送截图，先生确认后即时到账并发送充值码
-            </p>
-          </div>
+          )}
+
+          {/* 扫码充值：生成专属码 */}
+          {step === "paycode" && (
+            <div className="space-y-3">
+              <div className="text-center">
+                <p className="text-sm text-[#666]">充值金额：<b className="text-[#c9a84c]">¥{(selectedAmount / 100).toFixed(2)}</b></p>
+              </div>
+
+              {/* 专属充值码 */}
+              <div className="bg-[#fdf8ed] rounded-xl p-4 text-center">
+                <p className="text-xs text-[#999] mb-2">你的专属充值码</p>
+                <p className="text-2xl font-bold font-mono text-[#c9a84c] tracking-wider">{payCode}</p>
+                <p className="text-xs text-[#999] mt-2">付款时备注此码，方便确认到账</p>
+              </div>
+
+              {/* 扫码付款指引 */}
+              <div className="bg-[#f9f9f9] rounded-xl p-4 space-y-2">
+                <p className="text-sm font-semibold text-[#1a1a1a]">付款步骤</p>
+                <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2.5">
+                  <Phone size={16} className="text-[#c9a84c]" />
+                  <span className="text-base font-mono text-[#1a1a1a]">859022196</span>
+                </div>
+                <ol className="text-xs text-[#999] space-y-1.5 pl-4 list-decimal">
+                  <li>加亦须先生微信</li>
+                  <li>转账 <b>¥{(selectedAmount / 100).toFixed(2)}</b></li>
+                  <li>备注充值码 <b className="text-[#c9a84c]">{payCode}</b></li>
+                  <li>先生确认后，返回这里兑换充值码</li>
+                </ol>
+              </div>
+
+              <div className="flex gap-2">
+                <button onClick={() => setStep("select")} className="flex-1 py-3 rounded-xl border border-[#e8e8e8] text-sm font-medium text-[#666]">重新选金额</button>
+                <button onClick={() => { setStep("redeem"); setCode(""); setMessage(null); }} className="flex-1 py-3 rounded-xl text-sm font-bold text-white" style={{ background: "linear-gradient(135deg, #c9a84c, #b89430)" }}>去兑换</button>
+              </div>
+            </div>
+          )}
+
+          {/* 兑换充值码 */}
+          {step === "redeem" && (
+            <div className="space-y-3">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={code}
+                  onChange={(e) => {
+                    setCode(e.target.value.toUpperCase());
+                    setMessage(null);
+                  }}
+                  onKeyDown={(e) => e.key === "Enter" && handleRedeem()}
+                  placeholder="输入充值码"
+                  className="flex-1 px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-base tracking-widest outline-none focus:border-[#c9a84c] transition-colors"
+                  autoFocus
+                />
+                <button
+                  onClick={handleRedeem}
+                  disabled={redeeming}
+                  className="px-5 py-3 rounded-xl text-white text-sm font-semibold active:scale-[0.98] transition-transform disabled:opacity-50"
+                  style={{ background: "linear-gradient(135deg, #c9a84c, #b89430)" }}
+                >
+                  {redeeming ? "..." : "兑换"}
+                </button>
+              </div>
+              {message && (
+                <p className={`text-xs text-center ${message.success ? "text-green-600" : "text-red-500"}`}>
+                  {message.text}
+                </p>
+              )}
+              <div className="bg-[#f9f9f9] rounded-xl p-3">
+                <p className="text-xs text-[#999] text-center">
+                  先生确认收款后，充值码即可兑换
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

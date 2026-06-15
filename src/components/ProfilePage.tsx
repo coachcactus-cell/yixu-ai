@@ -98,25 +98,31 @@ function resolveInviteCode(code: string): { path: string; label: string; icon: a
   return null;
 }
 
-// ─── 手机号登录组件 ───
-function PhoneLogin({
-  onLogin,
+// ─── 注册组件（微信扫码 / 邮箱 / 手机号 三选一）───
+function RegisterForm({
+  onRegister,
 }: {
-  onLogin: (phone: string, wechatId: string) => void;
+  onRegister: (method: string, identifier: string, wechatId?: string) => void;
 }) {
-  const [phone, setPhone] = useState("");
+  const [method, setMethod] = useState<"wechat" | "email" | "phone">("wechat");
+  const [identifier, setIdentifier] = useState("");
   const [wechatId, setWechatId] = useState("");
   const [error, setError] = useState("");
   const [agreed, setAgreed] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   const handleSubmit = () => {
-    const trimmed = phone.trim();
+    const trimmed = identifier.trim();
     if (!trimmed) {
-      setError("请输入手机号");
+      setError(method === "email" ? "请输入邮箱" : "请输入手机号");
       return;
     }
-    // 接受任意位数的手机号（大陆11位/港澳8位/其他地区均可）
-    if (!/^\d{6,15}$/.test(trimmed)) {
+    // 验证
+    if (method === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setError("请输入有效的邮箱地址");
+      return;
+    }
+    if (method === "phone" && !/^\d{6,15}$/.test(trimmed)) {
       setError("请输入有效的手机号（6-15位数字）");
       return;
     }
@@ -125,55 +131,181 @@ function PhoneLogin({
       return;
     }
     setError("");
-    onLogin(trimmed, wechatId.trim());
+    onRegister(method, trimmed, wechatId.trim());
+  };
+
+  // 模拟邮箱验证码发送
+  const sendEmailCode = () => {
+    const trimmed = identifier.trim();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setError("请输入有效的邮箱地址");
+      return;
+    }
+    setEmailSent(true);
+    setError("");
   };
 
   return (
     <div className="card mt-4">
       <div className="text-center mb-4">
-        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#fdf8ed] to-[#fef3d0] flex items-center justify-center mx-auto mb-3">
-          <Phone size={28} className="text-[#c9a84c]" />
-        </div>
         <h3 className="font-bold text-[#1a1a1a]">注册 / 登录</h3>
-        <p className="text-xs text-[#999999] mt-1">
-          输入手机号即可注册，已有账号直接登录
-        </p>
+        <p className="text-xs text-[#999999] mt-1">选择一种方式开始</p>
       </div>
 
-      <div className="space-y-3">
-        <input
-          type="tel"
-          value={phone}
-          onChange={(e) => {
-            setPhone(e.target.value.replace(/\D/g, "").slice(0, 15));
-            setError("");
-          }}
-          placeholder="手机号（6-15位数字）"
-          className="w-full px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-lg tracking-widest outline-none focus:border-[#c9a84c] transition-colors"
-        />
-        <input
-          type="text"
-          value={wechatId}
-          onChange={(e) => setWechatId(e.target.value)}
-          placeholder="微信号（选填）"
-          className="w-full px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-base outline-none focus:border-[#c9a84c] transition-colors"
-        />
-        {error && <p className="text-xs text-red-500 text-center">{error}</p>}
-        <label className="flex items-start gap-2 text-xs text-[#999] px-1">
+      {/* 方式选择 */}
+      <div className="flex gap-1 mb-4 bg-[#f5f5f5] rounded-xl p-1">
+        {[
+          { key: "wechat", label: "微信", icon: "💬" },
+          { key: "email", label: "邮箱", icon: "📧" },
+          { key: "phone", label: "手机号", icon: "📱" },
+        ].map((opt) => (
+          <button
+            key={opt.key}
+            onClick={() => { setMethod(opt.key as any); setIdentifier(""); setError(""); setEmailSent(false); }}
+            className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              method === opt.key ? "bg-white text-[#1a1a1a] shadow-sm" : "text-[#999]"
+            }`}
+          >
+            {opt.icon} {opt.label}
+          </button>
+        ))}
+      </div>
+
+      {/* 微信扫码 */}
+      {method === "wechat" && (
+        <div className="space-y-3">
+          <div className="bg-[#fdf8ed] rounded-xl p-5 text-center">
+            <div className="w-16 h-16 rounded-full bg-[#07c160] flex items-center justify-center mx-auto mb-3">
+              <span className="text-white text-2xl font-bold">微</span>
+            </div>
+            <p className="text-sm text-[#1a1a1a] font-semibold">扫码关注亦须先生</p>
+            <p className="text-xs text-[#999] mt-1">微信扫码后自动完成注册</p>
+          </div>
+          <div className="bg-[#f9f9f9] rounded-xl p-3 space-y-2">
+            <p className="text-xs text-[#999] text-center leading-relaxed">
+              扫码关注公众号「亦须先生」→ 点击菜单「进入亦须AI」→ 自动登录<br />
+              <b className="text-[#666]">目前为演示版，正式版上线后接入微信 OAuth</b>
+            </p>
+          </div>
+          {/* 演示版：手动输入微信号注册 */}
           <input
-            type="checkbox"
-            checked={agreed}
-            onChange={(e) => setAgreed(e.target.checked)}
-            className="mt-0.5 shrink-0"
+            type="text"
+            value={wechatId}
+            onChange={(e) => setWechatId(e.target.value)}
+            placeholder="输入你的微信号（演示版直接注册）"
+            className="w-full px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-base outline-none focus:border-[#07c160] transition-colors"
           />
-          <span>注册即同意《用户协议》和《隐私政策》，我们不会把你的数据卖给任何人。</span>
-        </label>
-        <button
-          onClick={handleSubmit}
-          className="w-full rounded-xl py-3 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-50"
-          style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}
-          disabled={!agreed}
-        >
+          {error && <p className="text-xs text-red-500 text-center">{error}</p>}
+          <label className="flex items-start gap-2 text-xs text-[#999] px-1">
+            <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5 shrink-0" />
+            <span>注册即同意《用户协议》和《隐私政策》，我们不会把你的数据卖给任何人。</span>
+          </label>
+          <button
+            onClick={() => {
+              if (!wechatId.trim()) { setError("请输入微信号"); return; }
+              if (!agreed) { setError("请先同意用户协议"); return; }
+              onRegister("wechat", wechatId.trim());
+            }}
+            className="w-full rounded-xl py-3 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-50"
+            style={{ background: "linear-gradient(135deg, #07c160, #06ad56)" }}
+            disabled={!agreed}
+          >
+            微信注册
+          </button>
+        </div>
+      )}
+
+      {/* 邮箱注册 */}
+      {method === "email" && (
+        <div className="space-y-3">
+          {!emailSent ? (
+            <>
+              <input
+                type="email"
+                value={identifier}
+                onChange={(e) => { setIdentifier(e.target.value); setError(""); }}
+                placeholder="输入邮箱地址"
+                className="w-full px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-base outline-none focus:border-[#c9a84c] transition-colors"
+              />
+              {error && <p className="text-xs text-red-500 text-center">{error}</p>}
+              <label className="flex items-start gap-2 text-xs text-[#999] px-1">
+                <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5 shrink-0" />
+                <span>注册即同意《用户协议》和《隐私政策》，我们不会把你的数据卖给任何人。</span>
+              </label>
+              <button
+                onClick={sendEmailCode}
+                className="w-full rounded-xl py-3 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-50"
+                style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}
+                disabled={!agreed}
+              >
+                发送验证链接
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="bg-[#fdf8ed] rounded-xl p-4 text-center">
+                <div className="text-4xl mb-2">📧</div>
+                <p className="text-sm font-semibold text-[#1a1a1a]">验证链接已发送</p>
+                <p className="text-xs text-[#999] mt-1">{identifier}</p>
+                <p className="text-xs text-[#999] mt-2 leading-relaxed">请检查邮箱，点击验证链接完成注册。</p>
+              </div>
+              {/* 演示版：直接完成 */}
+              <button
+                onClick={handleSubmit}
+                className="w-full rounded-xl py-3 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+                style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}
+              >
+                演示版：直接完成注册
+              </button>
+            </>
+          )}
+          <div className="bg-[#f9f9f9] rounded-xl p-2 text-center">
+            <p className="text-[10px] text-[#999]">海内外邮箱均可使用</p>
+          </div>
+        </div>
+      )}
+
+      {/* 手机号注册 */}
+      {method === "phone" && (
+        <div className="space-y-3">
+          <input
+            type="tel"
+            value={identifier}
+            onChange={(e) => {
+              setIdentifier(e.target.value.replace(/\D/g, "").slice(0, 15));
+              setError("");
+            }}
+            placeholder="手机号（6-15位数字）"
+            className="w-full px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-lg tracking-widest outline-none focus:border-[#c9a84c] transition-colors"
+          />
+          <input
+            type="text"
+            value={wechatId}
+            onChange={(e) => setWechatId(e.target.value)}
+            placeholder="微信号（选填）"
+            className="w-full px-4 py-3 rounded-xl border border-[#e8e8e8] text-center text-base outline-none focus:border-[#c9a84c] transition-colors"
+          />
+          {error && <p className="text-xs text-red-500 text-center">{error}</p>}
+          <label className="flex items-start gap-2 text-xs text-[#999] px-1">
+            <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5 shrink-0" />
+            <span>注册即同意《用户协议》和《隐私政策》，我们不会把你的数据卖给任何人。</span>
+          </label>
+          <button
+            onClick={handleSubmit}
+            className="w-full rounded-xl py-3 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-50"
+            style={{ background: "linear-gradient(135deg, #c9a84c, #b8943a)" }}
+            disabled={!agreed}
+          >
+            注册 / 登录
+          </button>
+          <div className="bg-[#f9f9f9] rounded-xl p-2 text-center">
+            <p className="text-[10px] text-[#999]">大陆11位 / 港澳8位 / 海外均可</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
           注册 / 登录
         </button>
       </div>
@@ -238,9 +370,10 @@ export default function ProfilePage() {
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // ── 手机号登录 ──
-  const handlePhoneLogin = (phone: string, wechat: string) => {
-    const isNewUser = loginWithPhone(phone);
+  // ── 注册（微信/邮箱/手机号）───
+  const handleRegister = (method: string, identifier: string, wechat?: string) => {
+    // 用 identifier 作为登录标识
+    const isNewUser = loginWithPhone(identifier);
     if (wechat) setWechatId(wechat);
     setShowLogin(false);
     // 新用戶 → 彈紅包選擇
@@ -401,7 +534,7 @@ export default function ProfilePage() {
 
         {/* ── 登录表单 ── */}
         {showLogin && (
-          <PhoneLogin onLogin={handlePhoneLogin} />
+          <RegisterForm onRegister={handleRegister} />
         )}
 
         {/* ── 已登录状态 ── */}
