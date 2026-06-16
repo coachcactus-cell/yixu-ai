@@ -21,10 +21,12 @@ import {
   Plus,
   Trash2,
   Check,
+  ShoppingCart,
+  XCircle,
 } from "lucide-react";
 import Link from "next/link";
 
-type Tab = "overview" | "users" | "revenue" | "distributors" | "content" | "topup-codes";
+type Tab = "overview" | "users" | "revenue" | "distributors" | "content" | "topup-codes" | "orders";
 
 // ── Mock 数据 ──
 const MOCK_OVERVIEW = {
@@ -74,6 +76,7 @@ export default function AdminDashboard() {
 
   const tabs: { key: Tab; label: string; icon: any }[] = [
     { key: "overview", label: "总览", icon: BarChart3 },
+    { key: "orders", label: "订单", icon: ShoppingCart },
     { key: "users", label: "用戶", icon: Users },
     { key: "revenue", label: "收入", icon: DollarSign },
     { key: "distributors", label: "分銷", icon: Handshake },
@@ -134,6 +137,7 @@ export default function AdminDashboard() {
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-4 pb-8">
         {activeTab === "overview" && <OverviewTab />}
+        {activeTab === "orders" && <OrdersTab />}
         {activeTab === "users" && <UsersTab />}
         {activeTab === "revenue" && <RevenueTab />}
         {activeTab === "distributors" && <DistributorsTab />}
@@ -513,6 +517,288 @@ function StatusBadge({ status }: { status: string }) {
     <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${styles[status] || "bg-gray-100 text-gray-600"}`}>
       {labels[status] || status}
     </span>
+  );
+}
+
+// ── 订单管理 Tab（VIP付款确认）──
+function OrdersTab() {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [confirmMsg, setConfirmMsg] = useState<{ text: string; success: boolean } | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectOrderId, setRejectOrderId] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadOrders();
+  }, []);
+
+  const loadOrders = async () => {
+    try {
+      const res = await fetch("/api/orders/list");
+      const data = await res.json();
+      if (data.success) {
+        // 按 pending 排最前
+        setOrders(data.data.sort((a: any, b: any) => {
+          if (a.status === "pending" && b.status !== "pending") return -1;
+          if (a.status !== "pending" && b.status === "pending") return 1;
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        }));
+      }
+    } catch {}
+    setLoading(false);
+  };
+
+  const handleConfirm = async (orderId: string) => {
+    try {
+      const res = await fetch("/api/orders/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, adminPassword: "yixu2026" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setConfirmMsg({ text: `✓ ${data.message}`, success: true });
+        loadOrders();
+        setTimeout(() => setConfirmMsg(null), 3000);
+      } else {
+        setConfirmMsg({ text: data.message, success: false });
+      }
+    } catch {
+      setConfirmMsg({ text: "网络错误", success: false });
+    }
+  };
+
+  const handleReject = async () => {
+    if (!rejectReason.trim() || !rejectOrderId) return;
+    try {
+      const res = await fetch("/api/orders/reject", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: rejectOrderId, reason: rejectReason, adminPassword: "yixu2026" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setConfirmMsg({ text: `✓ 已拒绝`, success: true });
+        setRejectOrderId(null);
+        setRejectReason("");
+        loadOrders();
+        setTimeout(() => setConfirmMsg(null), 3000);
+      } else {
+        setConfirmMsg({ text: data.message, success: false });
+      }
+    } catch {}
+  };
+
+  const filteredOrders = statusFilter === "all"
+    ? orders
+    : orders.filter((o) => o.status === statusFilter);
+
+  const stats = {
+    total: orders.length,
+    pending: orders.filter((o) => o.status === "pending").length,
+    paid: orders.filter((o) => o.status === "paid").length,
+    rejected: orders.filter((o) => o.status === "rejected").length,
+    totalRevenue: orders.filter((o) => o.status === "paid").reduce((s: number, o: any) => s + o.amount, 0),
+  };
+
+  return (
+    <>
+      {/* 统计卡片 */}
+      <div className="mt-4 grid grid-cols-4 gap-2">
+        <StatCard label="总订单" value={stats.total} color="#666" />
+        <StatCard label="⚡待确认" value={stats.pending} color="#f59e0b" highlight />
+        <StatCard label="✓已激活" value={stats.paid} color="#10b981" />
+        <StatCard label="💰收入" value={`¥${stats.totalRevenue}`} color="#c9a84c" />
+      </div>
+
+      {/* 筛选 */}
+      <div className="mt-3 flex gap-2">
+        {["all", "pending", "paid", "rejected"].map((s) => (
+          <button
+            key={s}
+            onClick={() => setStatusFilter(s)}
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+              statusFilter === s
+                ? "bg-[#c9a84c] text-white"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`}
+          >
+            {{ all: "全部", pending: "待确认", paid: "已激活", rejected: "已拒绝" }[s]}
+            {s !== "all" && (
+              <span className="ml-1 opacity-70">
+                ({orders.filter((o) => o.status === s).length})
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {confirmMsg && (
+        <div className={`mt-3 p-2 rounded-lg text-xs font-medium text-center ${confirmMsg.success ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-600 border border-red-200"}`}>
+          {confirmMsg.text}
+        </div>
+      )}
+
+      {/* 订单列表 */}
+      {loading ? (
+        <div className="text-center py-8">
+          <RefreshCw size={20} className="animate-spin mx-auto text-[#999]" />
+        </div>
+      ) : filteredOrders.length === 0 ? (
+        <div className="text-center py-8 text-sm text-[#999]">暂无订单</div>
+      ) : (
+        <div className="mt-3 space-y-2">
+          {filteredOrders.map((order) => (
+            <OrderCard
+              key={order.id}
+              order={order}
+              onConfirm={() => handleConfirm(order.id)}
+              onReject={() => { setRejectOrderId(order.id); }}
+              isRejecting={rejectOrderId === order.id}
+              rejectReason={rejectReason}
+              setRejectReason={setRejectReason}
+              onSubmitReject={handleReject}
+              onCancelReject={() => { setRejectOrderId(null); setRejectReason(""); }}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
+// ── 订单卡片组件 ──
+function OrderCard({
+  order,
+  onConfirm,
+  onReject,
+  isRejecting,
+  rejectReason,
+  setRejectReason,
+  onSubmitReject,
+  onCancelReject,
+}: {
+  order: any;
+  onConfirm: () => void;
+  onReject: () => void;
+  isRejecting: boolean;
+  rejectReason: string;
+  setRejectReason: (v: string) => void;
+  onSubmitReject: () => void;
+  onCancelReject: () => void;
+}) {
+  const isPending = order.status === "pending";
+
+  return (
+    <div className={`rounded-xl p-3 border ${
+      isPending ? "bg-yellow-50/50 border-yellow-300/50" : "bg-white border-[#e8e8e8]"
+    }`}>
+      <div className="flex justify-between items-start mb-2">
+        <div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm font-bold text-[#1a1a1a]">{order.userName}</span>
+            {order.userPhone && (
+              <span className="text-[10px] text-[#999]">{order.userPhone}</span>
+            )}
+            <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${
+              order.status === "paid" ? "bg-green-100 text-green-700" :
+              order.status === "rejected" ? "bg-red-100 text-red-500" :
+              "bg-yellow-100 text-yellow-700"
+            }`}>
+              {order.plan === "month" ? "月卡¥68" : "年卡¥198"}
+            </span>
+          </div>
+          <p className="text-[10px] text-[#999] mt-0.5 font-mono">#{order.id.slice(0, 14)}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-lg font-bold text-[#c9a84c]">¥{order.amount}</p>
+          <p className="text-[10px] text-[#999]">
+            {new Date(order.createdAt).toLocaleString("zh-CN")}
+          </p>
+        </div>
+      </div>
+
+      {/* 支付方式 + 备注 */}
+      <div className="flex items-center gap-2 mb-2">
+        <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+          order.paymentMethod === "wechat" ? "bg-green-50 text-green-600" : "bg-blue-50 text-blue-600"
+        }`}>
+          {order.paymentMethod === "wechat" ? "微信" : "支付宝"}
+        </span>
+        {order.note && (
+          <span className="text-[10px] text-gray-500 truncate flex-1">备注: {order.note}</span>
+        )}
+      </div>
+
+      {/* 拒绝原因显示 */}
+      {(order.status === "rejected" || order.rejectReason) && (
+        <div className="mb-2 p-2 bg-red-50 rounded-lg">
+          <p className="text-[11px] text-red-600">🗙 原因: {order.rejectReason}</p>
+        </div>
+      )}
+
+      {/* 操作按钮 */}
+      {isPending && !isRejecting && (
+        <div className="flex gap-2">
+          <button
+            onClick={onConfirm}
+            className="flex-1 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white text-xs font-bold active:scale-[0.97] transition-all flex items-center justify-center gap-1"
+          >
+            <Check size={12} /> 确认收款 ✓
+          </button>
+          <button
+            onClick={onReject}
+            className="py-2 px-4 rounded-lg border border-red-300 text-red-500 text-xs font-medium active:scale-[0.97] transition-all"
+          >
+            <XCircle size={12} /> 拒绝
+          </button>
+        </div>
+      )}
+
+      {/* 拒绝输入框 */}
+      {isRejecting && (
+        <div className="space-y-2">
+          <input
+            type="text"
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+            placeholder="请填写拒绝原因..."
+            autoFocus
+            className="w-full px-3 py-2 rounded-lg border border-red-300 text-xs outline-none focus:border-red-400"
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={onSubmitReject}
+              disabled={!rejectReason.trim()}
+              className="flex-1 py-1.5 rounded-lg bg-red-500 text-white text-xs font-bold disabled:opacity-40 active:scale-[0.97] transition-all"
+            >
+              提交拒绝
+            </button>
+            <button
+              onClick={onCancelReject}
+              className="py-1.5 px-4 rounded-lg border border-gray-300 text-gray-500 text-xs active:scale-[0.97]"
+            >
+              取消
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!isPending && order.status === "paid" && order.paidAt && (
+        <p className="text-[10px] text-green-600">✅ 已于 {new Date(order.paidAt).toLocaleString("zh-CN")} 激活</p>
+      )}
+    </div>
+  );
+}
+
+// ── 统计小卡片 ──
+function StatCard({ label, value, color, highlight }: { label: string; value: any; color: string; highlight?: boolean }) {
+  return (
+    <div className={`rounded-xl p-2.5 border text-center ${highlight ? "border-yellow-400/60 bg-yellow-50/80" : "bg-white border-[#e8e8e8]"}`}>
+      <p className="text-base font-bold" style={{ color }}>{value}</p>
+      <p className="text-[9px] text-[#999]">{label}</p>
+    </div>
   );
 }
 

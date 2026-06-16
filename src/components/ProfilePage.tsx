@@ -22,6 +22,7 @@ import {
   Camera,
   Check,
 } from "lucide-react";
+import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
 import { useWallet, formatAmount, ASSESSMENT_NAMES, ASSESSMENT_PRICES } from "@/hooks/useWallet";
 import TopupModal from "@/components/TopupModal";
@@ -563,13 +564,13 @@ export default function ProfilePage() {
                   )}
                 </div>
                 <div className="flex flex-col gap-1">
-                  <button
-                    onClick={() => setShowVIP(!showVIP)}
-                    className="btn-primary text-xs py-1.5 px-3"
+                  <Link
+                    href="/membership"
+                    className="btn-primary text-xs py-1.5 px-3 inline-flex items-center gap-1"
                   >
                     <Crown size={12} />
                     升级 VIP
-                  </button>
+                  </Link>
                   <button
                     onClick={logout}
                     className="text-xs text-[#999999] flex items-center gap-1 py-1.5 px-3"
