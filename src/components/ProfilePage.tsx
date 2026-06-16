@@ -8,7 +8,6 @@ import {
   BookOpen,
   Heart,
   ChevronRight,
-  Star,
   Sparkles,
   Building2,
   Shield,
@@ -26,24 +25,6 @@ import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
 import { useWallet, formatAmount, ASSESSMENT_NAMES, ASSESSMENT_PRICES } from "@/hooks/useWallet";
 import TopupModal from "@/components/TopupModal";
-
-const VIP_PLANS = [
-  {
-    name: "月会员",
-    price: "¥29",
-    period: "/月",
-    features: ["无限 AI 对话", "独家修行内容", "所有测评免费", "优先线下活动报名"],
-    popular: false,
-  },
-  {
-    name: "年会员",
-    price: "¥299",
-    period: "/年",
-    features: ["月会员全部权益", "个人化修行路径", "1对1 线上咨询 1 次", "线下活动 8 折"],
-    popular: true,
-    save: "省 ¥49",
-  },
-];
 
 // ── 邀请码 & 权限系统 ──
 
@@ -356,7 +337,6 @@ function Avatar({
 export default function ProfilePage() {
   const { user, history, isLoggedIn, loginWithPhone, setWechatId, setAvatar, logout } = useUser();
   const { balance, transactions, isUnlocked, grantWelcomeBonus } = useWallet();
-  const [showVIP, setShowVIP] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showTopup, setShowTopup] = useState(false);
@@ -613,50 +593,6 @@ export default function ProfilePage() {
                 </div>
               )}
             </div>
-
-            {/* VIP Plans (expandable) */}
-            {showVIP && (
-              <div className="mt-3 space-y-3 animate-fade-in-up">
-                <h3 className="section-header">选择你的修行计划</h3>
-                {VIP_PLANS.map((plan, i) => (
-                  <div
-                    key={i}
-                    className={`card relative ${
-                      plan.popular
-                        ? "border-2 border-[#c9a84c] bg-[#fdf8ed]"
-                        : ""
-                    }`}
-                  >
-                    {plan.popular && (
-                      <div className="absolute -top-2 right-4 bg-[#c9a84c] text-white text-xs px-3 py-0.5 rounded-full font-bold">
-                        最多人选择
-                      </div>
-                    )}
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-bold text-[#1a1a1a]">{plan.name}</h4>
-                      <div className="text-right">
-                        <span className="text-2xl font-bold text-[#c9a84c] font-song">
-                          {plan.price}
-                        </span>
-                        <span className="text-sm text-[#888888]">{plan.period}</span>
-                      </div>
-                    </div>
-                    <ul className="space-y-2 mb-3">
-                      {plan.features.map((f, j) => (
-                        <li key={j} className="flex items-center gap-2 text-sm text-[#1a1a1a]">
-                          <Star size={14} className="text-[#c9a84c] flex-shrink-0" />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                    {plan.save && (
-                      <p className="text-sm text-[#666666] mb-2">{plan.save}</p>
-                    )}
-                    <button className="w-full btn-primary">立即订阅</button>
-                  </div>
-                ))}
-              </div>
-            )}
 
             {/* Stats（已登录） */}
             <div className="card mt-3">
