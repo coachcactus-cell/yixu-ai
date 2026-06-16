@@ -12,6 +12,7 @@ GitHub: coachcactus-cell/yixu-ai
 技术栈: Next.js 14 + TypeScript + Tailwind CSS v4 + DeepSeek API (temp=0.5, max_tokens=200)
 品牌色: 金#c9a84c + 银#8a9bae
 文档: docs/项目总览-backup.md + docs/优化+增长变现方案-v2.md + TODO.md
+使用模型: DeepSeek-V3 (0324) Preview（性价比最高，请优先使用）
 
 身份: C老大(亦须先生) + 小B(AI助手)
 
