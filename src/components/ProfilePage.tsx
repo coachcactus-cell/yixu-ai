@@ -288,12 +288,6 @@ function RegisterForm({
     </div>
   );
 }
-          注册 / 登录
-        </button>
-      </div>
-    </div>
-  );
-};
 
 // ─── 头像组件 ───
 function Avatar({
@@ -546,10 +540,11 @@ export default function ProfilePage() {
                 <div className="flex flex-col gap-1">
                   <Link
                     href="/membership"
+                    target="_blank"
                     className="btn-primary text-xs py-1.5 px-3 inline-flex items-center gap-1"
                   >
                     <Crown size={12} />
-                    升级 VIP
+                    升级 VIP（新页面）
                   </Link>
                   <button
                     onClick={logout}
