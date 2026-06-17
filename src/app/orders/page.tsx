@@ -13,13 +13,17 @@ import Link from "next/link";
 
 interface Order {
   id: string;
-  plan: string;
+  userId: string;
+  userName: string;
+  userPhone?: string;
+  plan: "month" | "year";
   amount: number;
   status: "pending" | "paid" | "rejected" | "expired";
-  paymentMethod: string;
+  paymentMethod: "wechat" | "alipay";
   note: string;
   createdAt: string;
   paidAt?: string;
+  rejectedAt?: string;
   rejectReason?: string;
 }
 
