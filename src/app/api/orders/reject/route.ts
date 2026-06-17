@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rejectOrder, getOrderStats } from "@/lib/orders";
+import { notifyOrderRejected } from "@/lib/notify";
 
 /** POST /api/orders/reject - 拒绝订单 */
 export async function POST(req: NextRequest) {
@@ -36,6 +37,11 @@ export async function POST(req: NextRequest) {
         { status: 404 }
       );
     }
+
+    // 异步推送拒绝通知
+    notifyOrderRejected(order).catch((err) =>
+      console.error("[orders/reject] 通知推送失败:", err)
+    );
 
     const stats = getOrderStats();
 

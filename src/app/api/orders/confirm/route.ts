@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { confirmOrder, getOrderStats } from "@/lib/orders";
+import { notifyOrderConfirmed } from "@/lib/notify";
 
 /** POST /api/orders/confirm - 确认收款 */
 export async function POST(req: NextRequest) {
@@ -29,6 +30,11 @@ export async function POST(req: NextRequest) {
         { status: 404 }
       );
     }
+
+    // 异步推送确认通知
+    notifyOrderConfirmed(order).catch((err) =>
+      console.error("[orders/confirm] 通知推送失败:", err)
+    );
 
     // 返回更新后的统计
     const stats = getOrderStats();

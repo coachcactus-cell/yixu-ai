@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createOrder } from "@/lib/orders";
+import { notifyOrderCreated } from "@/lib/notify";
 
 /** POST /api/orders/create - 创建订单 */
 export async function POST(req: NextRequest) {
@@ -37,6 +38,11 @@ export async function POST(req: NextRequest) {
       paymentMethod,
       note: note || "",
     });
+
+    // 异步推送通知到 C 老大微信（不阻塞订单创建响应）
+    notifyOrderCreated(order).catch((err) =>
+      console.error("[orders/create] 通知推送失败:", err)
+    );
 
     return NextResponse.json({
       success: true,
