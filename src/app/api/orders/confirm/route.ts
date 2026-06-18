@@ -31,10 +31,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 异步推送确认通知
-    notifyOrderConfirmed(order).catch((err) =>
-      console.error("[orders/confirm] 通知推送失败:", err)
-    );
+    // 推送确认通知（必须 await，否则 Serverless 函数终止后通知丢失）
+    try {
+      const notifyResult = await notifyOrderConfirmed(order);
+      console.log("[orders/confirm] 通知结果:", notifyResult);
+    } catch (err) {
+      console.error("[orders/confirm] 通知推送失败:", err);
+    }
 
     // 返回更新后的统计
     const stats = getOrderStats();

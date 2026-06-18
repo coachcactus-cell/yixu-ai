@@ -39,10 +39,14 @@ export async function POST(req: NextRequest) {
       note: note || "",
     });
 
-    // 异步推送通知到 C 老大微信（不阻塞订单创建响应）
-    notifyOrderCreated(order).catch((err) =>
-      console.error("[orders/create] 通知推送失败:", err)
-    );
+    // 推送通知到 C 老大微信（必须 await，否则 Vercel Serverless 函数会在 response 返回后终止进程）
+    try {
+      const notifyResult = await notifyOrderCreated(order);
+      console.log("[orders/create] 通知结果:", notifyResult);
+    } catch (err) {
+      console.error("[orders/create] 通知推送失败:", err);
+      // 通知失败不影响订单创建
+    }
 
     return NextResponse.json({
       success: true,
