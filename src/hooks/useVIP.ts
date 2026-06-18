@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 
 const VIP_KEY = "yixu-vip";
 const VIP_CODE_KEY = "yixu-vip-codes";
+const VIP_ORDER_CHECK_KEY = "yixu-vip-last-order-check";
 
 interface VIPStatus {
   isVIP: boolean;
@@ -59,7 +60,44 @@ export function useVIP() {
   });
 
   useEffect(() => {
-    setVip(loadVIP());
+    // 先从 localStorage 加载现有 VIP 状态
+    const localVip = loadVIP();
+    setVip(localVip);
+
+    // 如果本地已经有 VIP，不需要再检查
+    if (localVip.isVIP) return;
+
+    // 本地没有 VIP → 查询服务器：有没有已确认的订单？
+    const userStr = localStorage.getItem("yixu-user");
+    if (!userStr) return;
+
+    try {
+      const user = JSON.parse(userStr);
+      const userId = user.id;
+      if (!userId) return;
+
+      fetch(`/api/orders/check-vip?userId=${encodeURIComponent(userId)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.vipActivated && data.vipInfo) {
+            // 服务器确认有已付款订单 → 自动激活 VIP
+            const newStatus: VIPStatus = {
+              isVIP: true,
+              plan: data.vipInfo.plan,
+              expiresAt: data.vipInfo.expiresAt,
+              activatedAt: data.vipInfo.activatedAt,
+            };
+            saveVIP(newStatus);
+            setVip(newStatus);
+            console.log("[VIP] 自动激活成功:", data.message);
+          }
+        })
+        .catch((err) => {
+          console.warn("[VIP] 查询订单状态失败:", err);
+        });
+    } catch {
+      // ignore
+    }
   }, []);
 
   const activateCode = useCallback((code: string): { success: boolean; message: string } => {

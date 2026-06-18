@@ -10,6 +10,7 @@ import {
   ArrowLeft,
   Copy,
   MessageSquare,
+  Download,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -237,20 +238,36 @@ export default function MembershipPage() {
             </div>
 
             {/* 显示对应的收款码 */}
-            <div className="bg-white rounded-2xl p-4 shadow-lg">
+            <div className="bg-white rounded-2xl p-4 shadow-lg relative">
               {paymentMethod === "wechat" ? (
                 <img
                   src="/pay/wechat-pay.jpg"
                   alt="微信支付收款码"
                   className="w-full h-auto rounded-lg"
+                  id="pay-qr-img"
                 />
               ) : (
                 <img
                   src="/pay/alipay-pay.jpg"
                   alt="支付宝收款码"
                   className="w-full h-auto rounded-lg"
+                  id="pay-qr-img"
                 />
               )}
+              {/* 下载按钮 */}
+              <button
+                onClick={() => {
+                  const imgSrc = paymentMethod === "wechat" ? "/pay/wechat-pay.jpg" : "/pay/alipay-pay.jpg";
+                  const a = document.createElement("a");
+                  a.href = imgSrc;
+                  a.download = paymentMethod === "wechat" ? "亦须AI-微信收款码.jpg" : "亦须AI-支付宝收款码.jpg";
+                  a.click();
+                }}
+                className="absolute top-2 right-2 bg-[#c9a84c] hover:bg-[#b8983f] text-[#0a1628] p-2 rounded-full shadow-md transition-all"
+                title="下载收款码"
+              >
+                <Download className="w-4 h-4" />
+              </button>
             </div>
 
             {/* 金额提示 */}
