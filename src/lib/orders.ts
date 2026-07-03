@@ -12,9 +12,11 @@ export interface Order {
   userPhone?: string;
   plan: "month" | "year";
   amount: number; // ¥68 月卡 / ¥198 年卡
-  status: "pending" | "paid" | "rejected" | "expired";
+  status: "pending" | "paid" | "rejected" | "expired" | "short_paid";
   paymentMethod: "wechat" | "alipay"; // 用户选择的支付方式
   note: string; // 用户填写的备注（交易单号后6位等）
+  actualAmount?: number; // C老大填写的实际收款金额（分）
+  forceConfirmReason?: string; // 强制确认原因（金额不足时使用）
   createdAt: string; // ISO date
   paidAt?: string; // 确认收款时间
   rejectedAt?: string;
@@ -103,23 +105,55 @@ export function getAllOrders(options?: { status?: Order["status"]; limit?: numbe
   return result;
 }
 
-/** 确认收款 */
-export function confirmOrder(id: string): Order | null {
+/** 确认收款（含金额比对）
+ *  actualAmount: 实际收款金额（元，如 68）
+ *  forceConfirmReason: 如果实际收款 < 订单金额，需要填写强制确认原因才能激活
+ *  返回: { order, warning } — warning 为金额不足提示
+ */
+export function confirmOrder(
+  id: string,
+  actualAmount?: number,
+  forceConfirmReason?: string
+): { order: Order | null; warning?: string } {
   const order = orders.get(id);
-  if (!order) return null;
-  if (order.status !== "pending") return null;
+  if (!order) return { order: null };
+  // 允许 pending 和 short_paid 状态再次确认
+  if (order.status !== "pending" && order.status !== "short_paid") return { order: null };
+
+  // 金额比对
+  if (actualAmount !== undefined && actualAmount !== null) {
+    order.actualAmount = Math.round(actualAmount * 100); // 存为分
+
+    if (actualAmount < order.amount) {
+      // 实际收款不足
+      if (!forceConfirmReason || !forceConfirmReason.trim()) {
+        // 无强制确认原因 → 标记 short_paid，不激活 VIP
+        order.status = "short_paid";
+        order.note += ` [收款不足: 订单¥${order.amount}, 实收¥${actualAmount}]`;
+        orders.set(id, order);
+        return {
+          order,
+          warning: `⚠️ 收款不足：订单 ¥${order.amount}，实收 ¥${actualAmount}，差额 ¥${order.amount - actualAmount}。如需强制激活，请填写原因。`,
+        };
+      }
+      // 有强制确认原因 → 允许激活，但记录原因
+      order.forceConfirmReason = forceConfirmReason.trim();
+      order.note += ` [强制确认: 订单¥${order.amount}, 实收¥${actualAmount}, 原因: ${forceConfirmReason.trim()}]`;
+    }
+  }
 
   order.status = "paid";
   order.paidAt = new Date().toISOString();
   orders.set(id, order);
-  return order;
+  return { order };
 }
 
 /** 拒绝订单 */
 export function rejectOrder(id: string, reason: string): Order | null {
   const order = orders.get(id);
   if (!order) return null;
-  if (order.status !== "pending") return null;
+  // 允许 pending 和 short_paid 状态被拒绝
+  if (order.status !== "pending" && order.status !== "short_paid") return null;
 
   order.status = "rejected";
   order.rejectedAt = new Date().toISOString();

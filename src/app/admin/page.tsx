@@ -520,7 +520,7 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-// ── 订单管理 Tab（VIP付款确认）──
+// ── 订单管理 Tab（VIP付款确认 + 金额比对）──
 function OrdersTab() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -528,6 +528,11 @@ function OrdersTab() {
   const [confirmMsg, setConfirmMsg] = useState<{ text: string; success: boolean } | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const [rejectOrderId, setRejectOrderId] = useState<string | null>(null);
+  // ── 确认收款：金额输入 ──
+  const [confirmOrderId, setConfirmOrderId] = useState<string | null>(null);
+  const [actualAmount, setActualAmount] = useState("");
+  const [forceConfirmReason, setForceConfirmReason] = useState("");
+  const [amountWarning, setAmountWarning] = useState<string | null>(null);
 
   useEffect(() => {
     loadOrders();
@@ -538,10 +543,12 @@ function OrdersTab() {
       const res = await fetch("/api/orders/list");
       const data = await res.json();
       if (data.success) {
-        // 按 pending 排最前
+        // 按优先级排序：pending > short_paid > paid > rejected
+        const priority: Record<string, number> = { pending: 0, short_paid: 1, paid: 2, rejected: 3, expired: 4 };
         setOrders(data.data.sort((a: any, b: any) => {
-          if (a.status === "pending" && b.status !== "pending") return -1;
-          if (a.status !== "pending" && b.status === "pending") return 1;
+          const pa = priority[a.status] ?? 5;
+          const pb = priority[b.status] ?? 5;
+          if (pa !== pb) return pa - pb;
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         }));
       }
@@ -549,20 +556,57 @@ function OrdersTab() {
     setLoading(false);
   };
 
-  const handleConfirm = async (orderId: string) => {
+  // ── 金额比对实时提示 ──
+  const checkAmountWarning = (orderId: string) => {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+    const inputVal = parseFloat(actualAmount);
+    if (!isNaN(inputVal) && inputVal < order.amount) {
+      setAmountWarning(`⚠️ 订单 ¥${order.amount}，实收 ¥${inputVal}，差额 ¥${order.amount - inputVal}。如需强制激活请填写原因，否则将标记「收款不足」不激活VIP。`);
+    } else {
+      setAmountWarning(null);
+    }
+  };
+
+  const handleConfirmSubmit = async () => {
+    if (!confirmOrderId) return;
+    const amt = parseFloat(actualAmount);
+    if (isNaN(amt) || amt <= 0) {
+      setConfirmMsg({ text: "请输入有效的收款金额", success: false });
+      return;
+    }
+
     try {
       const res = await fetch("/api/orders/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId, adminPassword: "yixu2026" }),
+        body: JSON.stringify({
+          orderId: confirmOrderId,
+          adminPassword: "yixu2026",
+          actualAmount: amt,
+          forceConfirmReason: forceConfirmReason.trim() || undefined,
+        }),
       });
       const data = await res.json();
       if (data.success) {
-        setConfirmMsg({ text: `✓ ${data.message}`, success: true });
+        const msg = data.warning
+          ? `✓ VIP已强制激活（实收 ¥${amt}，原因已记录）`
+          : `✓ 订单已确认，VIP已激活（实收 ¥${amt}）`;
+        setConfirmMsg({ text: msg, success: true });
+        setConfirmOrderId(null);
+        setActualAmount("");
+        setForceConfirmReason("");
+        setAmountWarning(null);
         loadOrders();
-        setTimeout(() => setConfirmMsg(null), 3000);
+        setTimeout(() => setConfirmMsg(null), 4000);
       } else {
-        setConfirmMsg({ text: data.message, success: false });
+        // short_paid 等
+        setConfirmMsg({ text: data.message || "确认失败", success: false });
+        loadOrders();
+        if (data.data?.status === "short_paid") {
+          // 保留输入框，让用户可以填强制确认原因
+          setAmountWarning(data.message);
+        }
       }
     } catch {
       setConfirmMsg({ text: "网络错误", success: false });
@@ -597,9 +641,10 @@ function OrdersTab() {
   const stats = {
     total: orders.length,
     pending: orders.filter((o) => o.status === "pending").length,
+    shortPaid: orders.filter((o) => o.status === "short_paid").length,
     paid: orders.filter((o) => o.status === "paid").length,
     rejected: orders.filter((o) => o.status === "rejected").length,
-    totalRevenue: orders.filter((o) => o.status === "paid").reduce((s: number, o: any) => s + o.amount, 0),
+    totalRevenue: orders.filter((o) => o.status === "paid").reduce((s: number, o: any) => s + (o.actualAmount ? o.actualAmount / 100 : o.amount), 0),
   };
 
   return (
@@ -607,24 +652,26 @@ function OrdersTab() {
       {/* 统计卡片 */}
       <div className="mt-4 grid grid-cols-4 gap-2">
         <StatCard label="总订单" value={stats.total} color="#666" />
-        <StatCard label="⚡待确认" value={stats.pending} color="#f59e0b" highlight />
+        <StatCard label="⚡待确认" value={stats.pending + stats.shortPaid} color="#f59e0b" highlight />
         <StatCard label="✓已激活" value={stats.paid} color="#10b981" />
-        <StatCard label="💰收入" value={`¥${stats.totalRevenue}`} color="#c9a84c" />
+        <StatCard label="💰实收" value={`¥${stats.totalRevenue.toFixed(2)}`} color="#c9a84c" />
       </div>
 
       {/* 筛选 */}
-      <div className="mt-3 flex gap-2">
-        {["all", "pending", "paid", "rejected"].map((s) => (
+      <div className="mt-3 flex gap-2 flex-wrap">
+        {["all", "pending", "short_paid", "paid", "rejected"].map((s) => (
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
             className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
               statusFilter === s
                 ? "bg-[#c9a84c] text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                : s === "short_paid"
+                  ? "bg-orange-50 text-orange-600 hover:bg-orange-100"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
-            {{ all: "全部", pending: "待确认", paid: "已激活", rejected: "已拒绝" }[s]}
+            {{ all: "全部", pending: "待确认", short_paid: "⚠收款不足", paid: "已激活", rejected: "已拒绝" }[s]}
             {s !== "all" && (
               <span className="ml-1 opacity-70">
                 ({orders.filter((o) => o.status === s).length})
@@ -653,8 +700,23 @@ function OrdersTab() {
             <OrderCard
               key={order.id}
               order={order}
-              onConfirm={() => handleConfirm(order.id)}
-              onReject={() => { setRejectOrderId(order.id); }}
+              onConfirmStart={() => {
+                setConfirmOrderId(order.id);
+                setActualAmount(String(order.amount));
+                setForceConfirmReason("");
+                setAmountWarning(null);
+              }}
+              onRejectStart={() => { setRejectOrderId(order.id); }}
+              // 确认收款输入框状态
+              isConfirming={confirmOrderId === order.id}
+              actualAmount={actualAmount}
+              setActualAmount={(v) => { setActualAmount(v); checkAmountWarning(order.id); }}
+              forceConfirmReason={forceConfirmReason}
+              setForceConfirmReason={setForceConfirmReason}
+              amountWarning={amountWarning}
+              onConfirmSubmit={handleConfirmSubmit}
+              onCancelConfirm={() => { setConfirmOrderId(null); setActualAmount(""); setForceConfirmReason(""); setAmountWarning(null); }}
+              // 拒绝输入框状态
               isRejecting={rejectOrderId === order.id}
               rejectReason={rejectReason}
               setRejectReason={setRejectReason}
@@ -668,11 +730,19 @@ function OrdersTab() {
   );
 }
 
-// ── 订单卡片组件 ──
+// ── 订单卡片组件（含金额输入）──
 function OrderCard({
   order,
-  onConfirm,
-  onReject,
+  onConfirmStart,
+  onRejectStart,
+  isConfirming,
+  actualAmount,
+  setActualAmount,
+  forceConfirmReason,
+  setForceConfirmReason,
+  amountWarning,
+  onConfirmSubmit,
+  onCancelConfirm,
   isRejecting,
   rejectReason,
   setRejectReason,
@@ -680,8 +750,16 @@ function OrderCard({
   onCancelReject,
 }: {
   order: any;
-  onConfirm: () => void;
-  onReject: () => void;
+  onConfirmStart: () => void;
+  onRejectStart: () => void;
+  isConfirming: boolean;
+  actualAmount: string;
+  setActualAmount: (v: string) => void;
+  forceConfirmReason: string;
+  setForceConfirmReason: (v: string) => void;
+  amountWarning: string | null;
+  onConfirmSubmit: () => void;
+  onCancelConfirm: () => void;
   isRejecting: boolean;
   rejectReason: string;
   setRejectReason: (v: string) => void;
@@ -689,10 +767,26 @@ function OrderCard({
   onCancelReject: () => void;
 }) {
   const isPending = order.status === "pending";
+  const isShortPaid = order.status === "short_paid";
+
+  const statusStyle: Record<string, string> = {
+    pending: "bg-yellow-100 text-yellow-700",
+    short_paid: "bg-orange-100 text-orange-700",
+    paid: "bg-green-100 text-green-700",
+    rejected: "bg-red-100 text-red-500",
+  };
+  const statusLabel: Record<string, string> = {
+    pending: "待确认",
+    short_paid: "⚠收款不足",
+    paid: "已激活",
+    rejected: "已拒绝",
+  };
 
   return (
     <div className={`rounded-xl p-3 border ${
-      isPending ? "bg-yellow-50/50 border-yellow-300/50" : "bg-white border-[#e8e8e8]"
+      isPending ? "bg-yellow-50/50 border-yellow-300/50" :
+      isShortPaid ? "bg-orange-50/50 border-orange-300/50" :
+      "bg-white border-[#e8e8e8]"
     }`}>
       <div className="flex justify-between items-start mb-2">
         <div>
@@ -701,18 +795,25 @@ function OrderCard({
             {order.userPhone && (
               <span className="text-[10px] text-[#999]">{order.userPhone}</span>
             )}
-            <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${
-              order.status === "paid" ? "bg-green-100 text-green-700" :
-              order.status === "rejected" ? "bg-red-100 text-red-500" :
-              "bg-yellow-100 text-yellow-700"
-            }`}>
+            <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${statusStyle[order.status] || "bg-gray-100 text-gray-600"}`}>
               {order.plan === "month" ? "月卡¥68" : "年卡¥198"}
             </span>
           </div>
-          <p className="text-[10px] text-[#999] mt-0.5 font-mono">#{order.id.slice(0, 14)}</p>
+          <div className="flex items-center gap-2 mt-0.5">
+            <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${statusStyle[order.status]}`}>
+              {statusLabel[order.status] || order.status}
+            </span>
+            <p className="text-[10px] text-[#999] font-mono">#{order.id.slice(0, 14)}</p>
+          </div>
         </div>
         <div className="text-right">
           <p className="text-lg font-bold text-[#c9a84c]">¥{order.amount}</p>
+          {/* 已确认订单显示实收金额 */}
+          {order.status === "paid" && order.actualAmount && (
+            <p className="text-[10px] text-green-600 font-bold">
+              实收 ¥{(order.actualAmount / 100).toFixed(2)}
+            </p>
+          )}
           <p className="text-[10px] text-[#999]">
             {new Date(order.createdAt).toLocaleString("zh-CN")}
           </p>
@@ -731,6 +832,16 @@ function OrderCard({
         )}
       </div>
 
+      {/* short_paid 提示 */}
+      {isShortPaid && (
+        <div className="mb-2 p-2 bg-orange-50 rounded-lg border border-orange-200">
+          <p className="text-[11px] text-orange-700 font-bold">⚠️ 收款不足，VIP未激活</p>
+          {order.note && (
+            <p className="text-[10px] text-orange-600 mt-0.5">{order.note}</p>
+          )}
+        </div>
+      )}
+
       {/* 拒绝原因显示 */}
       {(order.status === "rejected" || order.rejectReason) && (
         <div className="mb-2 p-2 bg-red-50 rounded-lg">
@@ -738,21 +849,92 @@ function OrderCard({
         </div>
       )}
 
-      {/* 操作按钮 */}
-      {isPending && !isRejecting && (
+      {/* 强制确认原因显示 */}
+      {order.forceConfirmReason && (
+        <div className="mb-2 p-2 bg-yellow-50/50 rounded-lg border border-yellow-200/50">
+          <p className="text-[10px] text-yellow-700">⚡ 强制确认原因: {order.forceConfirmReason}</p>
+        </div>
+      )}
+
+      {/* 操作按钮：待确认 / 收款不足 */}
+      {(isPending || isShortPaid) && !isConfirming && !isRejecting && (
         <div className="flex gap-2">
           <button
-            onClick={onConfirm}
+            onClick={onConfirmStart}
             className="flex-1 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white text-xs font-bold active:scale-[0.97] transition-all flex items-center justify-center gap-1"
           >
-            <Check size={12} /> 确认收款 ✓
+            <Check size={12} /> 确认收款
           </button>
           <button
-            onClick={onReject}
+            onClick={onRejectStart}
             className="py-2 px-4 rounded-lg border border-red-300 text-red-500 text-xs font-medium active:scale-[0.97] transition-all"
           >
             <XCircle size={12} /> 拒绝
           </button>
+        </div>
+      )}
+
+      {/* 确认收款输入框 */}
+      {isConfirming && (
+        <div className="space-y-2 mt-1">
+          <div className="p-2.5 bg-[#fafafa] rounded-lg border border-[#e8e8e8]">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] text-[#666]">订单金额</span>
+              <span className="text-sm font-bold text-[#1a1a1a]">¥{order.amount}</span>
+            </div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] text-[#666]">实收金额</span>
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] text-[#999]">¥</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={actualAmount}
+                  onChange={(e) => setActualAmount(e.target.value)}
+                  placeholder={String(order.amount)}
+                  autoFocus
+                  className="w-24 px-2 py-1.5 rounded-lg border border-[#c9a84c]/50 text-sm font-bold text-right outline-none focus:border-[#c9a84c]"
+                />
+              </div>
+            </div>
+            {amountWarning && (
+              <div className="p-2 bg-orange-50 rounded-lg border border-orange-200 mb-2">
+                <p className="text-[11px] text-orange-700 font-medium">{amountWarning}</p>
+              </div>
+            )}
+            {/* 金额不足时显示强制确认输入 */}
+            {parseFloat(actualAmount) < order.amount && (
+              <div>
+                <label className="text-[10px] text-orange-600 block mb-1">强制确认原因（必填）</label>
+                <input
+                  type="text"
+                  value={forceConfirmReason}
+                  onChange={(e) => setForceConfirmReason(e.target.value)}
+                  placeholder="如：老学员优惠、特殊协商等"
+                  className="w-full px-3 py-2 rounded-lg border border-orange-300 text-xs outline-none focus:border-orange-400"
+                />
+              </div>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={onConfirmSubmit}
+              disabled={
+                parseFloat(actualAmount) <= 0 ||
+                (parseFloat(actualAmount) < order.amount && !forceConfirmReason.trim())
+              }
+              className="flex-1 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white text-xs font-bold disabled:opacity-40 active:scale-[0.97] transition-all flex items-center justify-center gap-1"
+            >
+              <Check size={12} />
+              {parseFloat(actualAmount) >= order.amount ? "确认并激活 VIP" : "强制激活 VIP"}
+            </button>
+            <button
+              onClick={onCancelConfirm}
+              className="py-2 px-4 rounded-lg border border-gray-300 text-gray-500 text-xs active:scale-[0.97]"
+            >
+              取消
+            </button>
+          </div>
         </div>
       )}
 
@@ -785,7 +967,7 @@ function OrderCard({
         </div>
       )}
 
-      {!isPending && order.status === "paid" && order.paidAt && (
+      {!isPending && !isShortPaid && order.status === "paid" && order.paidAt && (
         <p className="text-[10px] text-green-600">✅ 已于 {new Date(order.paidAt).toLocaleString("zh-CN")} 激活</p>
       )}
     </div>
