@@ -20,6 +20,8 @@ import {
   Wallet,
   Camera,
   Check,
+  Pencil,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
@@ -44,6 +46,9 @@ const B2B_PASSWORDS: Record<string, string> = {
   // 正式合作伙伴的密码，例如：
   // "healing-zen": "zen2026",
 };
+
+// 永久VIP邀请码（工作人员/前贤专用）
+const STAFF_VIP_CODE = "cactusvvip";
 
 // 邀请码验证：严格模式，只有明确列出的码才有效
 function resolveInviteCode(code: string): { path: string; label: string; icon: any; color: string } | null {
@@ -329,12 +334,15 @@ function Avatar({
 
 // ─── 主组件 ───
 export default function ProfilePage() {
-  const { user, history, isLoggedIn, loginWithPhone, setWechatId, setAvatar, logout } = useUser();
+  const { user, history, isLoggedIn, loginWithPhone, setWechatId, setAvatar, setNickname, activateStaffVip, logout } = useUser();
   const { balance, transactions, isUnlocked, grantWelcomeBonus } = useWallet();
   const [showInvite, setShowInvite] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showTopup, setShowTopup] = useState(false);
   const [showWelcomeBonus, setShowWelcomeBonus] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState("");
+  const [staffVipToast, setStaffVipToast] = useState<string | null>(null);
   const [inviteCode, setInviteCode] = useState("");
   const [inviteError, setInviteError] = useState("");
   const [resolvedRoute, setResolvedRoute] = useState<{
@@ -416,7 +424,26 @@ export default function ProfilePage() {
       setInviteError("请输入邀请码");
       return;
     }
-    const route = resolveInviteCode(inviteCode);
+    const trimmed = inviteCode.trim();
+
+    // 永久VIP邀请码（工作人员/前贤专用）
+    if (trimmed.toLowerCase() === STAFF_VIP_CODE) {
+      if (!isLoggedIn) {
+        setInviteError("请先登录手机号，再激活VIP");
+        return;
+      }
+      if (user?.vipLevel === "staff") {
+        setInviteError("您已是永久VIP，无需重复激活");
+        return;
+      }
+      activateStaffVip();
+      setStaffVipToast("🎉 永久VIP已激活！感谢您的支持。");
+      setInviteCode("");
+      setTimeout(() => setStaffVipToast(null), 5000);
+      return;
+    }
+
+    const route = resolveInviteCode(trimmed);
     if (route) {
       setResolvedRoute(route);
       setInviteError("");
@@ -515,20 +542,73 @@ export default function ProfilePage() {
         {/* ── 已登录状态 ── */}
         {isLoggedIn && (
           <>
-            {/* 用户卡（已登录）— 帶頭像上載 */}
+            {/* 用户卡（已登录）— 帶頭像上載 + 暱稱編輯 */}
             <div className="card mt-4">
               <div className="flex items-center gap-3">
                 <Avatar
                   src={user?.avatar}
                   onClick={handleAvatarClick}
                 />
-                <div className="flex-1">
-                  <h2 className="font-bold text-lg text-[#1a1a1a] font-song">
-                    {user?.nickname || "修行者"}
-                  </h2>
+                <div className="flex-1 min-w-0">
+                  {editingName ? (
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        value={nameInput}
+                        onChange={(e) => setNameInput(e.target.value)}
+                        maxLength={12}
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && nameInput.trim()) {
+                            setNickname(nameInput.trim());
+                            setEditingName(false);
+                          }
+                          if (e.key === "Escape") setEditingName(false);
+                        }}
+                        className="text-lg font-bold font-song text-[#1a1a1a] bg-transparent border-b border-[#c9a84c] outline-none flex-1 min-w-0"
+                        placeholder="输入昵称"
+                      />
+                      <button
+                        onClick={() => {
+                          if (nameInput.trim()) {
+                            setNickname(nameInput.trim());
+                            setEditingName(false);
+                          }
+                        }}
+                        className="p-1 rounded-lg bg-[#c9a84c] text-white flex-shrink-0"
+                      >
+                        <Check size={14} />
+                      </button>
+                      <button
+                        onClick={() => setEditingName(false)}
+                        className="p-1 rounded-lg bg-gray-100 text-gray-500 flex-shrink-0"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5">
+                      <h2 className="font-bold text-lg text-[#1a1a1a] font-song">
+                        {user?.nickname || "修行者"}
+                      </h2>
+                      <button
+                        onClick={() => {
+                          setNameInput(user?.nickname || "");
+                          setEditingName(true);
+                        }}
+                        className="p-1 rounded-lg text-[#999] hover:text-[#c9a84c] hover:bg-[#fdf8ed] transition-colors"
+                        title="修改昵称"
+                      >
+                        <Pencil size={13} />
+                      </button>
+                    </div>
+                  )}
                   <div className="flex items-center gap-1 mt-1">
                     <span className="gold-tag">
-                      {user?.vipLevel === "free" ? "免费会员" : user?.vipLevel === "monthly" ? "月会员" : "年会员"}
+                      {user?.vipLevel === "free" ? "免费会员" :
+                       user?.vipLevel === "monthly" ? "月会员" :
+                       user?.vipLevel === "yearly" ? "年会员" :
+                       user?.vipLevel === "staff" ? "⭐ 永久VIP" : "免费会员"}
                     </span>
                   </div>
                   {user?.phone && (
@@ -537,15 +617,17 @@ export default function ProfilePage() {
                     </p>
                   )}
                 </div>
-                <div className="flex flex-col gap-1">
-                  <Link
-                    href="/membership"
-                    target="_blank"
-                    className="btn-primary text-xs py-1.5 px-3 inline-flex items-center gap-1"
-                  >
-                    <Crown size={12} />
-                    升级 VIP（新页面）
-                  </Link>
+                <div className="flex flex-col gap-1 flex-shrink-0">
+                  {user?.vipLevel !== "staff" && (
+                    <Link
+                      href="/membership"
+                      target="_blank"
+                      className="btn-primary text-xs py-1.5 px-3 inline-flex items-center gap-1"
+                    >
+                      <Crown size={12} />
+                      升级 VIP
+                    </Link>
+                  )}
                   <button
                     onClick={logout}
                     className="text-xs text-[#999999] flex items-center gap-1 py-1.5 px-3"
@@ -556,6 +638,13 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
+
+            {/* 工作人员VIP激活成功提示 */}
+            {staffVipToast && (
+              <div className="mt-3 p-3 rounded-xl bg-gradient-to-r from-[#c9a84c]/10 to-[#fdf8ed] border border-[#c9a84c]/30 text-center">
+                <p className="text-sm font-bold text-[#c9a84c]">{staffVipToast}</p>
+              </div>
+            )}
 
             {/* ── 钱包卡片 ── */}
             <div className="card mt-3 bg-gradient-to-br from-[#fdf8ed] to-[#fefaf0] border border-[#c9a84c]/20">

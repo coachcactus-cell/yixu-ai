@@ -37,7 +37,7 @@ export interface YixuUser {
   nickname: string;
   avatar?: string;      // base64 data URL，≤100KB
   createdAt: string;
-  vipLevel: "free" | "monthly" | "yearly";
+  vipLevel: "free" | "monthly" | "yearly" | "staff";
 }
 
 function generateId(): string {
@@ -134,6 +134,22 @@ export function useUser() {
     setUser(updated);
   }, [user]);
 
+  // ── 修改昵称 ──
+  const setNickname = useCallback((nickname: string) => {
+    if (!user) return;
+    const updated = { ...user, nickname };
+    saveUser(updated);
+    setUser(updated);
+  }, [user]);
+
+  // ── 激活永久VIP（工作人员/前贤邀请码）──
+  const activateStaffVip = useCallback(() => {
+    if (!user) return;
+    const updated: YixuUser = { ...user, vipLevel: "staff" };
+    saveUser(updated);
+    setUser(updated);
+  }, [user]);
+
   // ── 登出 ──
   const logout = useCallback(() => {
     if (!user) return;
@@ -196,6 +212,8 @@ export function useUser() {
     loginWithPhone,
     setWechatId,
     setAvatar,
+    setNickname,
+    activateStaffVip,
     logout,
     addChakraRecord,
     addYijingRecord,
