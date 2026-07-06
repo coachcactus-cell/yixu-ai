@@ -53,7 +53,7 @@ function generateOrderId(): string {
 
 // ── CRUD 操作 ──
 
-/** 创建订单 */
+/** 创建订单（含去重：同用户+同plan已有 pending/short_paid 则拒绝） */
 export function createOrder(data: {
   userId: string;
   userName: string;
@@ -61,7 +61,22 @@ export function createOrder(data: {
   plan: PlanType;
   paymentMethod: "wechat" | "alipay";
   note: string;
-}): Order {
+  currency: "CNY" | "HKD";
+}): { order: Order | null; error?: string } {
+  // ── 去重：同 userId + 同 plan 已有 pending 或 short_paid 则拒绝 ──
+  for (const existing of orders.values()) {
+    if (
+      existing.userId === data.userId &&
+      existing.plan === data.plan &&
+      (existing.status === "pending" || existing.status === "short_paid")
+    ) {
+      return {
+        order: null,
+        error: `您已有待处理的${data.plan === "month" ? "月卡" : "年卡"}订单，请先完成付款或等待处理`,
+      };
+    }
+  }
+
   const id = generateOrderId();
   const order: Order = {
     id,
@@ -75,8 +90,10 @@ export function createOrder(data: {
     note: data.note || "",
     createdAt: new Date().toISOString(),
   };
+  // 货币标记
+  (order as Order & { currency?: string }).currency = data.currency;
   orders.set(id, order);
-  return order;
+  return { order };
 }
 
 /** 获取订单 */
