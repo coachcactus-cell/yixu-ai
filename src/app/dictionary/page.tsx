@@ -89,7 +89,7 @@ export default function DictionaryHomePage() {
             <li>📍 一句话明白 — 10岁都看得懂</li>
             <li>📖 白话解释 — 生活化、接地气</li>
             <li>🔬 经典原文 — 可折叠，想深究再展开</li>
-            <li>🌿 生活例子 — 每条术语都有日常对照</li>
+            <li>🌿 亦须接地气 — 每条术语都有日常对照</li>
           </ul>
         </div>
       </div>

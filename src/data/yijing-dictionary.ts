@@ -10,7 +10,7 @@
  * - plainText: 白話解釋（生活化）
  * - classicText: 經典原文（可摺疊）
  * - source: 原文出處
- * - lifeExample: 生活例子
+ * - lifeExample: 亦須接地氣
  * - related: 關聯詞條 id 列表
  */
 

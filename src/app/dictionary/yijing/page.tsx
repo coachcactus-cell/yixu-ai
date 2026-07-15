@@ -73,13 +73,13 @@ export default function YijingDictionaryPage() {
 
           {/* 搜尋框 */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#c9a84c]" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="搜索卦名、术语、关键词..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white text-sm placeholder:text-white/40 focus:outline-none focus:border-[#c9a84c]"
+              placeholder="搜索卦名、术语、关键词…"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-[#c9a84c]/30 text-[#1a1a1a] text-sm placeholder:text-[#999] focus:outline-none focus:border-[#c9a84c] focus:ring-2 focus:ring-[#c9a84c]/20 transition-all"
             />
           </div>
         </div>
@@ -268,10 +268,10 @@ function EntryDetailView({
           </div>
         )}
 
-        {/* 生活例子 */}
+        {/* 亦須接地氣 */}
         {entry.lifeExample && (
           <div className="bg-white rounded-xl p-4 border border-[#e8e8e8]">
-            <p className="text-[10px] font-bold text-[#10b981] mb-1.5">🌿 生活例子</p>
+            <p className="text-[10px] font-bold text-[#10b981] mb-1.5">🌿 亦须接地气</p>
             <p className="text-sm text-[#333] leading-relaxed">{entry.lifeExample}</p>
           </div>
         )}
