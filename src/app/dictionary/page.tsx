@@ -46,10 +46,10 @@ export default function DictionaryHomePage() {
                   </span>
                 </div>
                 <p className="text-xs text-[#666] leading-relaxed mb-2">
-                  基础概念 · 六十四卦 · 爻辞术语 · 占筮术语
+                  基础概念 · 六十四卦 · 爻辞术语 · 易传概念 · 易学流派
                 </p>
                 <p className="text-[10px] text-[#999]">
-                  持续更新中 · 目前 10+ 条
+                  持续更新中 · 目前 41 条
                 </p>
               </div>
             </div>
