@@ -132,7 +132,10 @@ export default function YijingDictionaryPage() {
                 onToggle={() =>
                   setExpandedId(expandedId === entry.id ? null : entry.id)
                 }
-                onClickDetail={() => setSelectedEntry(entry)}
+                onClickDetail={() => {
+                setSelectedEntry(entry);
+                window.scrollTo(0, 0);
+              }}
               />
             ))}
           </div>
