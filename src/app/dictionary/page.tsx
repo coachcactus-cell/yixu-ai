@@ -14,14 +14,14 @@ export default function DictionaryHomePage() {
           </Link>
           <div className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-[#c9a84c]" />
-            <h1 className="text-base font-bold text-white font-song">经典词典</h1>
+            <h1 className="text-base font-bold text-white font-song">经典辞典</h1>
           </div>
         </div>
       </header>
 
       <div className="max-w-md mx-auto px-4 py-6 pb-20">
         <div className="text-center mb-8">
-          <h2 className="text-xl font-bold text-[#1a1a1a] font-song mb-2">亦须经典词典</h2>
+          <h2 className="text-xl font-bold text-[#1a1a1a] font-song mb-2">亦须经典辞典</h2>
           <p className="text-sm text-[#666]">
             公益免费 · 知识精准 · 一看就明
           </p>
@@ -40,7 +40,7 @@ export default function DictionaryHomePage() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-base font-bold text-[#1a1a1a] font-song">易经词典</h3>
+                  <h3 className="text-base font-bold text-[#1a1a1a] font-song">易学辞典</h3>
                   <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#10b981]/10 text-[#10b981] font-medium">
                     已上线
                   </span>
@@ -63,7 +63,7 @@ export default function DictionaryHomePage() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-base font-bold text-[#1a1a1a] font-song">唯识词典</h3>
+                  <h3 className="text-base font-bold text-[#1a1a1a] font-song">唯识辞典</h3>
                   <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#f5f5f5] text-[#999] font-medium">
                     制作中
                   </span>
@@ -83,7 +83,7 @@ export default function DictionaryHomePage() {
         <div className="mt-8 p-4 rounded-xl bg-[#fdf8ed] border border-[#c9a84c]/20">
           <div className="flex items-center gap-1.5 mb-2">
             <Sparkles className="w-3.5 h-3.5 text-[#c9a84c]" />
-            <h3 className="text-xs font-bold text-[#c9a84c]">词典特色</h3>
+            <h3 className="text-xs font-bold text-[#c9a84c]">辞典特色</h3>
           </div>
           <ul className="text-xs text-[#666] space-y-1.5 leading-relaxed">
             <li>📍 一句话明白 — 10岁都看得懂</li>

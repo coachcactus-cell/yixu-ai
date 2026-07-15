@@ -65,7 +65,7 @@ export default function YijingDictionaryPage() {
                 <BookOpen className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h1 className="text-base font-bold text-white font-song">易经词典</h1>
+                <h1 className="text-base font-bold text-white font-song">易学辞典</h1>
                 <p className="text-[10px] text-white/50">公益免费 · 亦须AI出品</p>
               </div>
             </div>
@@ -141,7 +141,7 @@ export default function YijingDictionaryPage() {
         {/* 底部说明 */}
         <div className="mt-8 p-4 rounded-xl bg-[#fdf8ed] border border-[#c9a84c]/20">
           <p className="text-xs text-[#666] leading-relaxed text-center">
-            📿 易经词典 · 亦须AI 公益项目
+            📿 易学辞典 · 亦须AI 公益项目
             <br />
             知识精准 · 一看就明 · 持续更新中
           </p>
@@ -299,7 +299,7 @@ function EntryDetailView({
 
         {/* 底部 */}
         <div className="pt-4 text-center">
-          <p className="text-[10px] text-[#ccc]">亦须AI · 易经词典 · 公益免费</p>
+          <p className="text-[10px] text-[#ccc]">亦须AI · 易学辞典 · 公益免费</p>
         </div>
       </div>
     </div>
