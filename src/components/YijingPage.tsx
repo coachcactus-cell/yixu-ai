@@ -161,10 +161,14 @@ function generateDongYaoNLP(
 
 /* ── SVG 六爻图 ── */
 function HexagramSVG({ lines, dongYao }: { lines: number[]; dongYao: number }) {
+  // lines[0] = 初爻（最底），lines[5] = 上爻（最頂）
+  // flex-col 由上到下排列，所以要反轉，令上爻排最頂
+  const reversedLines = [...lines].reverse();
+
   return (
     <div className="flex flex-col items-center gap-1.5 my-4">
-      {lines.map((line, i) => {
-        const pos = i + 1; // lines[0] = 初爻（最底），lines[5] = 上爻（最頂）
+      {reversedLines.map((line, i) => {
+        const pos = 6 - i; // 反轉後：i=0 → pos=6（上爻，最頂），i=5 → pos=1（初爻，最底）
         const isDong = pos === dongYao;
         const isYang = line === 1;
 
