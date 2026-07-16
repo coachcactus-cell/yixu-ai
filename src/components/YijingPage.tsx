@@ -164,7 +164,7 @@ function HexagramSVG({ lines, dongYao }: { lines: number[]; dongYao: number }) {
   return (
     <div className="flex flex-col items-center gap-1.5 my-4">
       {lines.map((line, i) => {
-        const pos = 6 - i;
+        const pos = i + 1; // lines[0] = 初爻（最底），lines[5] = 上爻（最頂）
         const isDong = pos === dongYao;
         const isYang = line === 1;
 
