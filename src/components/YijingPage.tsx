@@ -47,7 +47,7 @@ function extractImagery(yaoKey: string): { main: string; action: string } {
   const imageryMap: Record<string, { main: string; action: string }> = {
     "潜龙勿用": { main: "潜藏的龙", action: "蓄势待发，不宜轻举妄动" },
     "见龙在田": { main: "田间的龙", action: "才华初显，等待时机" },
-    "君子终日干干": { main: "日夕不懈的君子", action: "勤勉精进，警惕自省" },
+    "君子终日乾乾": { main: "日夕不懈的君子", action: "勤勉精进，警惕自省" },
     "或跃在渊": { main: "跃动的龙", action: "审时度势，进退有度" },
     "飞龙在天": { main: "腾飞的龙", action: "正当其时，大有作为" },
     "亢龙有悔": { main: "过极的龙", action: "盛极而衰，需知进退" },
