@@ -62,7 +62,7 @@ const MOCK_CONTENT = [
   { id: "c2", title: "孟子塔羅牌（5张）", type: "塔羅", status: "开发中", views: 0 },
   { id: "c3", title: "和香推薦·檀香", type: "用香", status: "已上架", views: 89 },
   { id: "c4", title: "修行日课·静心法", type: "修行", status: "草稿", views: 0 },
-  { id: "c5", title: "易经·干卦解读", type: "易卦", status: "已上架", views: 234 },
+  { id: "c5", title: "易经·乾卦解读", type: "易卦", status: "已上架", views: 234 },
 ];
 
 export default function AdminDashboard() {

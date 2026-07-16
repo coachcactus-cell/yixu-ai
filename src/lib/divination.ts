@@ -63,7 +63,7 @@ export function isValidPhone(phone: string): boolean {
 
 export interface DivinationResult {
   hexagram: Hexagram;
-  upperGuaName: string;   // 上卦名（如"干"）
+  upperGuaName: string;   // 上卦名（如"乾"）
   lowerGuaName: string;   // 下卦名（如"坤"）
   dongYao: number;        // 动爻位置（1-6）
   season?: Season;        // 季節（入口一专用）
