@@ -49,7 +49,7 @@ export default function DictionaryHomePage() {
                   基础概念 · 六十四卦 · 爻辞术语 · 易传概念 · 易学流派
                 </p>
                 <p className="text-[10px] text-[#999]">
-                  持续更新中 · 目前 105 条
+                  持续更新中 · 目前 231 条
                 </p>
               </div>
             </div>
