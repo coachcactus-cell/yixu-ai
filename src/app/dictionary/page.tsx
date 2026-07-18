@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft, Sparkles } from "lucide-react";
+import { QianGuaIcon } from "@/components/QianGuaIcon";
 
 export default function DictionaryHomePage() {
   return (
@@ -13,7 +14,7 @@ export default function DictionaryHomePage() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div className="flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-[#c9a84c]" />
+            <QianGuaIcon className="w-5 h-5 text-[#c9a84c]" />
             <h1 className="text-base font-bold text-white font-song">经典辞典</h1>
           </div>
         </div>
@@ -36,7 +37,7 @@ export default function DictionaryHomePage() {
           >
             <div className="flex items-start gap-3">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#c9a84c]/10 to-[#fdf8ed] flex items-center justify-center flex-shrink-0">
-                <span className="text-2xl">☰</span>
+                <QianGuaIcon className="w-7 h-7 text-[#c9a84c]" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">

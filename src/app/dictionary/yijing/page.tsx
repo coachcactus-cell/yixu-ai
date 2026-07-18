@@ -8,7 +8,8 @@ import {
   type DictionaryEntry,
 } from "@/data/yijing-dictionary";
 import { HEXAGRAMS } from "@/data/yijing";
-import { Search, BookOpen, ChevronDown, ChevronUp, ArrowLeft, Link2 } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, ArrowLeft, Link2 } from "lucide-react";
+import { QianGuaIcon } from "@/components/QianGuaIcon";
 import Link from "next/link";
 
 export default function YijingDictionaryPage() {
@@ -63,7 +64,7 @@ export default function YijingDictionaryPage() {
             </Link>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c9a84c] to-[#b89430] flex items-center justify-center">
-                <BookOpen className="w-4 h-4 text-white" />
+                <QianGuaIcon className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h1 className="text-base font-bold text-white font-song">易学辞典</h1>
@@ -119,7 +120,7 @@ export default function YijingDictionaryPage() {
 
         {filteredEntries.length === 0 ? (
           <div className="text-center py-16">
-            <BookOpen className="w-12 h-12 mx-auto text-[#ddd] mb-3" />
+            <QianGuaIcon className="w-12 h-12 mx-auto text-[#ddd] mb-3" />
             <p className="text-sm text-[#999]">未找到相关词条</p>
             <p className="text-xs text-[#ccc] mt-1">试试搜索「太极」「阴阳」「乾卦」</p>
           </div>
