@@ -2,19 +2,19 @@
 
 import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Home, Calendar, ClipboardList, User, Compass } from "lucide-react";
+import { Home, BookOpen, ClipboardList, User, Compass } from "lucide-react";
 import ChatPage from "@/components/ChatPage";
-import CalendarPage from "@/components/CalendarPage";
+import DictionaryTabPage from "@/components/DictionaryTabPage";
 import AssessmentPage from "@/components/AssessmentPage";
 import ProfilePage from "@/components/ProfilePage";
 import YijingPage from "@/components/YijingPage";
 
-const VALID_TABS = ["home", "yijing", "calendar", "assessment", "profile"];
+const VALID_TABS = ["home", "yijing", "dictionary", "assessment", "profile"];
 
 const TABS = [
   { key: "home", label: "首页", icon: Home },
   { key: "yijing", label: "易卦", icon: Compass },
-  { key: "calendar", label: "修行", icon: Calendar },
+  { key: "dictionary", label: "公益辞典", icon: BookOpen },
   { key: "assessment", label: "测评", icon: ClipboardList },
   { key: "profile", label: "我的", icon: User },
 ];
@@ -39,7 +39,7 @@ function AppContent() {
       {/* Page Content */}
       {activeTab === "home" && <ChatPage />}
       {activeTab === "yijing" && <YijingPage />}
-      {activeTab === "calendar" && <CalendarPage />}
+      {activeTab === "dictionary" && <DictionaryTabPage />}
       {activeTab === "assessment" && (
         <AssessmentPage onFullscreenChange={setIsFullscreen} />
       )}
