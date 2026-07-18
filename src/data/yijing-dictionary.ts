@@ -4218,13 +4218,14 @@ export function getEntriesByCategory(category: DictionaryEntry["category"]): Dic
 
 
 
-/** 搜尋詞條（按詞名、拼音、一句話、白話解釋，支援簡繁容錯） */
+/** 搜尋詞條（按詞名、拼音、一句話、白話解釋，支援簡繁容錯 + 相關度排序） */
 export function searchEntries(query: string): DictionaryEntry[] {
   const raw = query.trim();
   if (!raw) return YIJING_DICTIONARY;
   const q = raw.toLowerCase();
   const qTrad = simpToTrad(raw);
-  return YIJING_DICTIONARY.filter(
+
+  const matches = YIJING_DICTIONARY.filter(
     (e) =>
       e.term.includes(raw) ||
       e.term.includes(qTrad) ||
@@ -4234,6 +4235,28 @@ export function searchEntries(query: string): DictionaryEntry[] {
       e.plainText.includes(raw) ||
       e.plainText.includes(qTrad)
   );
+
+  // 相關度排序：term完全相同 > term開頭匹配 > term包含匹配 > oneLiner > plainText
+  const score = (e: DictionaryEntry): number => {
+    const term = e.term;
+    const termLow = term.toLowerCase();
+    // 完全相同（簡或繁）
+    if (term === raw || term === qTrad) return 100;
+    // term 開頭匹配
+    if (term.startsWith(raw) || term.startsWith(qTrad)) return 90;
+    // pinyin 完全相同
+    if (e.pinyin.toLowerCase() === q) return 85;
+    // term 包含匹配
+    if (term.includes(raw) || term.includes(qTrad)) return 70;
+    // pinyin 包含匹配
+    if (e.pinyin.toLowerCase().includes(q)) return 50;
+    // oneLiner 包含
+    if (e.oneLiner.includes(raw) || e.oneLiner.includes(qTrad)) return 30;
+    // plainText 包含
+    return 10;
+  };
+
+  return matches.sort((a, b) => score(b) - score(a));
 }
 
 
