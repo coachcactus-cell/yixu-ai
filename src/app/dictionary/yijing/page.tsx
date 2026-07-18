@@ -7,6 +7,7 @@ import {
   searchEntries,
   type DictionaryEntry,
 } from "@/data/yijing-dictionary";
+import { HEXAGRAMS } from "@/data/yijing";
 import { Search, BookOpen, ChevronDown, ChevronUp, ArrowLeft, Link2 } from "lucide-react";
 import Link from "next/link";
 
@@ -192,6 +193,20 @@ function EntryCard({
       {/* 展開內容 */}
       {isExpanded && (
         <div className="px-4 pb-3 space-y-3">
+          {/* 卦象圖示（僅六十四卦） */}
+          {entry.category === "六十四卦" && (() => {
+            const guaEntries = YIJING_DICTIONARY.filter((e) => e.category === "六十四卦");
+            const idx = guaEntries.findIndex((e) => e.id === entry.id);
+            if (idx >= 0 && idx < HEXAGRAMS.length) {
+              return (
+                <div className="flex justify-center py-1">
+                  <SimpleHexagram lines={HEXAGRAMS[idx].lines} />
+                </div>
+              );
+            }
+            return null;
+          })()}
+
           {/* 一句話明白 */}
           <div>
             <p className="text-[10px] font-bold text-[#c9a84c] mb-1">📍 一句话明白</p>
@@ -229,6 +244,19 @@ function EntryDetailView({
   onBack: () => void;
   onSelectRelated: (id: string) => void;
 }) {
+  // 六十四卦：查找對應的卦象 lines 數據
+  const hexagram = useMemo(() => {
+    if (entry.category !== "六十四卦") return null;
+    // HEXAGRAMS 的卦名是簡體，辭典 term 是繁體，用順序對應
+    // 辭典六十四卦按卦序排列，與 HEXAGRAMS 一致
+    const guaEntries = YIJING_DICTIONARY.filter((e) => e.category === "六十四卦");
+    const idx = guaEntries.findIndex((e) => e.id === entry.id);
+    if (idx >= 0 && idx < HEXAGRAMS.length) {
+      return HEXAGRAMS[idx];
+    }
+    return null;
+  }, [entry]);
+
   return (
     <div className="min-h-screen bg-[#fafafa]">
       {/* Header */}
@@ -245,6 +273,19 @@ function EntryDetailView({
       </header>
 
       <div className="max-w-md mx-auto px-4 py-4 pb-20 space-y-4">
+        {/* 卦象圖示（僅六十四卦） */}
+        {hexagram && (
+          <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] rounded-xl p-5 border border-[#c9a84c]/20">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[10px] font-bold text-[#c9a84c]">☰ 卦象</p>
+              <p className="text-[10px] text-white/40">
+                第{hexagram.number}卦 · {hexagram.upperTrigram}上{hexagram.lowerTrigram}下
+              </p>
+            </div>
+            <SimpleHexagram lines={hexagram.lines} />
+          </div>
+        )}
+
         {/* 一句話明白 */}
         <div className="bg-white rounded-xl p-4 border border-[#e8e8e8]">
           <p className="text-[10px] font-bold text-[#c9a84c] mb-1.5">📍 一句话明白</p>
@@ -305,6 +346,35 @@ function EntryDetailView({
           <p className="text-[10px] text-[#ccc]">亦须AI · 易学辞典 · 公益免费</p>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ── 簡易卦象圖示（辭典用，無動爻標記）──
+function SimpleHexagram({ lines }: { lines: number[] }) {
+  // lines[0] = 初爻（最底），lines[5] = 上爻（最頂）
+  // flex-col 由上到下排列，反轉令上爻排最頂
+  const reversedLines = [...lines].reverse();
+
+  return (
+    <div className="flex flex-col items-center gap-2 py-2">
+      {reversedLines.map((line, i) => {
+        const pos = 6 - i; // i=0 → 上爻(6), i=5 → 初爻(1)
+        const isYang = line === 1;
+        return (
+          <div key={i} className="flex items-center gap-2">
+            <span className="text-[9px] text-white/30 w-4 text-right">{pos}</span>
+            {isYang ? (
+              <div className="h-[6px] w-24 rounded-sm bg-[#c9a84c]" />
+            ) : (
+              <div className="flex gap-3">
+                <div className="h-[6px] w-9 rounded-sm bg-[#c9a84c]" />
+                <div className="h-[6px] w-9 rounded-sm bg-[#c9a84c]" />
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
