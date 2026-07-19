@@ -565,35 +565,36 @@ export default function ChatPage() {
         </header>
 
         {/* Landing Body */}
-        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-32 content-below-header">
+        <div className="flex-1 flex flex-col items-center px-6 pb-40 content-below-header overflow-y-auto">
           {/* Greeting */}
-          <p className="text-sm text-[#c9a84c] font-medium mb-8 tracking-wide">
+          <p className="text-sm text-[#c9a84c] font-medium mt-4 mb-4 tracking-wide shrink-0">
             {getGreeting()}
           </p>
 
           {/* Large Cartoon Avatar — casual shirt with iPad */}
-          <div className="relative mb-10 flex justify-center">
-            <div className="absolute w-48 h-80 mx-auto rounded-full bg-gradient-to-b from-[#fdf8ed]/80 via-[#fdf8ed]/40 to-transparent" />
+          <div className="flex-1 flex items-center justify-center min-h-0 w-full max-w-[240px] py-2">
             <img
               src="/cartoon-casual.png?v=4"
               alt="亦须先生全身像"
-              className="relative w-44 h-auto object-contain mx-auto drop-shadow-xl"
+              className="w-full h-auto max-h-[42vh] object-contain drop-shadow-xl"
               style={{ filter: "drop-shadow(0 8px 24px rgba(201,168,76,0.2))" }}
             />
           </div>
 
           {/* Tagline */}
-          <h2 className="text-xl font-bold text-[#1a1a1a] font-song mb-2 text-center">
-            修行路上，有我陪你
-          </h2>
-          <p className="text-sm text-[#666666] mb-10 text-center max-w-xs leading-relaxed">
-            传统经学 × Sino-NLP<br />多维角度，聊聊你的困扰
-          </p>
+          <div className="text-center shrink-0 mb-6">
+            <h2 className="text-xl font-bold text-[#1a1a1a] font-song mb-2 text-center">
+              修行路上，有我陪你
+            </h2>
+            <p className="text-sm text-[#666666] text-center max-w-xs leading-relaxed">
+              传统经学 × Sino-NLP<br />多维角度，聊聊你的困扰
+            </p>
+          </div>
 
           {/* CTA Button */}
           <button
             onClick={handleStart}
-            className="flex items-center gap-2 px-10 py-3.5 rounded-full bg-gradient-to-r from-[#c9a84c] to-[#b89430] text-white font-bold text-base shadow-lg shadow-[#c9a84c]/25 active:scale-95 transition-transform"
+            className="shrink-0 flex items-center gap-2 px-10 py-3.5 rounded-full bg-gradient-to-r from-[#c9a84c] to-[#b89430] text-white font-bold text-base shadow-lg shadow-[#c9a84c]/25 active:scale-95 transition-transform mb-2"
           >
             开始对话
             <ArrowRight size={18} />
