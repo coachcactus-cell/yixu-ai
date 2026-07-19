@@ -565,7 +565,7 @@ export default function ChatPage() {
         </header>
 
         {/* Landing Body */}
-        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-16 content-below-header">
+        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-32 content-below-header">
           {/* Greeting */}
           <p className="text-sm text-[#c9a84c] font-medium mb-8 tracking-wide">
             {getGreeting()}
@@ -598,11 +598,6 @@ export default function ChatPage() {
             开始对话
             <ArrowRight size={18} />
           </button>
-
-          {/* Footer hint */}
-          <p className="mt-6 text-sm text-[#999999]">
-            点击上方按钮，开始与亦须先生对话
-          </p>
         </div>
       </div>
     );

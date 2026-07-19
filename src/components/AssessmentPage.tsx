@@ -254,46 +254,32 @@ export default function AssessmentPage({
             <ShieldAlert size={14} className="text-[#7c9cd4]" />
             国际标准心理量表
           </h3>
-          <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
             {ASSESSMENTS.filter((a) => a.category === "clinical").map((a) => {
               const Icon = a.icon;
               const unlocked = isUnlocked(a.id);
               return (
-                <div key={a.id} className="card" style={{ opacity: a.available ? 1 : 0.6 }}>
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: a.available ? a.color + "15" : "#f5f5f5" }}
-                    >
-                      <Icon size={22} style={{ color: a.color }} />
+                <div key={a.id} className="card !m-0 !p-3" style={{ opacity: a.available ? 1 : 0.6 }}>
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-1.5" style={{ backgroundColor: a.available ? a.color + "15" : "#f5f5f5" }}>
+                      <Icon size={20} style={{ color: a.color }} />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-[#1a1a1a]">{a.title}</h3>
-                        {unlocked && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 font-medium flex items-center gap-0.5">
-                            <Check size={8} /> 已解锁
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-[#666666] mt-1">{a.desc}</p>
-                      <div className="flex items-center justify-between mt-3">
-                        <span className="text-sm text-[#777777]">{a.count}</span>
-                        <div className="flex items-center gap-2">
-                          {!unlocked && (
-                            <span className="text-sm font-bold text-[#c9a84c]">深度解读 ¥12.30</span>
-                          )}
-                          {a.available && (
-                            <button
-                              className="btn-primary text-sm py-2 px-4"
-                              onClick={handleStartMap[a.id]}
-                            >
-                              开始测评
-                              <ArrowRight size={14} />
-                            </button>
-                          )}
-                        </div>
-                      </div>
+                    <h3 className="font-semibold text-[#1a1a1a] text-sm leading-tight">{a.title}</h3>
+                    {unlocked && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 font-medium inline-flex items-center gap-0.5">
+                        <Check size={8} /> 已解锁
+                      </span>
+                    )}
+                    <p className="text-[11px] text-[#666666] mt-0.5 line-clamp-2 leading-tight">{a.desc}</p>
+                    <div className="flex flex-col items-center gap-1 mt-2 w-full">
+                      {!unlocked && (
+                        <span className="text-[10px] font-bold text-[#c9a84c]">深度解读 ¥12.30</span>
+                      )}
+                      {a.available && (
+                        <button className="btn-primary text-[11px] py-1 px-3 w-full" onClick={handleStartMap[a.id]}>
+                          开始测评
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -308,44 +294,30 @@ export default function AssessmentPage({
             <Sparkles size={14} className="text-[#c9a84c]" />
             亦须原创测评
           </h3>
-          <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
             {ASSESSMENTS.filter((a) => a.category === "yixu").map((a) => {
               const Icon = a.icon;
               const unlocked = isUnlocked(a.id);
               return (
-                <div key={a.id} className="card" style={{ opacity: a.available ? 1 : 0.6 }}>
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: a.available ? "#fdf8ed" : "#f5f5f5" }}
-                    >
-                      <Icon size={22} style={{ color: a.color }} />
+                <div key={a.id} className="card !m-0 !p-3" style={{ opacity: a.available ? 1 : 0.6 }}>
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-1.5" style={{ backgroundColor: a.available ? "#fdf8ed" : "#f5f5f5" }}>
+                      <Icon size={20} style={{ color: a.color }} />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-[#1a1a1a]">{a.title}</h3>
-                        {unlocked && ASSESSMENT_PRICES[a.id] > 0 && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 font-medium flex items-center gap-0.5">
-                            <Check size={8} /> 已解锁
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-[#666666] mt-1">{a.desc}</p>
-                      <div className="flex items-center justify-between mt-3">
-                        <span className="text-sm text-[#777777]">{a.count}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-[#c9a84c]">{a.price === "免费" ? "免费" : (unlocked ? "已解锁" : a.price)}</span>
-                          {a.available && (
-                            <button
-                              className="btn-primary text-sm py-2 px-4"
-                              onClick={handleStartMap[a.id]}
-                            >
-                              开始测评
-                              <ArrowRight size={14} />
-                            </button>
-                          )}
-                        </div>
-                      </div>
+                    <h3 className="font-semibold text-[#1a1a1a] text-sm leading-tight">{a.title}</h3>
+                    {unlocked && ASSESSMENT_PRICES[a.id] > 0 && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 font-medium inline-flex items-center gap-0.5">
+                        <Check size={8} /> 已解锁
+                      </span>
+                    )}
+                    <p className="text-[11px] text-[#666666] mt-0.5 line-clamp-2 leading-tight">{a.desc}</p>
+                    <div className="flex flex-col items-center gap-1 mt-2 w-full">
+                      <span className="text-[10px] font-bold text-[#c9a84c]">{a.price === "免费" ? "免费" : (unlocked ? "已解锁" : a.price)}</span>
+                      {a.available && (
+                        <button className="btn-primary text-[11px] py-1 px-3 w-full" onClick={handleStartMap[a.id]}>
+                          开始测评
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -360,48 +332,34 @@ export default function AssessmentPage({
             <Brain size={14} className="text-[#6b8fb5]" />
             Sino-NLP 原创测评
           </h3>
-          <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
             {ASSESSMENTS.filter((a) => a.category === "sino-nlp").map((a) => {
               const Icon = a.icon;
               const unlocked = isUnlocked(a.id);
               return (
-                <div key={a.id} className="card" style={{ opacity: a.available ? 1 : 0.6 }}>
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: a.available ? a.color + "15" : "#f5f5f5" }}
-                    >
-                      <Icon size={22} style={{ color: a.available ? a.color : "#999" }} />
+                <div key={a.id} className="card !m-0 !p-3" style={{ opacity: a.available ? 1 : 0.6 }}>
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-1.5" style={{ backgroundColor: a.available ? a.color + "15" : "#f5f5f5" }}>
+                      <Icon size={20} style={{ color: a.available ? a.color : "#999" }} />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-[#1a1a1a]">{a.title}</h3>
-                        {unlocked && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 font-medium flex items-center gap-0.5">
-                            <Check size={8} /> 已解锁
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-[#666666] mt-1">{a.desc}</p>
-                      <div className="flex items-center justify-between mt-3">
-                        <span className="text-sm text-[#777777]">{a.count}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-[#c9a84c]">{unlocked ? "已解锁" : a.price}</span>
-                          {a.available ? (
-                            <button
-                              className="btn-primary text-sm py-2 px-4"
-                              onClick={handleStartMap[a.id]}
-                            >
-                              开始测评
-                              <ArrowRight size={14} />
-                            </button>
-                          ) : (
-                            <button className="btn-outline text-sm py-2 px-4 opacity-50" disabled>
-                              即将推出
-                            </button>
-                          )}
-                        </div>
-                      </div>
+                    <h3 className="font-semibold text-[#1a1a1a] text-sm leading-tight">{a.title}</h3>
+                    {unlocked && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 font-medium inline-flex items-center gap-0.5">
+                        <Check size={8} /> 已解锁
+                      </span>
+                    )}
+                    <p className="text-[11px] text-[#666666] mt-0.5 line-clamp-2 leading-tight">{a.desc}</p>
+                    <div className="flex flex-col items-center gap-1 mt-2 w-full">
+                      <span className="text-[10px] font-bold text-[#c9a84c]">{unlocked ? "已解锁" : a.price}</span>
+                      {a.available ? (
+                        <button className="btn-primary text-[11px] py-1 px-3 w-full" onClick={handleStartMap[a.id]}>
+                          开始测评
+                        </button>
+                      ) : (
+                        <button className="btn-outline text-[11px] py-1 px-3 w-full opacity-50" disabled>
+                          即将推出
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -416,49 +374,38 @@ export default function AssessmentPage({
             <Flame size={14} className="text-[#6c63ff]" />
             火热 New Age 🔥
           </h3>
-          <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
             {ASSESSMENTS.filter((a) => a.category === "new-age").map((a) => {
               const Icon = a.icon;
               const unlocked = isUnlocked(a.id);
               return (
-                <div key={a.id} className="card relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0B0E1A, #1A1035)", borderColor: "rgba(108,99,255,0.3)" }}>
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: "rgba(108,99,255,0.2)" }}
-                    >
-                      <Icon size={22} style={{ color: "#6c63ff" }} />
+                <div key={a.id} className="card !m-0 !p-3 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0B0E1A, #1A1035)", borderColor: "rgba(108,99,255,0.3)" }}>
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-1.5" style={{ backgroundColor: "rgba(108,99,255,0.2)" }}>
+                      <Icon size={20} style={{ color: "#6c63ff" }} />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-white">{a.title}</h3>
-                        {unlocked && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 font-medium flex items-center gap-0.5">
-                            <Check size={8} /> 已解锁
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-[rgba(255,255,255,0.7)] mt-1">{a.desc}</p>
-                      <div className="flex items-center justify-between mt-3">
-                        <span className="text-sm text-[rgba(255,255,255,0.5)]">{a.count}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-[#B8A9D4]">{unlocked ? "已解锁" : a.price}</span>
-                          {a.available && (
-                            <button
-                              className="text-sm py-2 px-4 rounded-lg font-semibold transition-all active:scale-[0.97]"
-                              style={{
-                                background: "linear-gradient(135deg, rgba(240,230,197,0.4), rgba(184,169,212,0.4))",
-                                border: "1px solid rgba(255,255,255,0.2)",
-                                color: "#FFFFFF",
-                              }}
-                              onClick={handleStartMap[a.id]}
-                            >
-                              开始测评
-                              <ArrowRight size={14} className="inline ml-1" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
+                    <h3 className="font-semibold text-white text-sm leading-tight">{a.title}</h3>
+                    {unlocked && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 font-medium inline-flex items-center gap-0.5">
+                        <Check size={8} /> 已解锁
+                      </span>
+                    )}
+                    <p className="text-[11px] text-[rgba(255,255,255,0.7)] mt-0.5 line-clamp-2 leading-tight">{a.desc}</p>
+                    <div className="flex flex-col items-center gap-1 mt-2 w-full">
+                      <span className="text-[10px] font-bold text-[#B8A9D4]">{unlocked ? "已解锁" : a.price}</span>
+                      {a.available && (
+                        <button
+                          className="text-[11px] py-1 px-3 rounded-lg font-semibold w-full transition-all active:scale-[0.97]"
+                          style={{
+                            background: "linear-gradient(135deg, rgba(240,230,197,0.4), rgba(184,169,212,0.4))",
+                            border: "1px solid rgba(255,255,255,0.2)",
+                            color: "#FFFFFF",
+                          }}
+                          onClick={handleStartMap[a.id]}
+                        >
+                          开始测评
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

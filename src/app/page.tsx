@@ -2,20 +2,24 @@
 
 import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Home, BookOpen, ClipboardList, User, Compass } from "lucide-react";
+import { Home, BookOpen, ClipboardList, User, Compass, Music2, Cookie } from "lucide-react";
 import ChatPage from "@/components/ChatPage";
 import DictionaryTabPage from "@/components/DictionaryTabPage";
 import AssessmentPage from "@/components/AssessmentPage";
 import ProfilePage from "@/components/ProfilePage";
 import YijingPage from "@/components/YijingPage";
+import TianLaiTabPage from "@/components/TianLaiTabPage";
+import DianXinTabPage from "@/components/DianXinTabPage";
 
-const VALID_TABS = ["home", "yijing", "dictionary", "assessment", "profile"];
+const VALID_TABS = ["home", "yijing", "tianlai", "dictionary", "assessment", "dianxin", "profile"];
 
 const TABS = [
   { key: "home", label: "首页", icon: Home },
   { key: "yijing", label: "易卦", icon: Compass },
+  { key: "tianlai", label: "天籁", icon: Music2 },
   { key: "dictionary", label: "公益辞典", icon: BookOpen },
   { key: "assessment", label: "测评", icon: ClipboardList },
+  { key: "dianxin", label: "点心", icon: Cookie },
   { key: "profile", label: "我的", icon: User },
 ];
 
@@ -39,10 +43,12 @@ function AppContent() {
       {/* Page Content */}
       {activeTab === "home" && <ChatPage />}
       {activeTab === "yijing" && <YijingPage />}
+      {activeTab === "tianlai" && <TianLaiTabPage />}
       {activeTab === "dictionary" && <DictionaryTabPage />}
       {activeTab === "assessment" && (
         <AssessmentPage onFullscreenChange={setIsFullscreen} />
       )}
+      {activeTab === "dianxin" && <DianXinTabPage />}
       {activeTab === "profile" && <ProfilePage />}
 
       {/* Bottom Tab Bar — 全屏模式隐藏 */}
