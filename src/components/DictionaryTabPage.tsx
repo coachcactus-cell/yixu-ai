@@ -57,28 +57,31 @@ export default function DictionaryTabPage() {
             </div>
           </button>
 
-          {/* 唯識辭典（Coming Soon）*/}
-          <div className="bg-white rounded-2xl p-5 border border-[#e8e8e8] opacity-70">
+          {/* 唯識辭典 */}
+          <button
+            onClick={() => router.push("/dictionary/weishi")}
+            className="w-full text-left block bg-white rounded-2xl p-5 border border-[#e8e8e8] hover:border-[#6b8f9e]/40 hover:shadow-md transition-all active:scale-[0.98]"
+          >
             <div className="flex items-start gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#8a9bae]/10 to-[#f0f4ff] flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6b8f9e]/10 to-[#f0f4f5] flex items-center justify-center flex-shrink-0">
                 <span className="text-2xl">🪷</span>
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="text-base font-bold text-[#1a1a1a] font-song">唯识辞典</h3>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#c9a84c]/10 text-[#c9a84c] font-medium">
-                    Coming Soon
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#10b981]/10 text-[#10b981] font-medium">
+                    已上线
                   </span>
                 </div>
                 <p className="text-xs text-[#666] leading-relaxed mb-2">
-                  五位百法 · 八识 · 唯识术语
+                  八识体系 · 五位百法 · 唯识基本概念 · 经典术语
                 </p>
                 <p className="text-[10px] text-[#999]">
-                  即将上线 · 敬请期待
+                  持续更新中 · 目前 300 条
                 </p>
               </div>
             </div>
-          </div>
+          </button>
         </div>
 
         {/* 說明 */}
