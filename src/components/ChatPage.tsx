@@ -565,28 +565,28 @@ export default function ChatPage() {
         </header>
 
         {/* Landing Body */}
-        <div className="flex-1 flex flex-col items-center px-6 pb-40 content-below-header overflow-y-auto">
+        <div className="flex-1 flex flex-col items-center px-5 pb-40 content-below-header overflow-y-auto">
           {/* Greeting */}
-          <p className="text-sm text-[#c9a84c] font-medium mt-4 mb-4 tracking-wide shrink-0">
+          <p className="text-sm text-[#c9a84c] font-medium mt-3 mb-3 tracking-wide shrink-0">
             {getGreeting()}
           </p>
 
           {/* Large Cartoon Avatar — casual shirt with iPad */}
-          <div className="flex-1 flex items-center justify-center min-h-0 w-full max-w-[240px] py-2">
+          <div className="shrink-0 w-[180px] h-[230px] flex items-end justify-center mb-3">
             <img
               src="/cartoon-casual.png?v=4"
               alt="亦须先生全身像"
-              className="w-full h-auto max-h-[42vh] object-contain drop-shadow-xl"
+              className="w-full h-full object-contain drop-shadow-xl"
               style={{ filter: "drop-shadow(0 8px 24px rgba(201,168,76,0.2))" }}
             />
           </div>
 
           {/* Tagline */}
-          <div className="text-center shrink-0 mb-6">
-            <h2 className="text-xl font-bold text-[#1a1a1a] font-song mb-2 text-center">
+          <div className="text-center shrink-0 mb-5">
+            <h2 className="text-lg font-bold text-[#1a1a1a] font-song mb-1.5 text-center">
               修行路上，有我陪你
             </h2>
-            <p className="text-sm text-[#666666] text-center max-w-xs leading-relaxed">
+            <p className="text-xs text-[#666666] text-center max-w-xs leading-relaxed">
               传统经学 × Sino-NLP<br />多维角度，聊聊你的困扰
             </p>
           </div>
@@ -594,10 +594,10 @@ export default function ChatPage() {
           {/* CTA Button */}
           <button
             onClick={handleStart}
-            className="shrink-0 flex items-center gap-2 px-10 py-3.5 rounded-full bg-gradient-to-r from-[#c9a84c] to-[#b89430] text-white font-bold text-base shadow-lg shadow-[#c9a84c]/25 active:scale-95 transition-transform mb-2"
+            className="shrink-0 flex items-center gap-2 px-10 py-3 rounded-full bg-gradient-to-r from-[#c9a84c] to-[#b89430] text-white font-bold text-sm shadow-lg shadow-[#c9a84c]/25 active:scale-95 transition-transform"
           >
             开始对话
-            <ArrowRight size={18} />
+            <ArrowRight size={16} />
           </button>
         </div>
       </div>

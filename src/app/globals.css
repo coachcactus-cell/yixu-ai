@@ -71,33 +71,39 @@ body {
   border-top: 0.5px solid var(--color-border);
   padding-bottom: var(--safe-bottom);
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  align-items: stretch;
   height: calc(64px + var(--safe-bottom));
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  overscroll-behavior-x: contain;
-}
-
-.tab-bar::-webkit-scrollbar {
-  display: none;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .tab-item {
-  flex: 0 0 auto;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 1px;
-  padding: 4px 6px;
+  padding: 4px 0;
   color: #aaaaaa;
   transition: color 0.2s;
-  font-size: 11px;
-  min-width: 56px;
+  font-size: 10px;
   text-align: center;
   line-height: 1.15;
+  overflow: hidden;
+  box-sizing: border-box;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.tab-item > span {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
 }
 
 .tab-item.active {

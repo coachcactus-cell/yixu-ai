@@ -17,10 +17,9 @@ const TABS = [
   { key: "home", label: "首页", icon: Home },
   { key: "yijing", label: "易卦", icon: Compass },
   { key: "tianlai", label: "天籁", icon: Music2 },
-  { key: "dictionary", label: "公益辞典", icon: BookOpen },
+  { key: "dictionary", label: "辞典", icon: BookOpen },
   { key: "assessment", label: "测评", icon: ClipboardList },
   { key: "dianxin", label: "点心", icon: Cookie },
-  { key: "profile", label: "我的", icon: User },
 ];
 
 function AppContent() {
@@ -40,6 +39,18 @@ function AppContent() {
 
   return (
     <div className="page-container">
+      {/* 右上角「我的」入口按钮 */}
+      {!isFullscreen && (
+        <button
+          onClick={() => setActiveTab("profile")}
+          className="fixed z-40 w-11 h-11 rounded-full bg-[#c9a84c] border-2 border-white shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+          aria-label="我的"
+          style={{ top: "12px", right: "12px" }}
+        >
+          <User size={22} className="text-white" strokeWidth={2.5} />
+        </button>
+      )}
+
       {/* Page Content */}
       {activeTab === "home" && <ChatPage />}
       {activeTab === "yijing" && <YijingPage />}
@@ -63,7 +74,7 @@ function AppContent() {
               className={`tab-item ${isActive ? "active" : ""}`}
               onClick={() => setActiveTab(tab.key)}
             >
-              <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+              <Icon strokeWidth={isActive ? 2.5 : 2} />
               <span>{tab.label}</span>
             </button>
           );
