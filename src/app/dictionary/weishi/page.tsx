@@ -15,6 +15,7 @@ export default function WeishiDictionaryPage() {
   const [activeCategory, setActiveCategory] = useState<string>("全部");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [selectedEntry, setSelectedEntry] = useState<WeishiEntry | null>(null);
+  const [displayCount, setDisplayCount] = useState(50);
 
   // 搜尋 + 篩選
   const filteredEntries = useMemo(() => {
@@ -23,6 +24,11 @@ export default function WeishiDictionaryPage() {
       result = result.filter((e) => e.category === activeCategory);
     }
     return result;
+  }, [query, activeCategory]);
+
+  // 當搜尋或篩選變化時，重置顯示數量
+  useMemo(() => {
+    setDisplayCount(50);
   }, [query, activeCategory]);
 
   // 統計
@@ -123,22 +129,32 @@ export default function WeishiDictionaryPage() {
             <p className="text-xs text-[#ccc] mt-1">试试搜索「八识」「百法」「阿赖耶」</p>
           </div>
         ) : (
-          <div className="space-y-2.5">
-            {filteredEntries.map((entry) => (
-              <EntryCard
-                key={entry.id}
-                entry={entry}
-                isExpanded={expandedId === entry.id}
-                onToggle={() =>
-                  setExpandedId(expandedId === entry.id ? null : entry.id)
-                }
-                onClickDetail={() => {
-                setSelectedEntry(entry);
-                window.scrollTo(0, 0);
-              }}
-              />
-            ))}
-          </div>
+          <>
+            <div className="space-y-2.5">
+              {filteredEntries.slice(0, displayCount).map((entry) => (
+                <EntryCard
+                  key={entry.id}
+                  entry={entry}
+                  isExpanded={expandedId === entry.id}
+                  onToggle={() =>
+                    setExpandedId(expandedId === entry.id ? null : entry.id)
+                  }
+                  onClickDetail={() => {
+                    setSelectedEntry(entry);
+                    window.scrollTo(0, 0);
+                  }}
+                />
+              ))}
+            </div>
+            {displayCount < filteredEntries.length && (
+              <button
+                onClick={() => setDisplayCount((c) => c + 50)}
+                className="w-full mt-4 py-3 rounded-xl bg-[#f0f4f5] text-[#6b8f9e] text-sm font-medium hover:bg-[#e0e8ea] transition-colors"
+              >
+                加载更多（剩余 {filteredEntries.length - displayCount} 条）
+              </button>
+            )}
+          </>
         )}
 
         {/* 底部说明 */}
