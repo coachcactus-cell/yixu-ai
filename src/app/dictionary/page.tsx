@@ -73,10 +73,10 @@ export default function DictionaryHomePage() {
                   </span>
                 </div>
                 <p className="text-xs text-[#666] leading-relaxed mb-2">
-                  八识体系 · 五位百法 · 唯识基本概念 · 经典术语
+                  八识体系 · 五位百法 · 心所法 · 论典术语 · 修行观法 · 宗派辩论
                 </p>
                 <p className="text-[10px] text-[#999]">
-                  持续更新中 · 目前 300 条
+                  持续更新中 · 目前 1170 条
                 </p>
               </div>
             </div>
