@@ -43,11 +43,11 @@ function AppContent() {
       {!isFullscreen && (
         <button
           onClick={() => setActiveTab("profile")}
-          className="fixed z-40 w-11 h-11 rounded-full bg-[#c9a84c] border-2 border-white shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+          className="fixed z-40 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm border border-[#c9a84c]/30 shadow-sm flex items-center justify-center active:scale-95 transition-transform"
           aria-label="我的"
-          style={{ top: "12px", right: "12px" }}
+          style={{ top: "14px", right: "14px" }}
         >
-          <User size={22} className="text-white" strokeWidth={2.5} />
+          <User size={16} className={activeTab === "profile" ? "text-[#c9a84c]" : "text-[#999]"} strokeWidth={2} />
         </button>
       )}
 
