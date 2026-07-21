@@ -565,12 +565,15 @@ export default function ChatPage() {
     return (
       <div className="flex flex-col h-screen bg-white">
         {/* Header */}
-        <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8] relative z-20">
+        <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8] relative" style={{ zIndex: 30 }}>
           <div className="flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => setShowFounderModal(true)}
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => { console.log("founder modal clicked!"); setShowFounderModal(true); }}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setShowFounderModal(true); } }}
               className="flex items-center gap-2 active:opacity-70 transition-opacity cursor-pointer select-none"
+              style={{ WebkitTapHighlightColor: "rgba(201,168,76,0.1)" }}
             >
               <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#c9a84c]/40 flex-shrink-0 bg-[#fdf8ed]">
                 <img
@@ -585,7 +588,7 @@ export default function ChatPage() {
                 </h1>
                 <p className="text-sm text-[#666666]">Cactus AI</p>
               </div>
-            </button>
+            </div>
           </div>
         </header>
 
@@ -633,12 +636,15 @@ export default function ChatPage() {
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
-      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8] relative z-20">
+      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8] relative" style={{ zIndex: 30 }}>
         <div className="flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => setShowFounderModal(true)}
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => { console.log("founder modal clicked!"); setShowFounderModal(true); }}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setShowFounderModal(true); } }}
             className="flex items-center gap-2 active:opacity-70 transition-opacity cursor-pointer select-none"
+            style={{ WebkitTapHighlightColor: "rgba(201,168,76,0.1)" }}
           >
             <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#c9a84c]/40 flex-shrink-0 bg-[#fdf8ed]">
               <img
@@ -653,7 +659,7 @@ export default function ChatPage() {
               </h1>
               <p className="text-sm text-[#666666]">Sino-NLP 疗愈对话</p>
             </div>
-          </button>
+          </div>
           <div className="flex items-center gap-2">
             {messages.length > 1 && (
               <button
