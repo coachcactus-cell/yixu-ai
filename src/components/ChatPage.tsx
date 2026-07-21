@@ -565,11 +565,12 @@ export default function ChatPage() {
     return (
       <div className="flex flex-col h-screen bg-white">
         {/* Header */}
-        <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
+        <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8] relative z-20">
           <div className="flex items-center justify-between">
             <button
+              type="button"
               onClick={() => setShowFounderModal(true)}
-              className="flex items-center gap-2 active:opacity-70 transition-opacity"
+              className="flex items-center gap-2 active:opacity-70 transition-opacity cursor-pointer select-none"
             >
               <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#c9a84c]/40 flex-shrink-0 bg-[#fdf8ed]">
                 <img
@@ -632,11 +633,12 @@ export default function ChatPage() {
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
-      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
+      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8] relative z-20">
         <div className="flex items-center justify-between">
           <button
+            type="button"
             onClick={() => setShowFounderModal(true)}
-            className="flex items-center gap-2 active:opacity-70 transition-opacity"
+            className="flex items-center gap-2 active:opacity-70 transition-opacity cursor-pointer select-none"
           >
             <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#c9a84c]/40 flex-shrink-0 bg-[#fdf8ed]">
               <img
