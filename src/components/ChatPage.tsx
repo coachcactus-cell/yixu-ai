@@ -565,15 +565,11 @@ export default function ChatPage() {
     return (
       <div className="flex flex-col h-screen bg-white">
         {/* Header */}
-        <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8] relative" style={{ zIndex: 30 }}>
+        <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]" style={{ position: "relative", zIndex: 30, pointerEvents: "auto" }}>
           <div className="flex items-center justify-between">
             <div
-              role="button"
-              tabIndex={0}
-              onClick={() => { console.log("founder modal clicked!"); setShowFounderModal(true); }}
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setShowFounderModal(true); } }}
-              className="flex items-center gap-2 active:opacity-70 transition-opacity cursor-pointer select-none"
-              style={{ WebkitTapHighlightColor: "rgba(201,168,76,0.1)" }}
+              onClick={() => setShowFounderModal(true)}
+              style={{ pointerEvents: "auto", cursor: "pointer", touchAction: "manipulation" }}
             >
               <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#c9a84c]/40 flex-shrink-0 bg-[#fdf8ed]">
                 <img
@@ -627,6 +623,15 @@ export default function ChatPage() {
             开始对话
             <ArrowRight size={16} />
           </button>
+
+          {/* 认识先生 — 备用入口 */}
+          <button
+            onClick={() => setShowFounderModal(true)}
+            className="shrink-0 mt-4 text-xs text-[#8a9bae] underline active:opacity-60"
+            style={{ touchAction: "manipulation" }}
+          >
+            认识亦须先生 →
+          </button>
         </div>
       </div>
     );
@@ -636,15 +641,11 @@ export default function ChatPage() {
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
-      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8] relative" style={{ zIndex: 30 }}>
+      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]" style={{ position: "relative", zIndex: 30, pointerEvents: "auto" }}>
         <div className="flex items-center justify-between">
           <div
-            role="button"
-            tabIndex={0}
-            onClick={() => { console.log("founder modal clicked!"); setShowFounderModal(true); }}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setShowFounderModal(true); } }}
-            className="flex items-center gap-2 active:opacity-70 transition-opacity cursor-pointer select-none"
-            style={{ WebkitTapHighlightColor: "rgba(201,168,76,0.1)" }}
+            onClick={() => setShowFounderModal(true)}
+            style={{ pointerEvents: "auto", cursor: "pointer", touchAction: "manipulation" }}
           >
             <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#c9a84c]/40 flex-shrink-0 bg-[#fdf8ed]">
               <img
