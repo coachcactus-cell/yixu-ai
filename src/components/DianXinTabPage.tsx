@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { ChevronDown, ChevronUp, Play, X, Phone, ArrowRight, Sparkles, Shield, RefreshCw, Users } from "lucide-react";
+import { ChevronDown, ChevronUp, Play, Phone, ArrowRight, Sparkles, Shield, RefreshCw, Users } from "lucide-react";
 
-/* ── 学员见证视频 ── */
+/* ── 学员见证视频（压缩版） ── */
 const TESTIMONIAL_VIDEOS = [
   { src: "/videos/dianxin/video1-shaohui.mp4", poster: "/videos/dianxin/poster1.jpg", name: "嫊慧" },
   { src: "/videos/dianxin/video2-xiaodan.mp4", poster: "/videos/dianxin/poster2.jpg", name: "小丹" },
@@ -47,7 +47,7 @@ const COURSE_DAYS = [
     day: 6,
     title: "跟压力说拜拜",
     icon: "😮‍💨",
-    content: "压力到底是个啥？我让你彻底看懂它的原理，知道它形成的真正原因。然后给你速效和彻底两种减压法，再结合脑电波放松练习，让你把压在心口的石头彻底搬开，晚上睡得香，白天状态好！",
+    content: `压力到底是个啥？我让你彻底看懂它的原理，知道它形成的真正原因。然后给你速效和彻底两种减压法，再结合脑电波放松练习，让你把压在心口的石头彻底搬开，晚上睡得香，白天状态好！`,
   },
   {
     day: 7,
@@ -96,6 +96,19 @@ const TECHNIQUES = [
 /* ── 有效范畴 ── */
 const SCOPE = ["管理", "领导", "销售", "谈判", "夫妻关系", "教育孩子", "搞定父母", "辅导", "教育", "修行"];
 
+/* ── 图片列表 ── */
+const IMG = {
+  groupAirplane: "/images/dianxin/1784620809153_cdaff55a.jpg",  // 集体放纸飞机
+  groupPhoto: "/images/dianxin/1784620808984_8d6fb915.jpg",      // 大合照
+  lecture: "/images/dianxin/1784620809124_c1c962ba.jpg",          // 课堂讲课
+  vak: "/images/dianxin/1784620809104_9b81d53b.jpg",              // VAK练习
+  drawing: "/images/dianxin/1784620809110_57060214.jpg",          // 学员讨论画图
+  sharing: "/images/dianxin/1784620809135_b40c23ef.jpg",          // 学员开心分享
+  pyramid: "/images/dianxin/1784620809107_9f07cb47.jpg",          // 金字塔图讲课
+  standee: "/images/dianxin/1784620809170_af44ab4b.jpg",          // 点心易拉宝
+  coach: "/images/dianxin/1784620809138_78d49a30.jpg",            // 先生讲Life Coach
+};
+
 export default function DianXinTabPage() {
   const [expandedDay, setExpandedDay] = useState<number | null>(1);
   const [playingVideo, setPlayingVideo] = useState<number | null>(null);
@@ -106,14 +119,10 @@ export default function DianXinTabPage() {
   };
 
   const handlePlayClick = (index: number) => {
-    // 停止其他视频
     videoRefs.current.forEach((v, i) => {
-      if (v && i !== index) {
-        v.pause();
-      }
+      if (v && i !== index) v.pause();
     });
     setPlayingVideo(index);
-    // 自动播放
     setTimeout(() => {
       videoRefs.current[index]?.play();
     }, 100);
@@ -121,20 +130,44 @@ export default function DianXinTabPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa] pb-20">
-      {/* ── Hero ── */}
-      <div className="bg-gradient-to-b from-[#fdf8ed] to-[#fafafa] px-5 pt-10 pb-8">
-        <div className="text-center mb-6">
-          <span className="inline-block px-3 py-1 rounded-full bg-[#c9a84c]/10 text-[#c9a84c] text-xs font-medium mb-3">
+      {/* ── Banner 视频Hero ── */}
+      <div className="relative w-full overflow-hidden" style={{ aspectRatio: "9/16", maxHeight: "70vh" }}>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster="/videos/dianxin/banner-poster.jpg"
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/videos/dianxin/banner.mp4" type="video/mp4" />
+        </video>
+        {/* 渐变遮罩 + 文字叠加 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/70" />
+        <div className="absolute inset-0 flex flex-col items-center justify-end pb-8 px-5">
+          <span className="inline-block px-3 py-1 rounded-full bg-[#c9a84c]/20 backdrop-blur-sm text-[#c9a84c] text-xs font-medium mb-3">
             Sino-NLP 身心语言 · since 2004
           </span>
-          <h1 className="text-3xl font-black font-song text-[#1a1a1a] mb-2">
+          <h1 className="text-4xl font-black font-song text-white mb-2 drop-shadow-lg">
             <span className="text-[#c9a84c]">点</span>
             <span className="text-[#8a9bae]">心</span>
           </h1>
-          <p className="text-sm text-[#666]">12天 · 120小时 · 终身强大工具</p>
+          <p className="text-sm text-white/90 drop-shadow-md">12天 · 120小时 · 终身强大工具</p>
         </div>
+      </div>
 
-        {/* 痛点引子 */}
+      {/* ── 集体放纸飞机大图 ── */}
+      <div className="w-full px-5 pt-5">
+        <img
+          src={IMG.groupAirplane}
+          alt="Sino-NLP点心读书会集体活动"
+          className="w-full rounded-2xl shadow-lg object-cover"
+        />
+        <p className="text-center text-xs text-[#999] mt-2">Sino-NLP《点心》读书会 · 学员留影</p>
+      </div>
+
+      {/* ── 痛点引子 ── */}
+      <div className="px-5 py-6">
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#f0ede5]">
           <h2 className="text-base font-bold text-[#1a1a1a] mb-3 leading-snug">
             你不是不够努力，<br/>只是劲儿没用对地方！
@@ -151,8 +184,8 @@ export default function DianXinTabPage() {
         </div>
       </div>
 
-      {/* ── 转折 ── */}
-      <div className="px-5 py-6">
+      {/* ── 转折 + 金字塔图 ── */}
+      <div className="px-5 py-4">
         <div className="text-center mb-5">
           <p className="text-sm text-[#666] leading-relaxed">
             我办这个课快20年了，见了太多被这种感觉困住的人。<br/>
@@ -163,7 +196,7 @@ export default function DianXinTabPage() {
           </p>
         </div>
 
-        <div className="bg-gradient-to-r from-[#c9a84c]/5 to-[#8a9bae]/5 rounded-2xl p-5 border border-[#c9a84c]/15">
+        <div className="bg-gradient-to-r from-[#c9a84c]/5 to-[#8a9bae]/5 rounded-2xl p-5 border border-[#c9a84c]/15 mb-5">
           <p className="text-sm text-[#444] leading-relaxed">
             这个《点心》课，就是教你这个巧劲儿的地方！
           </p>
@@ -171,9 +204,17 @@ export default function DianXinTabPage() {
             它不玄乎，就是把老祖宗的智慧，跟西方最实用的心理学方法捏在一起，变成你能立刻上手用的<strong className="text-[#c9a84c]">终身强大工具</strong>！
           </p>
         </div>
+
+        {/* 金字塔图讲课 */}
+        <img
+          src={IMG.pyramid}
+          alt="Sino-NLP理解层次金字塔"
+          className="w-full rounded-xl shadow-md object-cover mb-2"
+        />
+        <p className="text-center text-xs text-[#999] mb-4">理解层次贯通技术 · 课堂讲授</p>
       </div>
 
-      {/* ── 学完你会发现 ── */}
+      {/* ── 学完你会发现 + VAK图 ── */}
       <div className="px-5 py-4">
         <h3 className="text-sm font-bold text-[#999] mb-3 text-center tracking-wider">学完你会发现</h3>
         <div className="space-y-3">
@@ -196,9 +237,17 @@ export default function DianXinTabPage() {
             </p>
           </div>
         </div>
+
+        {/* VAK练习图 */}
+        <img
+          src={IMG.vak}
+          alt="VAK感官训练"
+          className="w-full rounded-xl shadow-md object-cover mt-4 mb-2"
+        />
+        <p className="text-center text-xs text-[#999] mb-4">VAK感官训练 · 见微知著</p>
       </div>
 
-      {/* ── 口碑承诺 ── */}
+      {/* ── 口碑承诺 + 大合照 ── */}
       <div className="px-5 py-6">
         <div className="bg-[#1a1a1a] rounded-2xl p-5 text-center">
           <p className="text-sm text-[#fdf8ed] leading-relaxed mb-4">
@@ -216,13 +265,22 @@ export default function DianXinTabPage() {
             </div>
           </div>
         </div>
+
+        {/* 大合照 */}
+        <img
+          src={IMG.groupPhoto}
+          alt="Sino-NLP点心读书会大合照"
+          className="w-full rounded-xl shadow-md object-cover mt-4 mb-2"
+        />
+        <p className="text-center text-xs text-[#999] mb-4">历届学员大合照</p>
+
         <p className="text-center text-sm font-bold text-[#1a1a1a] mt-5">
           这不只是个课，更是个机会，<br/>让你跟那个"拧巴"的自己，做个了断！！
         </p>
         <p className="text-center text-[#c9a84c] font-song mt-2 text-base">想通了，就来吧~</p>
       </div>
 
-      {/* ── 上课形式 ── */}
+      {/* ── 上课安排 + 课堂图 ── */}
       <div className="px-5 py-4">
         <div className="bg-white rounded-2xl p-5 border border-[#f0ede5] text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
@@ -236,6 +294,14 @@ export default function DianXinTabPage() {
             当今这样的倾囊传授式课程，你往哪里找？
           </p>
         </div>
+
+        {/* 课堂讲课图 */}
+        <img
+          src={IMG.lecture}
+          alt="Sino-NLP课堂讲授"
+          className="w-full rounded-xl shadow-md object-cover mt-4 mb-2"
+        />
+        <p className="text-center text-xs text-[#999] mb-4">课堂讲授 · 亲身示范</p>
       </div>
 
       {/* ── 12天课程大纲 ── */}
@@ -288,7 +354,7 @@ export default function DianXinTabPage() {
         </div>
       </div>
 
-      {/* ── 实战技巧 ── */}
+      {/* ── 实战技巧 + 学员画图 ── */}
       <div className="px-5 py-6">
         <div className="bg-gradient-to-br from-[#fdf8ed] to-white rounded-2xl p-5 border border-[#c9a84c]/15">
           <div className="flex items-center gap-2 mb-3">
@@ -307,6 +373,14 @@ export default function DianXinTabPage() {
             ))}
           </div>
         </div>
+
+        {/* 学员讨论画图 */}
+        <img
+          src={IMG.drawing}
+          alt="学员演练讨论"
+          className="w-full rounded-xl shadow-md object-cover mt-4 mb-2"
+        />
+        <p className="text-center text-xs text-[#999] mb-4">学员演练 · 即学即用</p>
       </div>
 
       {/* ── 三大游戏 ── */}
@@ -342,13 +416,22 @@ export default function DianXinTabPage() {
         </p>
       </div>
 
-      {/* ── 学员见证视频 ── */}
+      {/* ── 学员心声 + 分享图 ── */}
       <div className="px-5 py-6">
+        {/* 学员开心分享图 */}
+        <img
+          src={IMG.sharing}
+          alt="学员开心分享"
+          className="w-full rounded-xl shadow-md object-cover mb-5"
+        />
+
         <div className="text-center mb-5">
-          <h2 className="text-xl font-bold font-song text-[#1a1a1a]">学员怎么说</h2>
+          <h2 className="text-xl font-bold font-song text-[#1a1a1a]">学员心声</h2>
           <p className="text-xs text-[#999] mt-1">点击播放，听听她们的真实分享</p>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+
+        {/* 由上至下排列4个视频 */}
+        <div className="space-y-4">
           {TESTIMONIAL_VIDEOS.map((video, index) => (
             <div key={index} className="relative rounded-xl overflow-hidden bg-black shadow-sm">
               <video
@@ -366,21 +449,27 @@ export default function DianXinTabPage() {
                   onClick={() => handlePlayClick(index)}
                   className="absolute inset-0 flex items-center justify-center bg-black/30 transition-opacity"
                 >
-                  <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center active:scale-90 transition-transform">
-                    <Play size={20} className="text-[#c9a84c] ml-0.5" fill="currentColor" />
+                  <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center active:scale-90 transition-transform">
+                    <Play size={24} className="text-[#c9a84c] ml-1" fill="currentColor" />
                   </div>
                 </button>
               )}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-3 py-1.5 pointer-events-none">
-                <span className="text-xs text-white font-medium">{video.name}</span>
+                <span className="text-sm text-white font-medium">{video.name}</span>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* ── 亲自授课 ── */}
+      {/* ── 亲自授课 + 先生图 ── */}
       <div className="px-5 py-4">
+        {/* 先生讲Life Coach图 */}
+        <img
+          src={IMG.coach}
+          alt="亦须先生亲自授课"
+          className="w-full rounded-xl shadow-md object-cover mb-4"
+        />
         <div className="bg-gradient-to-r from-[#c9a84c]/8 to-[#8a9bae]/8 rounded-2xl p-5 text-center border border-[#c9a84c]/15">
           <p className="text-sm text-[#444] leading-relaxed">
             我亲自授课，历届学员回炉助你成就！<br/>
@@ -389,8 +478,15 @@ export default function DianXinTabPage() {
         </div>
       </div>
 
-      {/* ── CTA ── */}
+      {/* ── 易拉宝 + CTA ── */}
       <div className="px-5 py-6">
+        {/* 点心易拉宝 */}
+        <img
+          src={IMG.standee}
+          alt="Sino-NLP点心课程"
+          className="w-full rounded-xl shadow-md object-cover mb-5"
+        />
+
         <a
           href="https://m.yxcactus.com/nd.jsp?mid=532&id=389"
           target="_blank"
