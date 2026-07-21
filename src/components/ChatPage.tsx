@@ -142,8 +142,6 @@ export default function ChatPage() {
   const [recordingSupported, setRecordingSupported] = useState(false);
   const [showGift, setShowGift] = useState(false);
   const [giftCard, setGiftCard] = useState<{ name: string; advice: string } | null>(null);
-  const [showFounderModal, setShowFounderModal] = useState(false);
-  const [copiedWechat, setCopiedWechat] = useState(false);
   const lastMsgTimeRef = useRef<number>(Date.now());
   const giftTimerRef = useRef<NodeJS.Timeout | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -518,25 +516,6 @@ export default function ChatPage() {
     saveHistory([WELCOME_MESSAGE]);
   }, []);
 
-  const handleCopyWechat = useCallback(() => {
-    if (typeof navigator !== "undefined" && navigator.clipboard) {
-      navigator.clipboard.writeText("859022196").then(() => {
-        setCopiedWechat(true);
-        setTimeout(() => setCopiedWechat(false), 2000);
-      }).catch(() => {
-        // fallback for older browsers
-        const ta = document.createElement("textarea");
-        ta.value = "859022196";
-        document.body.appendChild(ta);
-        ta.select();
-        try { document.execCommand("copy"); } catch {}
-        document.body.removeChild(ta);
-        setCopiedWechat(true);
-        setTimeout(() => setCopiedWechat(false), 2000);
-      });
-    }
-  }, []);
-
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -565,12 +544,9 @@ export default function ChatPage() {
     return (
       <div className="flex flex-col h-screen bg-white">
         {/* Header */}
-        <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]" style={{ position: "relative", zIndex: 30, pointerEvents: "auto" }}>
+        <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
           <div className="flex items-center justify-between">
-            <div
-              onClick={() => setShowFounderModal(true)}
-              style={{ pointerEvents: "auto", cursor: "pointer", touchAction: "manipulation" }}
-            >
+            <div className="flex items-center gap-2">
               <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#c9a84c]/40 flex-shrink-0 bg-[#fdf8ed]">
                 <img
                   src="/app-avatar.png"
@@ -623,15 +599,6 @@ export default function ChatPage() {
             开始对话
             <ArrowRight size={16} />
           </button>
-
-          {/* 认识先生 — 备用入口 */}
-          <button
-            onClick={() => setShowFounderModal(true)}
-            className="shrink-0 mt-4 text-xs text-[#8a9bae] underline active:opacity-60"
-            style={{ touchAction: "manipulation" }}
-          >
-            认识亦须先生 →
-          </button>
         </div>
       </div>
     );
@@ -641,12 +608,9 @@ export default function ChatPage() {
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
-      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]" style={{ position: "relative", zIndex: 30, pointerEvents: "auto" }}>
+      <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
         <div className="flex items-center justify-between">
-          <div
-            onClick={() => setShowFounderModal(true)}
-            style={{ pointerEvents: "auto", cursor: "pointer", touchAction: "manipulation" }}
-          >
+          <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#c9a84c]/40 flex-shrink-0 bg-[#fdf8ed]">
               <img
                 src="/app-avatar.png"
@@ -846,142 +810,6 @@ export default function ChatPage() {
                   谢谢先生
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 亦须先生介绍弹窗 */}
-      {showFounderModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-          onClick={() => setShowFounderModal(false)}
-        >
-          <div
-            className="bg-white rounded-2xl p-6 m-4 max-w-sm w-full max-h-[85vh] overflow-y-auto animate-fade-in-up relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* 关闭按钮 */}
-            <button
-              onClick={() => setShowFounderModal(false)}
-              className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-[#999] hover:text-[#333] hover:bg-[#f5f5f5] transition-colors z-10"
-            >
-              ✕
-            </button>
-
-            {/* 先生名衔 */}
-            <div className="text-center mb-4">
-              <h3 className="text-base font-bold text-[#1a1a1a] font-song leading-snug">
-                Cactus Wong <span className="text-[#c9a84c]">(字亦须)</span>
-              </h3>
-              <p className="text-xs text-[#8a9bae] mt-1">Sino-NLP 创始人</p>
-            </div>
-
-            {/* 简介三条 */}
-            <div className="space-y-2 mb-5">
-              <div className="flex items-start gap-2">
-                <span className="text-[#c9a84c] mt-0.5 text-sm">▪</span>
-                <p className="text-xs text-[#444] leading-relaxed">
-                  <strong className="text-[#333]">40+年国学深耕 × 30+年西方疗愈实践</strong>，资深生命教练
-                </p>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-[#c9a84c] mt-0.5 text-sm">▪</span>
-                <p className="text-xs text-[#444] leading-relaxed">
-                  <strong className="text-[#333]">专破：</strong>心灵内耗、情绪失衡、人生卡点
-                </p>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-[#c9a84c] mt-0.5 text-sm">▪</span>
-                <p className="text-xs text-[#444] leading-relaxed">
-                  <strong className="text-[#333]">能力：</strong>带你由「理、气、象」多层次重构命运的心智算法
-                </p>
-              </div>
-            </div>
-
-            {/* 联系方式 */}
-            <div className="bg-[#fdf8ed] rounded-xl p-4 mb-5">
-              <p className="text-xs font-semibold text-[#c9a84c] mb-3 text-center">合作 / 课程咨询</p>
-
-              {/* 微信二维码 */}
-              <div className="flex flex-col items-center gap-2 mb-3">
-                <div className="rounded-lg overflow-hidden border-2 border-[#c9a84c]/20 bg-white">
-                  <img
-                    src="/images/wechat-qr-cactus.jpg"
-                    alt="微信二维码"
-                    className="w-40 h-auto object-contain"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                      e.currentTarget.parentElement!.innerHTML = '<div class="w-40 h-40 flex items-center justify-center text-[#999] text-xs text-center px-2">二维码图片加载失败<br/>请暂加微信 859022196</div>';
-                    }}
-                  />
-                </div>
-
-                {/* 微信号 + 复制按钮 */}
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-5 h-5 rounded-full bg-[#07c160] flex items-center justify-center flex-shrink-0">
-                      <span className="text-white text-[10px]">💬</span>
-                    </div>
-                    <span className="text-xs text-[#333] font-medium">859022196</span>
-                  </div>
-                  <button
-                    onClick={handleCopyWechat}
-                    className={`px-2 py-0.5 rounded-md text-[10px] font-medium transition-colors ${
-                      copiedWechat
-                        ? "bg-[#c9a84c] text-white"
-                        : "bg-[#c9a84c]/10 text-[#c9a84c] hover:bg-[#c9a84c]/20"
-                    }`}
-                  >
-                    {copiedWechat ? "✓ 已复制" : "复制"}
-                  </button>
-                </div>
-              </div>
-
-              {/* WhatsApp 按钮 */}
-              <div className="flex items-center justify-center gap-2">
-                <a
-                  href="https://wa.me/85293103003"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#25D366] text-white text-xs font-medium active:scale-95 transition-transform"
-                >
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="white">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                  </svg>
-                  WhatsApp: 93103003
-                </a>
-              </div>
-            </div>
-
-            {/* 引言 */}
-            <div className="text-center mb-4">
-              <p className="text-sm text-[#c9a84c] font-song font-medium mb-2">
-                「用东方智慧，点亮现代心生活。」
-              </p>
-              <a
-                href="https://m.yxcactus.com/col.jsp?id=103"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block text-xs text-[#8a9bae] underline hover:text-[#c9a84c] transition-colors"
-              >
-                更深了解 →
-              </a>
-            </div>
-
-            {/* 底部格言 */}
-            <div className="border-t border-[#e8e8e8] pt-4 text-center">
-              <p className="text-xs text-[#666] font-song mb-2">
-                修行在生活，生活是修行。
-              </p>
-              <p className="text-[11px] text-[#999] leading-relaxed mb-3">
-                「离世觅菩提，恰如求兔角。」<br/>
-                这里无深奥教条，只有每一个当下嘅觉察。<br/>
-                让我们的共学激活每一个当下的力量。
-              </p>
-              <p className="text-xs text-[#c9a84c] font-song font-medium">
-                一 &nbsp;让生命感动生命&nbsp; —
-              </p>
             </div>
           </div>
         </div>
