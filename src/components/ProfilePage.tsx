@@ -432,7 +432,7 @@ export default function ProfilePage() {
         return;
       }
       if (user?.vipLevel === "staff") {
-        setInviteError("您已是永久VIP，无需重复激活");
+        setInviteError("您已是永久VIP。如需进入管理后台，请输入管理密码。");
         return;
       }
       activateStaffVip();
