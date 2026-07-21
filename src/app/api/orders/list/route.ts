@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get("status") as any;
     const limit = parseInt(searchParams.get("limit") || "100", 10);
 
-    const orders = getAllOrders({
+    const orders = await getAllOrders({
       status: ["pending", "paid", "rejected", "expired"].includes(status)
         ? status
         : undefined,

@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const order = rejectOrder(orderId, reason);
+    const order = await rejectOrder(orderId, reason);
     if (!order) {
       return NextResponse.json(
         { success: false, message: "订单不存在或状态不允许操作" },
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       console.error("[orders/reject] 通知推送失败:", err);
     }
 
-    const stats = getOrderStats();
+    const stats = await getOrderStats();
 
     return NextResponse.json({
       success: true,

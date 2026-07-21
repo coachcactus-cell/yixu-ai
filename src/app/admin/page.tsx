@@ -9,9 +9,7 @@ import {
   FileText,
   LogOut,
   RefreshCw,
-  TrendingUp,
   Eye,
-  MessageCircle,
   Sparkles,
   QrCode,
   ArrowUpRight,
@@ -28,28 +26,7 @@ import Link from "next/link";
 
 type Tab = "overview" | "users" | "revenue" | "distributors" | "content" | "topup-codes" | "orders";
 
-// ── Mock 数据 ──
-const MOCK_OVERVIEW = {
-  dau: 23,
-  dauChange: 12.5,
-  totalChats: 342,
-  chatChange: 8.3,
-  totalAssessments: 156,
-  assessmentChange: -2.1,
-  revenue: 1280,
-  revenueChange: 23.6,
-  weekData: [18, 22, 15, 28, 23, 31, 23],
-  assessmentDist: { enneagram: 68, chakra: 52, yijing: 36 },
-};
-
-const MOCK_USERS = [
-  { id: "u1", name: "修行者甲", joinDate: "2026-05-20", chats: 24, assessments: 3, vip: false },
-  { id: "u2", name: "修行者乙", joinDate: "2026-05-28", chats: 12, assessments: 5, vip: true },
-  { id: "u3", name: "修行者丙", joinDate: "2026-06-01", chats: 8, assessments: 2, vip: false },
-  { id: "u4", name: "修行者丁", joinDate: "2026-06-05", chats: 31, assessments: 4, vip: true },
-  { id: "u5", name: "修行者戊", joinDate: "2026-06-10", chats: 5, assessments: 1, vip: false },
-];
-
+// ── Mock 数据（分销 / 内容模块尚未接入服务端，先保留占位；订单/用户/收入已接真实数据）──
 const MOCK_DISTRIBUTORS = [
   { id: "dsp-001", name: "静心瑜伽工作室", wechat: "yoga_zhengxin", users: 45, revenue: 890, status: "active", commission: 15, joinDate: "2026-04-01" },
   { id: "dsp-002", name: "芳疗小院", wechat: "aroma_garden", users: 28, revenue: 520, status: "active", commission: 12, joinDate: "2026-04-15" },
@@ -148,59 +125,78 @@ export default function AdminDashboard() {
   );
 }
 
-// ── 总览 Tab ──
+// ── 总览 Tab（真实数据）──
 function OverviewTab() {
-  const d = MOCK_OVERVIEW;
-  const maxWeek = Math.max(...d.weekData);
+  const [stats, setStats] = useState<{
+    users: number; vip: number; revenue: number; pending: number;
+    monthRevenue: number; monthCard: number; yearCard: number;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      fetch("/api/users/list").then((r) => r.json()),
+      fetch("/api/orders/list").then((r) => r.json()),
+    ])
+      .then(([uRes, oRes]) => {
+        const users = uRes.success ? uRes.users : [];
+        const orders = oRes.success ? oRes.data : [];
+        const paid = orders.filter((o: any) => o.status === "paid");
+        const thisMonth = new Date().toISOString().slice(0, 7);
+        const monthPaid = paid.filter(
+          (o: any) => (o.paidAt || o.createdAt).slice(0, 7) === thisMonth
+        );
+        setStats({
+          users: users.length,
+          vip: new Set(paid.map((o: any) => o.userId)).size,
+          revenue: paid.reduce((s: number, o: any) => s + o.amount, 0),
+          pending: orders.filter(
+            (o: any) => o.status === "pending" || o.status === "short_paid"
+          ).length,
+          monthRevenue: monthPaid.reduce((s: number, o: any) => s + o.amount, 0),
+          monthCard: monthPaid
+            .filter((o: any) => o.plan === "month")
+            .reduce((s: number, o: any) => s + o.amount, 0),
+          yearCard: monthPaid
+            .filter((o: any) => o.plan === "year")
+            .reduce((s: number, o: any) => s + o.amount, 0),
+        });
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const s = stats;
+  const lv = (v: number | string) => (loading ? "…" : v);
 
   return (
     <>
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-3 mt-4">
-        <KPICard label="DAU" value={d.dau} change={d.dauChange} icon={Users} color="#c9a84c" />
-        <KPICard label="AI对话" value={d.totalChats} change={d.chatChange} icon={MessageCircle} color="#6366f1" />
-        <KPICard label="测评次数" value={d.totalAssessments} change={d.assessmentChange} icon={Sparkles} color="#8b5cf6" />
-        <KPICard label="收入(元)" value={d.revenue} change={d.revenueChange} icon={DollarSign} color="#10b981" />
+        <KPICard label="总用戶" value={lv(s ? s.users : 0)} change={0} icon={Users} color="#c9a84c" />
+        <KPICard label="付费VIP" value={lv(s ? s.vip : 0)} change={0} icon={Sparkles} color="#8b5cf6" />
+        <KPICard label="累计收入" value={lv(s ? `¥${s.revenue}` : "¥0")} change={0} icon={DollarSign} color="#10b981" />
+        <KPICard label="待确认" value={lv(s ? s.pending : 0)} change={0} icon={ShoppingCart} color="#f59e0b" />
       </div>
 
-      {/* 週趋勢 */}
+      {/* 本月收入构成 */}
       <div className="mt-4 bg-white rounded-xl p-4 border border-[#e8e8e8]">
         <h3 className="text-sm font-bold text-[#1a1a1a] mb-3 flex items-center gap-2">
-          <TrendingUp size={14} className="text-[#c9a84c]" />
-          本週 DAU 趋勢
-        </h3>
-        <div className="flex items-end gap-2 h-24">
-          {["一", "二", "三", "四", "五", "六", "日"].map((day, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center gap-1">
-              <div
-                className="w-full rounded-t-sm bg-gradient-to-t from-[#c9a84c] to-[#d4b85c] transition-all duration-500"
-                style={{ height: `${(d.weekData[i] / maxWeek) * 100}%`, minHeight: 4 }}
-              />
-              <span className="text-[9px] text-[#999]">{day}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 测评分佈 */}
-      <div className="mt-4 bg-white rounded-xl p-4 border border-[#e8e8e8]">
-        <h3 className="text-sm font-bold text-[#1a1a1a] mb-3 flex items-center gap-2">
-          <BarChart3 size={14} className="text-[#c9a84c]" />
-          测评分佈
+          <DollarSign size={14} className="text-[#c9a84c]" />
+          本月收入 ¥{loading ? "…" : s ? s.monthRevenue : 0}
         </h3>
         <div className="space-y-3">
           {[
-            { label: "九型人格", count: d.assessmentDist.enneagram, color: "#c9a84c" },
-            { label: "七脉轮", count: d.assessmentDist.chakra, color: "#8b5cf6" },
-            { label: "易卦", count: d.assessmentDist.yijing, color: "#3b82f6" },
+            { label: "月卡 ¥68", value: s ? s.monthCard : 0, color: "#c9a84c" },
+            { label: "年卡 ¥198", value: s ? s.yearCard : 0, color: "#8b5cf6" },
           ].map((item) => {
-            const total = d.assessmentDist.enneagram + d.assessmentDist.chakra + d.assessmentDist.yijing;
-            const pct = (item.count / total) * 100;
+            const total = (s ? s.monthCard : 0) + (s ? s.yearCard : 0) || 1;
+            const pct = Math.round((item.value / total) * 100);
             return (
               <div key={item.label}>
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs text-[#333]">{item.label}</span>
-                  <span className="text-xs font-bold text-[#1a1a1a]">{item.count} 次 ({pct.toFixed(0)}%)</span>
+                  <span className="text-xs font-bold text-[#1a1a1a]">¥{item.value} ({pct}%)</span>
                 </div>
                 <div className="h-2 bg-[#f5f5f5] rounded-full overflow-hidden">
                   <div
@@ -239,9 +235,33 @@ function OverviewTab() {
   );
 }
 
-// ── 用戶 Tab ──
+// ── 用戶 Tab（真实数据）──
 function UsersTab() {
-  const users = MOCK_USERS;
+  const [users, setUsers] = useState<any[]>([]);
+  const [vipIds, setVipIds] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      fetch("/api/users/list").then((r) => r.json()),
+      fetch("/api/orders/list").then((r) => r.json()),
+    ])
+      .then(([uRes, oRes]) => {
+        const us = uRes.success ? uRes.users : [];
+        const orders = oRes.success ? oRes.data : [];
+        const paid = new Set<string>(
+          orders.filter((o: any) => o.status === "paid").map((o: any) => o.userId)
+        );
+        setUsers(us);
+        setVipIds(paid);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const vipCount = users.filter((u) => vipIds.has(u.id)).length;
+  const boundCount = users.filter((u) => u.phone).length;
+
   return (
     <>
       <div className="mt-4 grid grid-cols-3 gap-3">
@@ -250,103 +270,114 @@ function UsersTab() {
           <p className="text-[10px] text-[#999]">总用戶</p>
         </div>
         <div className="bg-white rounded-xl p-3 border border-[#e8e8e8] text-center">
-          <p className="text-xl font-bold text-[#10b981]">{users.filter(u => u.vip).length}</p>
-          <p className="text-[10px] text-[#999]">VIP</p>
+          <p className="text-xl font-bold text-[#10b981]">{vipCount}</p>
+          <p className="text-[10px] text-[#999]">付费VIP</p>
         </div>
         <div className="bg-white rounded-xl p-3 border border-[#e8e8e8] text-center">
-          <p className="text-xl font-bold text-[#6366f1]">{users.reduce((a, u) => a + u.chats, 0)}</p>
-          <p className="text-[10px] text-[#999]">总对话</p>
+          <p className="text-xl font-bold text-[#6366f1]">{boundCount}</p>
+          <p className="text-[10px] text-[#999]">已绑手机</p>
         </div>
       </div>
 
       <div className="mt-4 space-y-2">
-        {users.map((u) => (
-          <div key={u.id} className="bg-white rounded-xl p-3 border border-[#e8e8e8] flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-[#fdf8ed] flex items-center justify-center flex-shrink-0">
-              <span className="text-sm">🧘</span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm font-bold text-[#1a1a1a] truncate">{u.name}</span>
-                {u.vip && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#c9a84c] text-white font-bold">VIP</span>
-                )}
-              </div>
-              <p className="text-[10px] text-[#999]">加入: {u.joinDate}</p>
-            </div>
-            <div className="text-right flex-shrink-0">
-              <p className="text-xs font-bold text-[#1a1a1a]">{u.chats} 对话</p>
-              <p className="text-[10px] text-[#999]">{u.assessments} 测评</p>
-            </div>
+        {loading ? (
+          <div className="text-center py-8">
+            <RefreshCw size={20} className="animate-spin mx-auto text-[#999]" />
           </div>
-        ))}
+        ) : users.length === 0 ? (
+          <div className="text-center py-8 text-sm text-[#999]">暂无用户</div>
+        ) : (
+          users.map((u) => (
+            <div key={u.id} className="bg-white rounded-xl p-3 border border-[#e8e8e8] flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-[#fdf8ed] flex items-center justify-center flex-shrink-0">
+                <span className="text-sm">🧘</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm font-bold text-[#1a1a1a] truncate">{u.nickname || "修行者"}</span>
+                  {vipIds.has(u.id) && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#c9a84c] text-white font-bold">VIP</span>
+                  )}
+                </div>
+                <p className="text-[10px] text-[#999]">
+                  {u.phone ? `手机 ${u.phone}` : "未绑手机"}
+                  {u.wechatId ? ` · 微信 ${u.wechatId}` : ""}
+                </p>
+                <p className="text-[10px] text-[#999]">加入: {(u.createdAt || "").slice(0, 10)}</p>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </>
   );
 }
 
-// ── 收入 Tab ──
+// ── 收入 Tab（真实数据）──
 function RevenueTab() {
+  const [paid, setPaid] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/orders/list")
+      .then((r) => r.json())
+      .then((oRes) => {
+        const orders = oRes.success ? oRes.data : [];
+        setPaid(orders.filter((o: any) => o.status === "paid"));
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const total = paid.reduce((s: number, o: any) => s + o.amount, 0);
+  const monthCard = paid.filter((o: any) => o.plan === "month").reduce((s: number, o: any) => s + o.amount, 0);
+  const yearCard = paid.filter((o: any) => o.plan === "year").reduce((s: number, o: any) => s + o.amount, 0);
+
   return (
     <>
       <div className="mt-4 bg-gradient-to-br from-[#1a1a2e] to-[#16213e] rounded-xl p-5 text-white">
-        <p className="text-xs text-white/60 mb-1">本月收入</p>
-        <p className="text-3xl font-bold">¥1,280</p>
-        <p className="text-xs text-green-400 mt-1 flex items-center gap-1">
-          <ArrowUpRight size={12} /> +23.6% 較上月
-        </p>
+        <p className="text-xs text-white/60 mb-1">累计确认收入</p>
+        <p className="text-3xl font-bold">¥{total}</p>
+        <p className="text-xs text-white/40 mt-1">{paid.length} 笔已确认订单</p>
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3">
         <div className="bg-white rounded-xl p-3 border border-[#e8e8e8]">
-          <p className="text-xs text-[#999]">VIP 月费</p>
-          <p className="text-lg font-bold text-[#c9a84c]">¥580</p>
-          <p className="text-[10px] text-[#999]">20 人 × ¥29</p>
+          <p className="text-xs text-[#999]">月卡收入</p>
+          <p className="text-lg font-bold text-[#c9a84c]">¥{monthCard}</p>
         </div>
         <div className="bg-white rounded-xl p-3 border border-[#e8e8e8]">
-          <p className="text-xs text-[#999]">B2B 合作</p>
-          <p className="text-lg font-bold text-[#6366f1]">¥700</p>
-          <p className="text-[10px] text-[#999]">2 家客戶</p>
+          <p className="text-xs text-[#999]">年卡收入</p>
+          <p className="text-lg font-bold text-[#6366f1]">¥{yearCard}</p>
         </div>
       </div>
 
       <div className="mt-4 bg-white rounded-xl p-4 border border-[#e8e8e8]">
-        <h3 className="text-sm font-bold text-[#1a1a1a] mb-3">收入趋勢（近6月）</h3>
-        <div className="flex items-end gap-3 h-28">
-          {[320, 480, 560, 720, 980, 1280].map((val, i) => {
-            const maxVal = 1280;
-            const months = ["1月", "2月", "3月", "4月", "5月", "6月"];
-            return (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <span className="text-[9px] text-[#999]">¥{val}</span>
-                <div
-                  className="w-full rounded-t-sm transition-all duration-500"
-                  style={{
-                    height: `${(val / maxVal) * 100}%`,
-                    minHeight: 4,
-                    background: i === 5 ? "linear-gradient(to top, #c9a84c, #d4b85c)" : "#e8e8e8",
-                  }}
-                />
-                <span className="text-[9px] text-[#999]">{months[i]}</span>
+        <h3 className="text-sm font-bold text-[#1a1a1a] mb-3">已确认订单</h3>
+        {loading ? (
+          <div className="text-center py-6">
+            <RefreshCw size={18} className="animate-spin mx-auto text-[#999]" />
+          </div>
+        ) : paid.length === 0 ? (
+          <p className="text-xs text-[#999] text-center py-4">暂无确认收入</p>
+        ) : (
+          <div className="space-y-2">
+            {paid.slice(0, 30).map((o: any) => (
+              <div key={o.id} className="flex items-center justify-between py-2 border-b border-[#f5f5f5] last:border-0">
+                <div>
+                  <p className="text-xs font-bold text-[#1a1a1a]">
+                    {o.userName}
+                    {o.userPhone ? ` · ${o.userPhone}` : ""}
+                  </p>
+                  <p className="text-[10px] text-[#999]">
+                    {o.plan === "month" ? "月卡" : "年卡"} · 确认于 {(o.paidAt || o.createdAt).slice(0, 10)}
+                  </p>
+                </div>
+                <p className="text-sm font-bold text-[#c9a84c]">¥{o.amount}</p>
               </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="mt-4 bg-white rounded-xl p-4 border border-[#e8e8e8]">
-        <h3 className="text-sm font-bold text-[#1a1a1a] mb-3">待结算佣金</h3>
-        <div className="space-y-2">
-          {MOCK_DISTRIBUTORS.filter(d => d.status === "active").map(d => (
-            <div key={d.id} className="flex items-center justify-between py-2 border-b border-[#f5f5f5] last:border-0">
-              <div>
-                <p className="text-xs font-bold text-[#1a1a1a]">{d.name}</p>
-                <p className="text-[10px] text-[#999]">佣金率: {d.commission}%</p>
-              </div>
-              <p className="text-sm font-bold text-[#c9a84c]">¥{(d.revenue * d.commission / 100).toFixed(0)}</p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </>
   );
@@ -475,7 +506,7 @@ function KPICard({
   color,
 }: {
   label: string;
-  value: number;
+  value: number | string;
   change: number;
   icon: any;
   color: string;
@@ -485,14 +516,16 @@ function KPICard({
     <div className="bg-white rounded-xl p-3 border border-[#e8e8e8]">
       <div className="flex items-center justify-between mb-1">
         <Icon size={14} style={{ color }} />
-        <span
-          className={`text-[9px] font-bold flex items-center gap-0.5 ${
-            isPositive ? "text-green-500" : "text-red-500"
-          }`}
-        >
-          {isPositive ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />}
-          {Math.abs(change)}%
-        </span>
+        {change !== 0 && (
+          <span
+            className={`text-[9px] font-bold flex items-center gap-0.5 ${
+              isPositive ? "text-green-500" : "text-red-500"
+            }`}
+          >
+            {isPositive ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />}
+            {Math.abs(change)}%
+          </span>
+        )}
       </div>
       <p className="text-xl font-bold text-[#1a1a1a]">{value}</p>
       <p className="text-[10px] text-[#999]">{label}</p>

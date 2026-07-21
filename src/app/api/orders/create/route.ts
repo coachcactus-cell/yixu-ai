@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = createOrder({
+    const result = await createOrder({
       userId,
       userName,
       userPhone,

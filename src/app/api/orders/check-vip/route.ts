@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const orders = getUserOrders(userId);
+    const orders = await getUserOrders(userId);
     const paidOrders = orders.filter((o) => o.status === "paid");
 
     if (paidOrders.length === 0) {

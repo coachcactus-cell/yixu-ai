@@ -85,11 +85,25 @@ export function useUser() {
   const [history, setHistory] = useState<UserHistory>({ chakraRecords: [], yijingRecords: [] });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  // 把用户镜像到服务端（后台可见真实用户），失败不影响本地
+  const syncUser = useCallback(async (u: YixuUser) => {
+    try {
+      await fetch("/api/users/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user: u }),
+      });
+    } catch {
+      // 网络异常时静默忽略，下次操作会再同步
+    }
+  }, []);
+
   useEffect(() => {
     const existing = loadUser();
     if (existing) {
       setUser(existing);
       setIsLoggedIn(!!existing.phone);
+      syncUser(existing);
     } else {
       // Auto-create anonymous user on first visit
       const newUser: YixuUser = {
@@ -101,11 +115,12 @@ export function useUser() {
       saveUser(newUser);
       setUser(newUser);
       setIsLoggedIn(false);
+      syncUser(newUser);
     }
     // Load history
     const hist = loadHistory();
     setHistory(hist);
-  }, []);
+  }, [syncUser]);
 
   // ── 手机号登录/注册 ──
   const loginWithPhone = useCallback((phone: string): boolean => {
@@ -115,8 +130,9 @@ export function useUser() {
     saveUser(updated);
     setUser(updated);
     setIsLoggedIn(true);
+    syncUser(updated);
     return isNewUser; // 返回是否為新用戶
-  }, [user]);
+  }, [user, syncUser]);
 
   // ── 补充微信ID ──
   const setWechatId = useCallback((wechatId: string) => {
@@ -124,7 +140,8 @@ export function useUser() {
     const updated = { ...user, wechatId };
     saveUser(updated);
     setUser(updated);
-  }, [user]);
+    syncUser(updated);
+  }, [user, syncUser]);
 
   // ── 设置头像 ──
   const setAvatar = useCallback((avatar: string) => {
@@ -132,7 +149,8 @@ export function useUser() {
     const updated = { ...user, avatar };
     saveUser(updated);
     setUser(updated);
-  }, [user]);
+    syncUser(updated);
+  }, [user, syncUser]);
 
   // ── 修改昵称 ──
   const setNickname = useCallback((nickname: string) => {
@@ -140,7 +158,8 @@ export function useUser() {
     const updated = { ...user, nickname };
     saveUser(updated);
     setUser(updated);
-  }, [user]);
+    syncUser(updated);
+  }, [user, syncUser]);
 
   // ── 激活永久VIP（工作人员/前贤邀请码）──
   const activateStaffVip = useCallback(() => {
@@ -148,7 +167,8 @@ export function useUser() {
     const updated: YixuUser = { ...user, vipLevel: "staff" };
     saveUser(updated);
     setUser(updated);
-  }, [user]);
+    syncUser(updated);
+  }, [user, syncUser]);
 
   // ── 登出 ──
   const logout = useCallback(() => {
@@ -157,7 +177,8 @@ export function useUser() {
     saveUser(updated);
     setUser(updated);
     setIsLoggedIn(false);
-  }, [user]);
+    syncUser(updated);
+  }, [user, syncUser]);
 
   // ── 保存脉轮测评记录 ──
   const addChakraRecord = useCallback((record: Omit<ChakraHistoryRecord, "id">) => {
@@ -209,6 +230,7 @@ export function useUser() {
     user,
     history,
     isLoggedIn,
+    syncUser,
     loginWithPhone,
     setWechatId,
     setAvatar,

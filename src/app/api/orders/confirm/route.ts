@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = confirmOrder(orderId, actualAmount, forceConfirmReason);
+    const result = await confirmOrder(orderId, actualAmount, forceConfirmReason);
     if (!result.order) {
       return NextResponse.json(
         { success: false, message: "订单不存在或状态不允许操作" },
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 返回更新后的统计
-    const stats = getOrderStats();
+    const stats = await getOrderStats();
 
     const response: Record<string, any> = {
       success: true,
