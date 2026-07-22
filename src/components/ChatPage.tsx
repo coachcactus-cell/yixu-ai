@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { Send, Clock, Sparkles, ArrowRight, Trash2, Volume2, VolumeX, Store } from "lucide-react";
+import { Send, Clock, Sparkles, ArrowRight, Trash2, Volume2, VolumeX } from "lucide-react";
+import BoshanluIcon from "@/components/icons/BoshanluIcon";
 
 interface Message {
   id: string;
@@ -573,13 +574,23 @@ export default function ChatPage() {
           </p>
 
           {/* Large Cartoon Avatar — casual shirt with iPad */}
-          <div className="shrink-0 w-[180px] h-[230px] flex items-end justify-center mb-3">
+          <div className="relative shrink-0 w-[200px] h-[230px] flex items-end justify-center mb-3">
             <img
               src="/cartoon-casual.png?v=4"
               alt="亦须先生全身像"
               className="w-full h-full object-contain drop-shadow-xl"
               style={{ filter: "drop-shadow(0 8px 24px rgba(201,168,76,0.2))" }}
             />
+            {/* 博山炉入口 — 汉代香器 icon，点入香舖 */}
+            <Link
+              href="/shop"
+              className="absolute -right-2 bottom-24 flex flex-col items-center gap-0.5 active:scale-95 transition-transform"
+            >
+              <div className="w-12 h-12 rounded-full bg-white/95 border border-[#c9a84c]/30 shadow-md shadow-[#c9a84c]/15 flex items-center justify-center">
+                <BoshanluIcon className="w-7 h-7 text-[#c9a84c]" />
+              </div>
+              <span className="text-[10px] text-[#c9a84c] font-medium whitespace-nowrap">进入香舖</span>
+            </Link>
           </div>
 
           {/* Tagline */}
@@ -600,24 +611,6 @@ export default function ChatPage() {
             开始对话
             <ArrowRight size={16} />
           </button>
-
-          {/* 香舖预览卡 — 首页入口，引导至 /shop */}
-          <Link
-            href="/shop"
-            className="shrink-0 w-full max-w-sm mt-5 rounded-2xl border border-[#c9a84c]/20 bg-gradient-to-r from-[#fdf8ed] to-[#eef1f4] p-4 flex items-center gap-3 active:scale-[0.98] transition-transform"
-          >
-            <div className="w-11 h-11 rounded-xl bg-[#c9a84c]/15 flex items-center justify-center flex-shrink-0">
-              <Store size={22} className="text-[#c9a84c]" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
-                <h3 className="text-sm font-bold text-[#1a1a1a]">香舖</h3>
-                <span className="px-1.5 py-0.5 rounded-full bg-[#c9a84c]/15 text-[#c9a84c] text-[9px] font-medium">即将上线</span>
-              </div>
-              <p className="text-xs text-[#666] mt-0.5 leading-snug">已上架 2 款精选香品，抢先预览</p>
-            </div>
-            <ArrowRight size={16} className="text-[#c9a84c] flex-shrink-0" />
-          </Link>
         </div>
       </div>
     );
