@@ -7,8 +7,8 @@ import { ChevronDown, ChevronUp, Play, Phone, ArrowRight, Sparkles, Shield, Refr
 const TESTIMONIAL_VIDEOS = [
   { src: "/videos/dianxin/video1-shaohui.mp4", poster: "/videos/dianxin/poster1.jpg", name: "嫊慧" },
   { src: "/videos/dianxin/video2-xiaodan.mp4", poster: "/videos/dianxin/poster2.jpg", name: "小丹" },
-  { src: "/videos/dianxin/video3-huirong.mp4", poster: "/videos/dianxin/poster2.jpg", name: "惠容" },
-  { src: "/videos/dianxin/video4-shijin.mp4", poster: "/videos/dianxin/poster1.jpg", name: "詩金" },
+  { src: "/videos/dianxin/video3-huirong.mp4", poster: "/videos/dianxin/poster3.jpg", name: "惠容" },
+  { src: "/videos/dianxin/video4-shijin.mp4", poster: "/videos/dianxin/poster4.jpg", name: "詩金" },
 ];
 
 /* ── 12天课程大纲 ── */
