@@ -9,14 +9,26 @@ const CATEGORIES = [
   { key: "goods", label: "香道周边", icon: Package },
 ];
 
-/* ── 示例商品（DEMO 占位，等你提供真实香品图与文案后替换） ── */
-const SAMPLE_PRODUCTS = [
+/* ── 商品列表：真实商品（image） + 示例占位（emoji）混合 ──
+ * 真实商品优先排前面，你再发嚟我直接加落呢个数组。
+ * 图放 /public/images/shop/，文件名同呢度 image 字段一致。 */
+const PRODUCTS = [
+  {
+    name: "愈疾香",
+    desc: "古方养生 · 祛疾扶正",
+    price: "¥320",
+    image: "/images/shop/yujixiang-1.jpg",
+    tag: "精选",
+  },
+  {
+    name: "灵虚香",
+    desc: "窖藏版 · 灵虚凝神",
+    price: "¥980",
+    image: "/images/shop/lingxuxiang-1.jpg",
+    tag: "窖藏",
+  },
   { emoji: "🌿", name: "【示例】海南沉香线香", desc: "天然沉香 · 静心凝神", price: "¥ --", tag: "即将上架" },
   { emoji: "🕯️", name: "【示例】古法和香香丸", desc: "手作合香 · 随身佩戴", price: "¥ --", tag: "即将上架" },
-  { emoji: "🔥", name: "【示例】篆香体验套装", desc: "含香粉 · 香篆 · 灰押", price: "¥ --", tag: "即将上架" },
-  { emoji: "📿", name: "【示例】祈福香牌", desc: "可佩戴 · 车载 · 家居", price: "¥ --", tag: "即将上架" },
-  { emoji: "📚", name: "【示例】香道入门课", desc: "线上 · 12讲 · 终身回看", price: "¥ --", tag: "即将上架" },
-  { emoji: "🧘", name: "【示例】身心疗愈工作坊", desc: "线下 · 限额小班", price: "¥ --", tag: "即将上架" },
 ];
 
 export default function ShopTabPage() {
@@ -61,7 +73,7 @@ export default function ShopTabPage() {
           <div className="flex-1 min-w-0">
             <h3 className="text-sm font-bold text-[#1a1a1a]">香舖正在筹建中</h3>
             <p className="text-xs text-[#666] mt-1 leading-relaxed">
-              这是栏目的结构预览。下方为示例商品与分类框架，<strong className="text-[#c9a84c]">等你提供真实香品图片与文案</strong>后，即可替换上线。
+              已有 <strong className="text-[#c9a84c]">2 款精选香品</strong> 上架预览，更多香品陆续上架中。
             </p>
           </div>
         </div>
@@ -93,24 +105,34 @@ export default function ShopTabPage() {
 
       {/* ── 示例商品网格（结构展示） ── */}
       <div className="px-5 pt-6">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <span className="accent-line" />
-            <h2 className="text-base font-bold font-song text-[#1a1a1a]">香品一览</h2>
-          </div>
-          <span className="text-[11px] text-[#999]">示例 · DEMO</span>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="accent-line" />
+          <h2 className="text-base font-bold font-song text-[#1a1a1a]">香品一览</h2>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          {SAMPLE_PRODUCTS.map((p, i) => (
+          {PRODUCTS.map((p, i) => (
             <div
               key={i}
               className="bg-white rounded-2xl overflow-hidden border border-[#f0ede5] shadow-sm flex flex-col"
             >
-              {/* 图片占位（真实图接入后替换为 <img>） */}
-              <div className="relative aspect-square bg-gradient-to-br from-[#fdf8ed] to-[#eef1f4] flex items-center justify-center">
-                <span className="text-5xl opacity-60">{p.emoji}</span>
-                <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-[#c9a84c]/90 text-white text-[10px] font-medium">
+              {/* 图片区：真实商品用 <img>，占位用 emoji */}
+              <div className="relative aspect-square bg-gradient-to-br from-[#fdf8ed] to-[#eef1f4] flex items-center justify-center overflow-hidden">
+                {p.image ? (
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    onError={(e) => { e.currentTarget.style.display = "none"; }}
+                  />
+                ) : (
+                  <span className="text-5xl opacity-60">{p.emoji}</span>
+                )}
+                <span
+                  className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-white text-[10px] font-medium ${
+                    p.image ? "bg-[#c9a84c]/90" : "bg-[#999]/70"
+                  }`}
+                >
                   {p.tag}
                 </span>
               </div>
@@ -119,7 +141,7 @@ export default function ShopTabPage() {
                 <p className="text-xs text-[#999] mt-1 leading-relaxed flex-1">{p.desc}</p>
                 <div className="flex items-center justify-between mt-2.5">
                   <span className="text-base font-bold text-[#c9a84c]">{p.price}</span>
-                  <span className="text-[10px] text-[#aaa]">上架后开放</span>
+                  <span className="text-[10px] text-[#aaa]">{p.image ? "新品预览" : "上架后开放"}</span>
                 </div>
               </div>
             </div>

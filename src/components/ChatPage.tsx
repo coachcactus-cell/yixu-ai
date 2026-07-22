@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Clock, Sparkles, ArrowRight, Trash2, Volume2, VolumeX } from "lucide-react";
+import Link from "next/link";
+import { Send, Clock, Sparkles, ArrowRight, Trash2, Volume2, VolumeX, Store } from "lucide-react";
 
 interface Message {
   id: string;
@@ -599,6 +600,24 @@ export default function ChatPage() {
             开始对话
             <ArrowRight size={16} />
           </button>
+
+          {/* 香舖预览卡 — 首页入口，引导至 /shop */}
+          <Link
+            href="/shop"
+            className="shrink-0 w-full max-w-sm mt-5 rounded-2xl border border-[#c9a84c]/20 bg-gradient-to-r from-[#fdf8ed] to-[#eef1f4] p-4 flex items-center gap-3 active:scale-[0.98] transition-transform"
+          >
+            <div className="w-11 h-11 rounded-xl bg-[#c9a84c]/15 flex items-center justify-center flex-shrink-0">
+              <Store size={22} className="text-[#c9a84c]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <h3 className="text-sm font-bold text-[#1a1a1a]">香舖</h3>
+                <span className="px-1.5 py-0.5 rounded-full bg-[#c9a84c]/15 text-[#c9a84c] text-[9px] font-medium">即将上线</span>
+              </div>
+              <p className="text-xs text-[#666] mt-0.5 leading-snug">已上架 2 款精选香品，抢先预览</p>
+            </div>
+            <ArrowRight size={16} className="text-[#c9a84c] flex-shrink-0" />
+          </Link>
         </div>
       </div>
     );
