@@ -584,7 +584,7 @@ export default function ChatPage() {
             {/* 博山炉入口 — 汉代香器 icon，点入香舖 */}
             <Link
               href="/shop"
-              className="absolute -right-2 bottom-24 flex flex-col items-center gap-0.5 active:scale-95 transition-transform"
+              className="absolute -right-2 bottom-6 flex flex-col items-center gap-0.5 active:scale-95 transition-transform"
             >
               <div className="w-12 h-12 rounded-full bg-white/95 border border-[#c9a84c]/30 shadow-md shadow-[#c9a84c]/15 flex items-center justify-center">
                 <BoshanluIcon className="w-7 h-7 text-[#c9a84c]" />
