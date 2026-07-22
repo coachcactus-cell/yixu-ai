@@ -3,7 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 import Link from "next/link";
-import { Home, BookOpen, ClipboardList, User, Compass, Music2, Cookie } from "lucide-react";
+import { Home, BookOpen, ClipboardList, User, Compass, Music2, Cookie, Store } from "lucide-react";
 import { FullscreenProvider, useFullscreen } from "@/contexts/FullscreenContext";
 
 const TABS = [
@@ -13,6 +13,7 @@ const TABS = [
   { key: "/dict", label: "辞典", icon: BookOpen },
   { key: "/assessment", label: "测评", icon: ClipboardList },
   { key: "/dianxin", label: "点心", icon: Cookie },
+  { key: "/shop", label: "香舖", icon: Store },
 ];
 
 const TAB_REDIRECTS: Record<string, string> = {
@@ -22,6 +23,7 @@ const TAB_REDIRECTS: Record<string, string> = {
   dictionary: "/dict",
   assessment: "/assessment",
   dianxin: "/dianxin",
+  shop: "/shop",
   profile: "/profile",
 };
 
