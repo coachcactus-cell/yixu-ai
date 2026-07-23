@@ -4,19 +4,20 @@ import { Sparkles, Leaf, MapPin, Clock } from "lucide-react";
 import BoshanluIcon from "@/components/icons/BoshanluIcon";
 
 /* ── 北斗七星阵菜单 ──
- * 7 颗星按真实北斗七星斗形分布：
- * 天枢→天璇→天玑→天权 组成斗杓（bowl）
- * 天权→玉衡→开阳→摇光 组成斗柄（handle）
- * 点击星点进入对应分类；未开发嘅 hasContent=false 则冇反应。
+ * 7 颗星按真实北斗七星斗形分布（横向布局）：
+ *   天枢→天璇→天玑→天权 组成斗杓（bowl，右上四边形）
+ *   天权→玉衡→开阳→摇光 组成斗柄（handle，向左下延伸）
+ * 坐标用 0-100 viewBox，SVG 同时画线 + 星点保证完美对齐。
+ * 文字标签用 HTML absolute 定位喺星点上方或下方，避开线条。
  */
 const STAR_MENU = [
-  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false, left: "68%", top: "16%", labelPos: "right" },
-  { star: "天璇", label: "金炉飘香", key: "jinlu", hasContent: false, left: "68%", top: "42%", labelPos: "right" },
-  { star: "天玑", label: "烧香良伴", key: "shaoxiang", hasContent: false, left: "24%", top: "55%", labelPos: "left" },
-  { star: "天权", label: "海南琼脂", key: "hainan", hasContent: false, left: "48%", top: "36%", labelPos: "left" },
-  { star: "玉衡", label: "香学班", key: "xiangxue", hasContent: false, left: "38%", top: "58%", labelPos: "left" },
-  { star: "开阳", label: "疗愈赋能", key: "liaoyu", hasContent: false, left: "26%", top: "76%", labelPos: "left" },
-  { star: "摇光", label: "拼香", key: "pinxiang", hasContent: false, left: "14%", top: "92%", labelPos: "right" },
+  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false, x: 82, y: 18, labelDir: "up" as const },
+  { star: "天璇", label: "金炉飘香", key: "jinlu", hasContent: false, x: 66, y: 44, labelDir: "up" as const },
+  { star: "天玑", label: "烧香良伴", key: "shaoxiang", hasContent: false, x: 44, y: 36, labelDir: "up" as const },
+  { star: "天权", label: "海南琼脂", key: "hainan", hasContent: false, x: 56, y: 62, labelDir: "down" as const },
+  { star: "玉衡", label: "香学班", key: "xiangxue", hasContent: false, x: 34, y: 70, labelDir: "down" as const },
+  { star: "开阳", label: "疗愈赋能", key: "liaoyu", hasContent: false, x: 18, y: 56, labelDir: "down" as const },
+  { star: "摇光", label: "拼香", key: "pinxiang", hasContent: false, x: 6, y: 32, labelDir: "up" as const },
 ];
 
 // 北斗七星连线顺序：天枢→天璇→天玑→天权→玉衡→开阳→摇光
@@ -117,55 +118,90 @@ export default function ShopTabPage() {
           <p className="text-[11px] text-[#999]">北斗七星阵 · 点击星点进入</p>
         </div>
 
-        {/* 北斗七星图 — 按真实斗形分布 */}
-        <div className="relative w-full h-[320px] max-w-xs mx-auto my-4">
-          {/* 连线 SVG */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+        {/* 北斗七星图 — 纯 SVG 画线+星点，HTML 标签独立定位 */}
+        <div className="relative w-full max-w-[300px] mx-auto" style={{ aspectRatio: "1 / 1" }}>
+          {/* SVG: 连线 + 星点（同一坐标系，保证对齐） */}
+          <svg
+            className="absolute inset-0 w-full h-full"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+          >
+            {/* 连线 */}
             {STAR_LINKS.map(([a, b], idx) => (
               <line
-                key={idx}
-                x1={STAR_MENU[a].left}
-                y1={STAR_MENU[a].top}
-                x2={STAR_MENU[b].left}
-                y2={STAR_MENU[b].top}
+                key={`line-${idx}`}
+                x1={STAR_MENU[a].x}
+                y1={STAR_MENU[a].y}
+                x2={STAR_MENU[b].x}
+                y2={STAR_MENU[b].y}
                 stroke="#c9a84c"
-                strokeWidth="0.9"
+                strokeWidth="0.8"
                 strokeLinecap="round"
-                opacity="0.75"
+                opacity="0.6"
               />
+            ))}
+
+            {/* 星点光晕 + 本体 */}
+            {STAR_MENU.map((item, idx) => (
+              <g key={`star-${idx}`}>
+                {/* 光晕 */}
+                <circle
+                  cx={item.x}
+                  cy={item.y}
+                  r="3"
+                  fill="#c9a84c"
+                  opacity={item.hasContent ? 0.2 : 0.1}
+                />
+                {/* 星点本体 — 6px 直径（viewBox 单位 1.5 ≈ 6px @300px容器） */}
+                <circle
+                  cx={item.x}
+                  cy={item.y}
+                  r="1.2"
+                  fill={item.hasContent ? "#c9a84c" : "#c9a84c"}
+                  opacity={item.hasContent ? 1 : 0.55}
+                />
+                {/* 内核高光 */}
+                <circle
+                  cx={item.x}
+                  cy={item.y}
+                  r="0.5"
+                  fill="white"
+                  opacity="0.5"
+                />
+              </g>
             ))}
           </svg>
 
-          {/* 星点 + 名称 */}
+          {/* HTML 标签层 — 覆盖喺 SVG 上面，可点击 */}
           {STAR_MENU.map((item) => (
             <button
               key={item.key}
               onClick={() => {
                 if (!item.hasContent) return;
-                // 已有内容跳转产品页（待接路由）
               }}
-              className={`group absolute -translate-x-1/2 -translate-y-1/2 flex items-center gap-2 ${
-                item.labelPos === "left" ? "flex-row-reverse" : "flex-row"
-              } ${item.hasContent ? "cursor-pointer" : "cursor-default"}`}
-              style={{ left: item.left, top: item.top }}
+              className={`absolute z-10 flex flex-col items-center ${
+                item.hasContent ? "cursor-pointer" : "cursor-default"
+              }`}
+              style={{
+                left: `${item.x}%`,
+                top: `${item.y}%`,
+                transform: item.labelDir === "up"
+                  ? "translate(-50%, -100%)"  // 标签喺星点上方
+                  : "translate(-50%, 8px)",    // 标签喺星点下方
+                paddingTop: item.labelDir === "up" ? "0" : "14px",
+                paddingBottom: item.labelDir === "up" ? "14px" : "0",
+              }}
             >
-              {/* 中文名称 */}
-              <div className={`flex items-baseline gap-1 whitespace-nowrap ${item.labelPos === "left" ? "text-right" : "text-left"}`}>
-                <span className={`text-[9px] ${item.hasContent ? "text-[#c9a84c]/70" : "text-[#c9a84c]/40"} font-song`}>{item.star}</span>
-                <span className={`text-sm font-song ${item.hasContent ? "text-[#1a1a1a]" : "text-[#999]"} group-hover:text-[#c9a84c] transition-colors`}>
-                  {item.label}
-                </span>
-              </div>
-
-              {/* 金色星点 */}
-              <div className="relative flex items-center justify-center shrink-0">
-                {/* 光晕 */}
-                <div className={`absolute w-6 h-6 rounded-full bg-[#c9a84c]/25 blur-sm transition-opacity ${item.hasContent ? "group-hover:opacity-100 opacity-70" : "opacity-40"}`} />
-                {/* 星点本体 */}
-                <div className={`relative w-2.5 h-2.5 rounded-full transition-transform ${item.hasContent ? "bg-[#c9a84c] group-hover:scale-125" : "bg-[#c9a84c]/50"}`}>
-                  <div className="absolute inset-0.5 rounded-full bg-white/40" />
-                </div>
-              </div>
+              <span className={`text-[8px] font-song leading-none ${
+                item.hasContent ? "text-[#c9a84c]/70" : "text-[#c9a84c]/40"
+              }`}>
+                {item.star}
+              </span>
+              <span className={`text-[11px] font-song leading-tight mt-0.5 whitespace-nowrap transition-colors ${
+                item.hasContent ? "text-[#1a1a1a]" : "text-[#999]"
+              }`}>
+                {item.label}
+              </span>
             </button>
           ))}
         </div>
