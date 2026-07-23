@@ -1,17 +1,24 @@
 "use client";
 
-import { Store, Sparkles, Leaf, Package, GraduationCap, MapPin, Clock } from "lucide-react";
+import { Sparkles, Leaf, MapPin, Clock } from "lucide-react";
+import BoshanluIcon from "@/components/icons/BoshanluIcon";
 
-/* ── 商品分类（预览结构，暂未接数据） ── */
-const CATEGORIES = [
-  { key: "incense", label: "香品", icon: Leaf },
-  { key: "course", label: "疗愈课程", icon: GraduationCap },
-  { key: "goods", label: "香道周边", icon: Package },
+/* ── 北斗七星阵菜单 ──
+ * 7 颗星竖排屏幕中央，每颗星旁有细中文名称。
+ * 已有内容的 key 对应 PRODUCTS 分类；未开发的点击无反应。
+ * 北斗七星顺序（斗杓→斗柄）：天枢→天璇→天玑→天权→玉衡→开阳→摇光
+ */
+const STAR_MENU = [
+  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false },
+  { star: "天璇", label: "金炉飘香", key: "jinlu", hasContent: false },
+  { star: "天玑", label: "烧香良伴", key: "shaoxiang", hasContent: false },
+  { star: "天权", label: "海南琼脂", key: "hainan", hasContent: false },
+  { star: "玉衡", label: "香学班", key: "xiangxue", hasContent: false },
+  { star: "开阳", label: "疗愈赋能", key: "liaoyu", hasContent: false },
+  { star: "摇光", label: "拼香", key: "pinxiang", hasContent: false },
 ];
 
-/* ── 商品列表：真实商品（image） + 示例占位（emoji）混合 ──
- * 真实商品优先排前面，你再发嚟我直接加落呢个数组。
- * 图放 /public/images/shop/，文件名同呢度 image 字段一致。 */
+/* ── 商品列表（真实商品 + 占位） ── */
 const PRODUCTS = [
   {
     name: "愈疾香",
@@ -35,33 +42,47 @@ export default function ShopTabPage() {
   return (
     <div className="min-h-screen bg-[#fafafa] pb-20">
       {/* ── Hero 头部 ── */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-[#1a1a1a] via-[#221d12] to-[#1a1a1a] px-5 pt-8 pb-7">
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#1a1a1a] via-[#221d12] to-[#1a1a1a]">
+        {/* Banner 动图（MP4），原有 banner 上文字不变 */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-40"
+        >
+          <source src="/videos/shop/banner.mp4" type="video/mp4" />
+        </video>
+
         {/* 柔光装饰 */}
         <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-[#c9a84c]/15 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-12 -left-8 w-44 h-44 rounded-full bg-[#8a9bae]/10 blur-3xl pointer-events-none" />
 
-        <div className="relative flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex items-center justify-center">
-              <Store size={20} className="text-[#c9a84c]" />
+        <div className="relative px-5 pt-8 pb-7">
+          {/* 左上角 logo（博山炉 icon）+ 名称 */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex items-center justify-center">
+                <BoshanluIcon className="w-6 h-6 text-[#c9a84c]" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-black font-song text-white leading-none">香舖</h1>
+                <p className="text-[11px] text-[#8a9bae] mt-1 tracking-wider">C Store</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-black font-song text-white leading-none">香舖</h1>
-              <p className="text-[11px] text-[#8a9bae] mt-1 tracking-wider">SHOP · YIXU HEALING</p>
-            </div>
+
+            {/* Coming Soon 状态标 */}
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#c9a84c]/15 border border-[#c9a84c]/30 backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#c9a84c] animate-pulse" />
+              <span className="text-[#c9a84c] text-xs font-semibold tracking-wide">即将上线</span>
+            </span>
           </div>
 
-          {/* Coming Soon 状态标 */}
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#c9a84c]/15 border border-[#c9a84c]/30 backdrop-blur-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c9a84c] animate-pulse" />
-            <span className="text-[#c9a84c] text-xs font-semibold tracking-wide">即将上线</span>
-          </span>
+          <p className="relative text-sm text-white/80 mt-4 leading-relaxed">
+            传统香品 · 身心灵疗愈课程<br/>
+            <span className="text-[#c9a84c]">中 · 港</span> 私域直送，安心之选
+          </p>
         </div>
-
-        <p className="relative text-sm text-white/80 mt-4 leading-relaxed">
-          传统香品 · 身心灵疗愈课程<br/>
-          <span className="text-[#c9a84c]">中 · 港</span> 私域直送，安心之选
-        </p>
       </div>
 
       {/* ── 上线预告卡 ── */}
@@ -79,31 +100,58 @@ export default function ShopTabPage() {
         </div>
       </div>
 
-      {/* ── 分类预览（结构展示） ── */}
-      <div className="px-5 pt-5">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="accent-line" />
-          <h2 className="text-base font-bold font-song text-[#1a1a1a]">商品分类</h2>
+      {/* ── 北斗七星阵菜单 ── */}
+      <div className="px-5 pt-8 pb-2">
+        <div className="text-center mb-6">
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <span className="accent-line" />
+            <h2 className="text-base font-bold font-song text-[#1a1a1a]">香品导览</h2>
+            <span className="accent-line" />
+          </div>
+          <p className="text-[11px] text-[#999]">北斗七星阵 · 点击星点进入</p>
         </div>
-        <div className="grid grid-cols-3 gap-3">
-          {CATEGORIES.map((cat) => {
-            const Icon = cat.icon;
-            return (
-              <div
-                key={cat.key}
-                className="bg-white rounded-2xl p-4 flex flex-col items-center gap-2 border border-[#f0ede5] shadow-sm"
-              >
-                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#c9a84c]/15 to-[#8a9bae]/15 flex items-center justify-center">
-                  <Icon size={20} className="text-[#c9a84c]" />
+
+        {/* 七星竖排 — 居中 */}
+        <div className="flex flex-col items-center gap-5 py-2">
+          {STAR_MENU.map((item, i) => (
+            <button
+              key={item.key}
+              onClick={() => {
+                if (!item.hasContent) return;
+                // 已有内容跳转产品页（待接路由）
+              }}
+              className={`group flex items-center gap-3 ${item.hasContent ? "cursor-pointer" : "cursor-default"}`}
+            >
+              {/* 金色星点 */}
+              <div className="relative flex items-center justify-center">
+                {/* 光晕 */}
+                <div className={`absolute w-8 h-8 rounded-full bg-[#c9a84c]/20 blur-md transition-opacity ${item.hasContent ? "group-hover:opacity-100 opacity-50" : "opacity-30"}`} />
+                {/* 星点本体 */}
+                <div className={`relative w-4 h-4 rounded-full transition-transform ${item.hasContent ? "bg-[#c9a84c] group-hover:scale-125" : "bg-[#c9a84c]/40"}`}>
+                  {/* 星点内光 */}
+                  <div className="absolute inset-0.5 rounded-full bg-white/30" />
                 </div>
-                <span className="text-sm font-medium text-[#333]">{cat.label}</span>
               </div>
-            );
-          })}
+              {/* 中文名称 */}
+              <div className="flex items-baseline gap-1.5">
+                <span className={`text-[10px] ${item.hasContent ? "text-[#c9a84c]/60" : "text-[#c9a84c]/30"} font-song`}>{item.star}</span>
+                <span className={`text-sm font-song ${item.hasContent ? "text-[#1a1a1a]" : "text-[#999]"} group-hover:text-[#c9a84c] transition-colors`}>
+                  {item.label}
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* 七星连线装饰（竖线） */}
+        <div className="relative mx-auto mt-1" style={{ width: "1px", height: "0" }}>
+          <div
+            className="absolute left-1/2 -translate-x-1/2 top-[-180px] w-px h-[180px] bg-gradient-to-b from-transparent via-[#c9a84c]/15 to-transparent pointer-events-none"
+          />
         </div>
       </div>
 
-      {/* ── 示例商品网格（结构展示） ── */}
+      {/* ── 商品网格 ── */}
       <div className="px-5 pt-6">
         <div className="flex items-center gap-2 mb-3">
           <span className="accent-line" />
@@ -116,7 +164,7 @@ export default function ShopTabPage() {
               key={i}
               className="bg-white rounded-2xl overflow-hidden border border-[#f0ede5] shadow-sm flex flex-col"
             >
-              {/* 图片区：真实商品用 <img>，占位用 emoji */}
+              {/* 图片区 */}
               <div className="relative aspect-square bg-gradient-to-br from-[#fdf8ed] to-[#eef1f4] flex items-center justify-center overflow-hidden">
                 {p.image ? (
                   <img
