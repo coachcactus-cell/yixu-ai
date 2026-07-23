@@ -4,18 +4,24 @@ import { Sparkles, Leaf, MapPin, Clock } from "lucide-react";
 import BoshanluIcon from "@/components/icons/BoshanluIcon";
 
 /* ── 北斗七星阵菜单 ──
- * 7 颗星竖排屏幕中央，每颗星旁有细中文名称。
- * 已有内容的 key 对应 PRODUCTS 分类；未开发的点击无反应。
- * 北斗七星顺序（斗杓→斗柄）：天枢→天璇→天玑→天权→玉衡→开阳→摇光
+ * 7 颗星按真实北斗七星斗形分布：
+ * 天枢→天璇→天玑→天权 组成斗杓（bowl）
+ * 天权→玉衡→开阳→摇光 组成斗柄（handle）
+ * 点击星点进入对应分类；未开发嘅 hasContent=false 则冇反应。
  */
 const STAR_MENU = [
-  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false },
-  { star: "天璇", label: "金炉飘香", key: "jinlu", hasContent: false },
-  { star: "天玑", label: "烧香良伴", key: "shaoxiang", hasContent: false },
-  { star: "天权", label: "海南琼脂", key: "hainan", hasContent: false },
-  { star: "玉衡", label: "香学班", key: "xiangxue", hasContent: false },
-  { star: "开阳", label: "疗愈赋能", key: "liaoyu", hasContent: false },
-  { star: "摇光", label: "拼香", key: "pinxiang", hasContent: false },
+  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false, left: "68%", top: "16%", labelPos: "right" },
+  { star: "天璇", label: "金炉飘香", key: "jinlu", hasContent: false, left: "68%", top: "42%", labelPos: "right" },
+  { star: "天玑", label: "烧香良伴", key: "shaoxiang", hasContent: false, left: "24%", top: "55%", labelPos: "left" },
+  { star: "天权", label: "海南琼脂", key: "hainan", hasContent: false, left: "48%", top: "36%", labelPos: "left" },
+  { star: "玉衡", label: "香学班", key: "xiangxue", hasContent: false, left: "38%", top: "58%", labelPos: "left" },
+  { star: "开阳", label: "疗愈赋能", key: "liaoyu", hasContent: false, left: "26%", top: "76%", labelPos: "left" },
+  { star: "摇光", label: "拼香", key: "pinxiang", hasContent: false, left: "14%", top: "92%", labelPos: "right" },
+];
+
+// 北斗七星连线顺序：天枢→天璇→天玑→天权→玉衡→开阳→摇光
+const STAR_LINKS = [
+  [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6],
 ];
 
 /* ── 商品列表（真实商品 + 占位） ── */
@@ -102,7 +108,7 @@ export default function ShopTabPage() {
 
       {/* ── 北斗七星阵菜单 ── */}
       <div className="px-5 pt-8 pb-2">
-        <div className="text-center mb-6">
+        <div className="text-center mb-4">
           <div className="flex items-center justify-center gap-2 mb-1">
             <span className="accent-line" />
             <h2 className="text-base font-bold font-song text-[#1a1a1a]">香品导览</h2>
@@ -111,43 +117,57 @@ export default function ShopTabPage() {
           <p className="text-[11px] text-[#999]">北斗七星阵 · 点击星点进入</p>
         </div>
 
-        {/* 七星竖排 — 居中 */}
-        <div className="flex flex-col items-center gap-5 py-2">
-          {STAR_MENU.map((item, i) => (
+        {/* 北斗七星图 — 按真实斗形分布 */}
+        <div className="relative w-full h-[320px] max-w-xs mx-auto my-4">
+          {/* 连线 SVG */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+            {STAR_LINKS.map(([a, b], idx) => (
+              <line
+                key={idx}
+                x1={STAR_MENU[a].left}
+                y1={STAR_MENU[a].top}
+                x2={STAR_MENU[b].left}
+                y2={STAR_MENU[b].top}
+                stroke="#c9a84c"
+                strokeWidth="0.9"
+                strokeLinecap="round"
+                opacity="0.75"
+              />
+            ))}
+          </svg>
+
+          {/* 星点 + 名称 */}
+          {STAR_MENU.map((item) => (
             <button
               key={item.key}
               onClick={() => {
                 if (!item.hasContent) return;
                 // 已有内容跳转产品页（待接路由）
               }}
-              className={`group flex items-center gap-3 ${item.hasContent ? "cursor-pointer" : "cursor-default"}`}
+              className={`group absolute -translate-x-1/2 -translate-y-1/2 flex items-center gap-2 ${
+                item.labelPos === "left" ? "flex-row-reverse" : "flex-row"
+              } ${item.hasContent ? "cursor-pointer" : "cursor-default"}`}
+              style={{ left: item.left, top: item.top }}
             >
-              {/* 金色星点 */}
-              <div className="relative flex items-center justify-center">
-                {/* 光晕 */}
-                <div className={`absolute w-8 h-8 rounded-full bg-[#c9a84c]/20 blur-md transition-opacity ${item.hasContent ? "group-hover:opacity-100 opacity-50" : "opacity-30"}`} />
-                {/* 星点本体 */}
-                <div className={`relative w-4 h-4 rounded-full transition-transform ${item.hasContent ? "bg-[#c9a84c] group-hover:scale-125" : "bg-[#c9a84c]/40"}`}>
-                  {/* 星点内光 */}
-                  <div className="absolute inset-0.5 rounded-full bg-white/30" />
-                </div>
-              </div>
               {/* 中文名称 */}
-              <div className="flex items-baseline gap-1.5">
-                <span className={`text-[10px] ${item.hasContent ? "text-[#c9a84c]/60" : "text-[#c9a84c]/30"} font-song`}>{item.star}</span>
+              <div className={`flex items-baseline gap-1 whitespace-nowrap ${item.labelPos === "left" ? "text-right" : "text-left"}`}>
+                <span className={`text-[9px] ${item.hasContent ? "text-[#c9a84c]/70" : "text-[#c9a84c]/40"} font-song`}>{item.star}</span>
                 <span className={`text-sm font-song ${item.hasContent ? "text-[#1a1a1a]" : "text-[#999]"} group-hover:text-[#c9a84c] transition-colors`}>
                   {item.label}
                 </span>
               </div>
+
+              {/* 金色星点 */}
+              <div className="relative flex items-center justify-center shrink-0">
+                {/* 光晕 */}
+                <div className={`absolute w-6 h-6 rounded-full bg-[#c9a84c]/25 blur-sm transition-opacity ${item.hasContent ? "group-hover:opacity-100 opacity-70" : "opacity-40"}`} />
+                {/* 星点本体 */}
+                <div className={`relative w-2.5 h-2.5 rounded-full transition-transform ${item.hasContent ? "bg-[#c9a84c] group-hover:scale-125" : "bg-[#c9a84c]/50"}`}>
+                  <div className="absolute inset-0.5 rounded-full bg-white/40" />
+                </div>
+              </div>
             </button>
           ))}
-        </div>
-
-        {/* 七星连线装饰（竖线） */}
-        <div className="relative mx-auto mt-1" style={{ width: "1px", height: "0" }}>
-          <div
-            className="absolute left-1/2 -translate-x-1/2 top-[-180px] w-px h-[180px] bg-gradient-to-b from-transparent via-[#c9a84c]/15 to-transparent pointer-events-none"
-          />
         </div>
       </div>
 
