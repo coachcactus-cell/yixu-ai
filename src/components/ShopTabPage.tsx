@@ -4,20 +4,19 @@ import { Sparkles, Leaf, MapPin, Clock } from "lucide-react";
 import BoshanluIcon from "@/components/icons/BoshanluIcon";
 
 /* ── 北斗七星阵菜单 ──
- * 7 颗星按真实北斗七星斗形分布（横向布局）：
- *   天枢→天璇→天玑→天权 组成斗杓（bowl，右上四边形）
- *   天权→玉衡→开阳→摇光 组成斗柄（handle，向左下延伸）
- * 坐标用 0-100 viewBox，SVG 同时画线 + 星点保证完美对齐。
- * 文字标签用 HTML absolute 定位喺星点上方或下方，避开线条。
+ * 坐标直接参考用户提供的真实北斗七星图：
+ *   天枢(右上) → 天璇(右下) → 天玑(左下) → 天权(中) → 玉衡(中上) → 开阳(左上) → 摇光(最左上)
+ * 连线顺序：天枢→天璇→天玑→天权→玉衡→开阳→摇光
+ * 标签方向按线条走向避开遮挡：right / down / up / left
  */
 const STAR_MENU = [
-  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false, x: 82, y: 18, labelDir: "up" as const },
-  { star: "天璇", label: "金炉飘香", key: "jinlu", hasContent: false, x: 66, y: 44, labelDir: "up" as const },
-  { star: "天玑", label: "烧香良伴", key: "shaoxiang", hasContent: false, x: 44, y: 36, labelDir: "up" as const },
-  { star: "天权", label: "海南琼脂", key: "hainan", hasContent: false, x: 56, y: 62, labelDir: "down" as const },
-  { star: "玉衡", label: "香学班", key: "xiangxue", hasContent: false, x: 34, y: 70, labelDir: "down" as const },
-  { star: "开阳", label: "疗愈赋能", key: "liaoyu", hasContent: false, x: 18, y: 56, labelDir: "down" as const },
-  { star: "摇光", label: "拼香", key: "pinxiang", hasContent: false, x: 6, y: 32, labelDir: "up" as const },
+  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false, x: 86, y: 26, labelDir: "up" as const },
+  { star: "天璇", label: "金炉飘香", key: "jinlu", hasContent: false, x: 76, y: 60, labelDir: "right" as const },
+  { star: "天玑", label: "烧香良伴", key: "shaoxiang", hasContent: false, x: 48, y: 70, labelDir: "down" as const },
+  { star: "天权", label: "海南琼脂", key: "hainan", hasContent: false, x: 60, y: 46, labelDir: "right" as const },
+  { star: "玉衡", label: "香学班", key: "xiangxue", hasContent: false, x: 50, y: 30, labelDir: "up" as const },
+  { star: "开阳", label: "疗愈赋能", key: "liaoyu", hasContent: false, x: 28, y: 20, labelDir: "up" as const },
+  { star: "摇光", label: "拼香", key: "pinxiang", hasContent: false, x: 10, y: 12, labelDir: "left" as const },
 ];
 
 // 北斗七星连线顺序：天枢→天璇→天玑→天权→玉衡→开阳→摇光
@@ -173,37 +172,46 @@ export default function ShopTabPage() {
           </svg>
 
           {/* HTML 标签层 — 覆盖喺 SVG 上面，可点击 */}
-          {STAR_MENU.map((item) => (
-            <button
-              key={item.key}
-              onClick={() => {
-                if (!item.hasContent) return;
-              }}
-              className={`absolute z-10 flex flex-col items-center ${
-                item.hasContent ? "cursor-pointer" : "cursor-default"
-              }`}
-              style={{
-                left: `${item.x}%`,
-                top: `${item.y}%`,
-                transform: item.labelDir === "up"
-                  ? "translate(-50%, -100%)"  // 标签喺星点上方
-                  : "translate(-50%, 8px)",    // 标签喺星点下方
-                paddingTop: item.labelDir === "up" ? "0" : "14px",
-                paddingBottom: item.labelDir === "up" ? "14px" : "0",
-              }}
-            >
-              <span className={`text-[8px] font-song leading-none ${
-                item.hasContent ? "text-[#c9a84c]/70" : "text-[#c9a84c]/40"
-              }`}>
-                {item.star}
-              </span>
-              <span className={`text-[11px] font-song leading-tight mt-0.5 whitespace-nowrap transition-colors ${
-                item.hasContent ? "text-[#1a1a1a]" : "text-[#999]"
-              }`}>
-                {item.label}
-              </span>
-            </button>
-          ))}
+          {STAR_MENU.map((item) => {
+            const isHoriz = item.labelDir === "left" || item.labelDir === "right";
+            const transform =
+              item.labelDir === "up" ? "translate(-50%, -100%)" :
+              item.labelDir === "down" ? "translate(-50%, 8px)" :
+              item.labelDir === "left" ? "translate(-100%, -50%)" :
+              "translate(8px, -50%)";
+            const padding =
+              item.labelDir === "up" ? "0 0 10px 0" :
+              item.labelDir === "down" ? "10px 0 0 0" :
+              item.labelDir === "left" ? "0 10px 0 0" :
+              "0 0 0 10px";
+            return (
+              <button
+                key={item.key}
+                onClick={() => {
+                  if (!item.hasContent) return;
+                }}
+                className={`absolute z-10 flex ${
+                  isHoriz ? "flex-row items-center" : "flex-col"
+                } ${
+                  isHoriz
+                    ? item.labelDir === "left" ? "items-end" : "items-start"
+                    : "items-center"
+                } ${item.hasContent ? "cursor-pointer" : "cursor-default"}`}
+                style={{ left: `${item.x}%`, top: `${item.y}%`, transform, padding }}
+              >
+                <span className={`text-[8px] font-song leading-none ${
+                  item.hasContent ? "text-[#c9a84c]/70" : "text-[#c9a84c]/40"
+                }`}>
+                  {item.star}
+                </span>
+                <span className={`text-[11px] font-song leading-tight mt-0.5 whitespace-nowrap transition-colors ${
+                  item.hasContent ? "text-[#1a1a1a]" : "text-[#999]"
+                }`}>
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
