@@ -3,102 +3,114 @@
 import { ChevronLeft, Clock } from "lucide-react";
 import Link from "next/link";
 import BoshanluIcon from "@/components/icons/BoshanluIcon";
+import { FULAO_CATEGORIES } from "@/data/fulaoData";
 
-/* ── 傅老和香 — 商品列表 ── */
-const FULAO_PRODUCTS = [
-  {
-    name: "愈疾香",
-    desc: "心平能愈三千疾，心静能平万事理。古方养生香品，祛疾扶正，安神定志。",
-    price: "¥320",
-    image: "/images/shop/yujixiang-1.jpg",
-    tag: "精选",
-  },
-  {
-    name: "���虚香",
-    desc: "窖藏版 · 灵虚凝神。黑灵虚窖藏，深沉醇厚，静心通达灵虚之境。",
-    price: "¥980",
-    image: "/images/shop/lingxuxiang-1.jpg",
-    tag: "窖藏",
-  },
-];
+const CATEGORY_ICONS: Record<string, string> = {
+  gongting: "👑",
+  wenren: "📚",
+  fangyi: "🛡️",
+  shuyuan: "🌸",
+  yuanchuang: "✨",
+  wanfen: "💊",
+  yangsheng: "🧘",
+  honglou: "🎭",
+  huaxun: "🌹",
+};
 
 export default function FulaoPage() {
   return (
     <div className="min-h-screen bg-[#fafafa] pb-20">
-      {/* ── 顶部导航 ── */}
-      <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-sm border-b border-[#f0ede5]">
-        <div className="flex items-center justify-between px-4 py-3">
-          <Link href="/shop" className="flex items-center gap-1 text-[#666] active:text-[#c9a84c]">
-            <ChevronLeft size={20} />
-            <span className="text-sm">返回</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex items-center justify-center">
-              <BoshanluIcon className="w-4.5 h-4.5 text-[#c9a84c]" />
-            </div>
-            <h1 className="text-base font-bold font-song text-[#1a1a1a]">傅老和香</h1>
-          </div>
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#c9a84c]/15 border border-[#c9a84c]/30">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c9a84c] animate-pulse" />
-            <span className="text-[#c9a84c] text-[10px] font-semibold">即将上线</span>
-          </span>
-        </div>
-      </div>
+      {/* ── Banner 区 ── */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#1a1a1a] via-[#221d12] to-[#1a1a1a]">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-40"
+        >
+          <source src="/videos/shop/banner.mp4" type="video/mp4" />
+        </video>
 
-      {/* ── 分类简介 ── */}
-      <div className="px-5 pt-5 pb-3">
-        <div className="bg-gradient-to-r from-[#c9a84c]/8 to-[#8a9bae]/8 rounded-2xl p-4 border border-[#c9a84c]/15">
-          <h2 className="text-sm font-bold font-song text-[#1a1a1a] mb-1">傅老和香</h2>
-          <p className="text-xs text-[#666] leading-relaxed">
-            承传非遗和香工艺，精选天然香材，古方手作。每一炉香，皆为先贤智慧之延续。
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-[#c9a84c]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-12 -left-8 w-44 h-44 rounded-full bg-[#8a9bae]/10 blur-3xl pointer-events-none" />
+
+        <div className="relative px-5 pt-6 pb-7">
+          {/* 顶部导航 */}
+          <div className="flex items-center justify-between mb-4">
+            <Link href="/shop" className="flex items-center gap-1 text-white/70 active:text-[#c9a84c]">
+              <ChevronLeft size={20} />
+              <span className="text-sm">香舖</span>
+            </Link>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex items-center justify-center">
+                <BoshanluIcon className="w-5 h-5 text-[#c9a84c]" />
+              </div>
+              <span className="text-[11px] text-[#8a9bae] tracking-wider">C Store</span>
+            </div>
+          </div>
+
+          {/* 标题 */}
+          <h1 className="text-2xl font-black font-song text-white leading-none">傅老和香</h1>
+          <p className="text-sm text-white/70 mt-2 leading-relaxed">
+            山东慧通香业 · 傅京亮和香全品图鉴<br/>
+            <span className="text-[#c9a84c]">9 大系列 · 28 款香品</span>
           </p>
         </div>
       </div>
 
-      {/* ── 商品列表 ── */}
-      <div className="px-5 pt-4">
+      {/* ── 简介卡 ── */}
+      <div className="px-5 -mt-4 relative z-10">
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#f0ede5]">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="accent-line" />
+            <h2 className="text-sm font-bold font-song text-[#1a1a1a]">傅老和香</h2>
+          </div>
+          <p className="text-xs text-[#666] leading-relaxed">
+            承传非遗和香工艺，精选天然香材，古方手作。每一炉香，皆为先贤智慧之延续。
+          </p>
+          <div className="mt-3 flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#c9a84c]/15 border border-[#c9a84c]/30">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#c9a84c] animate-pulse" />
+              <span className="text-[#c9a84c] text-[10px] font-semibold">即将上线</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── 9 大分类入口 ── */}
+      <div className="px-5 pt-5">
         <div className="flex items-center gap-2 mb-3">
           <span className="accent-line" />
-          <h2 className="text-sm font-bold font-song text-[#1a1a1a]">香品一览</h2>
+          <h2 className="text-sm font-bold font-song text-[#1a1a1a]">香品系列</h2>
         </div>
 
-        <div className="space-y-4">
-          {FULAO_PRODUCTS.map((p, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-2xl overflow-hidden border border-[#f0ede5] shadow-sm flex"
+        <div className="space-y-3">
+          {FULAO_CATEGORIES.map((cat) => (
+            <Link
+              key={cat.id}
+              href={`/shop/fulao/${cat.id}`}
+              className="block bg-white rounded-2xl p-4 border border-[#f0ede5] shadow-sm active:scale-[0.98] transition-transform"
             >
-              {/* 图片区 */}
-              <div className="relative w-32 h-32 flex-shrink-0 bg-gradient-to-br from-[#fdf8ed] to-[#eef1f4] flex items-center justify-center overflow-hidden">
-                {p.image ? (
-                  <img
-                    src={p.image}
-                    alt={p.name}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    onError={(e) => { e.currentTarget.style.display = "none"; }}
-                  />
-                ) : (
-                  <span className="text-3xl opacity-60">🌿</span>
-                )}
-              </div>
+              <div className="flex items-center gap-3">
+                {/* 图标 */}
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#fdf8ed] to-[#eef1f4] flex items-center justify-center flex-shrink-0 text-2xl">
+                  {CATEGORY_ICONS[cat.id] || "🌿"}
+                </div>
 
-              {/* 文字区 */}
-              <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-base font-bold font-song text-[#1a1a1a]">{p.name}</h3>
-                    <span className="px-1.5 py-0.5 rounded-full bg-[#c9a84c]/15 text-[#c9a84c] text-[9px] font-medium">
-                      {p.tag}
-                    </span>
+                {/* 文字 */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold font-song text-[#1a1a1a]">{cat.name}</h3>
+                    <span className="text-[10px] text-[#aaa]">{cat.products.length} 款</span>
                   </div>
-                  <p className="text-xs text-[#999] leading-relaxed line-clamp-2">{p.desc}</p>
+                  <p className="text-[11px] text-[#999] mt-1 leading-relaxed line-clamp-1">{cat.subtitle}</p>
                 </div>
-                <div className="flex items-end justify-between mt-2">
-                  <span className="text-lg font-bold text-[#c9a84c]">{p.price}</span>
-                  <span className="text-[10px] text-[#aaa]">新品预览</span>
-                </div>
+
+                {/* 箭头 */}
+                <ChevronLeft size={18} className="text-[#ccc] rotate-180 flex-shrink-0" />
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -109,6 +121,13 @@ export default function FulaoPage() {
             香舖即将开放购买功能。上线后可于此直接下单，或由亦须先生一对一推荐选用。
           </p>
         </div>
+      </div>
+
+      {/* ── 底部 ── */}
+      <div className="px-5 pt-5 pb-2 text-center">
+        <Link href="/shop" className="text-sm font-song text-[#c9a84c]">
+          返回香舖
+        </Link>
       </div>
     </div>
   );

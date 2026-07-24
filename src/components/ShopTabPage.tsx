@@ -44,25 +44,6 @@ const PADDING: Record<LabelDir, string> = {
   right: "0 0 0 12px",
 };
 
-/* ── 商品列表（真实商品 + 占位） ── */
-const PRODUCTS = [
-  {
-    name: "愈疾香",
-    desc: "古方养生 · 祛疾扶正",
-    price: "¥320",
-    image: "/images/shop/yujixiang-1.jpg",
-    tag: "精选",
-  },
-  {
-    name: "灵虚香",
-    desc: "窖藏版 · 灵虚凝神",
-    price: "¥980",
-    image: "/images/shop/lingxuxiang-1.jpg",
-    tag: "窖藏",
-  },
-  { emoji: "🌿", name: "【示例】海南沉香线香", desc: "天然沉香 · 静心凝神", price: "¥ --", tag: "即将上架" },
-  { emoji: "🕯️", name: "【示例】古法和香香丸", desc: "手作合香 · 随身佩戴", price: "¥ --", tag: "即将上架" },
-];
 
 export default function ShopTabPage() {
   const router = useRouter();
@@ -209,52 +190,6 @@ export default function ShopTabPage() {
               </button>
             );
           })}
-        </div>
-      </div>
-
-      {/* ── 商品网格 ── */}
-      <div className="px-5 pt-6">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="accent-line" />
-          <h2 className="text-base font-bold font-song text-[#1a1a1a]">香品一览</h2>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          {PRODUCTS.map((p, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-2xl overflow-hidden border border-[#f0ede5] shadow-sm flex flex-col"
-            >
-              {/* 图片区 */}
-              <div className="relative aspect-square bg-gradient-to-br from-[#fdf8ed] to-[#eef1f4] flex items-center justify-center overflow-hidden">
-                {p.image ? (
-                  <img
-                    src={p.image}
-                    alt={p.name}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    onError={(e) => { e.currentTarget.style.display = "none"; }}
-                  />
-                ) : (
-                  <span className="text-5xl opacity-60">{p.emoji}</span>
-                )}
-                <span
-                  className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-white text-[10px] font-medium ${
-                    p.image ? "bg-[#c9a84c]/90" : "bg-[#999]/70"
-                  }`}
-                >
-                  {p.tag}
-                </span>
-              </div>
-              <div className="p-3 flex-1 flex flex-col">
-                <h3 className="text-sm font-semibold text-[#1a1a1a] leading-snug line-clamp-2">{p.name}</h3>
-                <p className="text-xs text-[#999] mt-1 leading-relaxed flex-1">{p.desc}</p>
-                <div className="flex items-center justify-between mt-2.5">
-                  <span className="text-base font-bold text-[#c9a84c]">{p.price}</span>
-                  <span className="text-[10px] text-[#aaa]">{p.image ? "新品预览" : "上架后开放"}</span>
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
 
