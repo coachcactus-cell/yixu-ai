@@ -68,22 +68,20 @@ export default function ShopTabPage() {
 
         <div className="relative px-5 pt-8 pb-7">
           {/* 左上角 logo（博山炉 icon）+ 名称 */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex items-center justify-center">
-                <BoshanluIcon className="w-6 h-6 text-[#c9a84c]" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-black font-song text-white leading-none">香舖</h1>
-              </div>
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex items-center justify-center">
+              <BoshanluIcon className="w-6 h-6 text-[#c9a84c]" />
             </div>
-
-            {/* Coming Soon 状态标 */}
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#c9a84c]/15 border border-[#c9a84c]/30 backdrop-blur-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#c9a84c] animate-pulse" />
-              <span className="text-[#c9a84c] text-xs font-semibold tracking-wide">即将上线</span>
-            </span>
+            <div>
+              <h1 className="text-2xl font-black font-song text-white leading-none">香舖</h1>
+            </div>
           </div>
+
+          {/* Coming Soon 状态标 */}
+          <span className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-full bg-[#c9a84c]/15 border border-[#c9a84c]/30 backdrop-blur-sm w-fit">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c9a84c] animate-pulse" />
+            <span className="text-[#c9a84c] text-xs font-semibold tracking-wide">即将上线</span>
+          </span>
 
           <p className="relative text-sm text-white/80 mt-4 leading-relaxed">
             传统香品 · 身心灵疗愈课程<br/>

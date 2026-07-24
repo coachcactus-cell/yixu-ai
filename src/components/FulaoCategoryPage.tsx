@@ -39,16 +39,11 @@ export default function FulaoCategoryPage({ categoryId }: { categoryId: string }
 
         <div className="relative px-5 pt-6 pb-7">
           {/* 顶部导航 */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center mb-4">
             <Link href="/shop/fulao" className="flex items-center gap-1 text-white/70 active:text-[#c9a84c]">
               <ChevronLeft size={20} />
               <span className="text-sm">傅老和香</span>
             </Link>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex items-center justify-center">
-                <BoshanluIcon className="w-5 h-5 text-[#c9a84c]" />
-              </div>
-            </div>
           </div>
 
           {/* 分类名 */}
