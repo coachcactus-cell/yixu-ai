@@ -4,21 +4,21 @@ import { Sparkles, Leaf, MapPin, Clock } from "lucide-react";
 import BoshanluIcon from "@/components/icons/BoshanluIcon";
 
 /* ── 北斗七星阵菜单 ──
- * 标准北斗七星天文坐标比例（垂直版，斗杓在上、斗柄向下弧线延伸）：
- *   斗杓（碗）：天枢→天璇→天玑→天权（四星近方形，天枢天璇为碗口）
- *   斗柄（弧）：天权→玉衡→开阳→摇光（三星弧线向下延伸）
+ * 标准北斗七星天文坐标比例（垂直版，斗杓在上倾斜如勺、斗柄向下弧线）：
+ *   斗杓（勺）：天枢→天璇→天玑→天权（倾斜四边形，天枢天璇距离较远形成勺口）
+ *   斗柄（弧）：天权→玉衡→开阳→摇光（三星自然弧线向下延伸）
  * 连线：天枢→天璇→天玑→天权→玉衡→开阳→摇光
  */
 const STAR_MENU = [
-  // index 0-3: 斗杓（碗）— 顶部四星
-  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false, x: 62, y: 12, labelDir: "right" as const },
-  { star: "天璇", label: "金炉飘香", key: "jinlu", hasContent: false, x: 62, y: 32, labelDir: "right" as const },
-  { star: "天玑", label: "烧香良伴", key: "shaoxiang", hasContent: false, x: 38, y: 32, labelDir: "left" as const },
-  { star: "天权", label: "海南琼脂", key: "hainan", hasContent: false, x: 38, y: 12, labelDir: "left" as const },
+  // index 0-3: 斗杓（倾斜如勺）
+  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false, x: 28, y: 14, labelDir: "left" as const },
+  { star: "天璇", label: "金炉飘香", key: "jinlu", hasContent: false, x: 64, y: 12, labelDir: "right" as const },
+  { star: "天玑", label: "烧香良伴", key: "shaoxiang", hasContent: false, x: 60, y: 34, labelDir: "right" as const },
+  { star: "天权", label: "海南琼脂", key: "hainan", hasContent: false, x: 40, y: 28, labelDir: "left" as const },
   // index 4-6: 斗柄（弧线向下延伸）
-  { star: "玉衡", label: "香学班", key: "xiangxue", hasContent: false, x: 36, y: 50, labelDir: "right" as const },
-  { star: "开阳", label: "疗愈赋能", key: "liaoyu", hasContent: false, x: 26, y: 68, labelDir: "left" as const },
-  { star: "摇光", label: "拼香", key: "pinxiang", hasContent: false, x: 18, y: 86, labelDir: "left" as const },
+  { star: "玉衡", label: "香学班", key: "xiangxue", hasContent: false, x: 32, y: 46, labelDir: "right" as const },
+  { star: "开阳", label: "疗愈赋能", key: "liaoyu", hasContent: false, x: 22, y: 64, labelDir: "left" as const },
+  { star: "摇光", label: "拼香", key: "pinxiang", hasContent: false, x: 16, y: 84, labelDir: "left" as const },
 ];
 
 // 北斗七星连线顺序：天枢→天璇→天玑→天权→玉衡→开阳→摇光
