@@ -4,19 +4,21 @@ import { Sparkles, Leaf, MapPin, Clock } from "lucide-react";
 import BoshanluIcon from "@/components/icons/BoshanluIcon";
 
 /* ── 北斗七星阵菜单 ──
- * 坐标直接参考用户提供的真实北斗七星图：
- *   天枢(右上) → 天璇(右下) → 天玑(左下) → 天权(中) → 玉衡(中上) → 开阳(左上) → 摇光(最左上)
- * 连线顺序：天枢→天璇→天玑→天权→玉衡→开阳→摇光
- * 标签方向按线条走向避开遮挡：right / down / up / left
+ * 标准北斗七星天文坐标比例（横向，斗杓在右、斗柄向左延伸）：
+ *   斗杓（碗）：天枢→天璇→天玑→天权（四星近方形）
+ *   斗柄（弧）：天权→玉衡→开阳→摇光（三星弧线延伸）
+ * 连线：天枢→天璇→天玑→天权→玉衡→开阳→摇光
  */
 const STAR_MENU = [
-  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false, x: 86, y: 26, labelDir: "up" as const },
-  { star: "天璇", label: "金炉飘香", key: "jinlu", hasContent: false, x: 76, y: 60, labelDir: "right" as const },
-  { star: "天玑", label: "烧香良伴", key: "shaoxiang", hasContent: false, x: 48, y: 70, labelDir: "down" as const },
-  { star: "天权", label: "海南琼脂", key: "hainan", hasContent: false, x: 60, y: 46, labelDir: "right" as const },
-  { star: "玉衡", label: "香学班", key: "xiangxue", hasContent: false, x: 50, y: 30, labelDir: "up" as const },
-  { star: "开阳", label: "疗愈赋能", key: "liaoyu", hasContent: false, x: 28, y: 20, labelDir: "up" as const },
-  { star: "摇光", label: "拼香", key: "pinxiang", hasContent: false, x: 10, y: 12, labelDir: "left" as const },
+  // index 0-3: 斗杓（碗）
+  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false, x: 72, y: 28, labelDir: "right" as const },
+  { star: "天璇", label: "金炉飘香", key: "jinlu", hasContent: false, x: 72, y: 58, labelDir: "right" as const },
+  { star: "天玑", label: "烧香良伴", key: "shaoxiang", hasContent: false, x: 56, y: 58, labelDir: "down" as const },
+  { star: "天权", label: "海南琼脂", key: "hainan", hasContent: false, x: 56, y: 28, labelDir: "up" as const },
+  // index 4-6: 斗柄（弧线向左上延伸）
+  { star: "玉衡", label: "香学班", key: "xiangxue", hasContent: false, x: 38, y: 22, labelDir: "up" as const },
+  { star: "开阳", label: "疗愈赋能", key: "liaoyu", hasContent: false, x: 22, y: 18, labelDir: "up" as const },
+  { star: "摇光", label: "拼香", key: "pinxiang", hasContent: false, x: 16, y: 14, labelDir: "left" as const },
 ];
 
 // 北斗七星连线顺序：天枢→天璇→天玑→天权→玉衡→开阳→摇光
@@ -118,7 +120,7 @@ export default function ShopTabPage() {
         </div>
 
         {/* 北斗七星图 — 纯 SVG 画线+星点，HTML 标签独立定位 */}
-        <div className="relative w-full max-w-[300px] mx-auto" style={{ aspectRatio: "1 / 1" }}>
+        <div className="relative w-full max-w-[340px] mx-auto" style={{ aspectRatio: "1 / 1" }}>
           {/* SVG: 连线 + 星点（同一坐标系，保证对齐） */}
           <svg
             className="absolute inset-0 w-full h-full"
@@ -134,9 +136,9 @@ export default function ShopTabPage() {
                 x2={STAR_MENU[b].x}
                 y2={STAR_MENU[b].y}
                 stroke="#c9a84c"
-                strokeWidth="0.8"
+                strokeWidth="1"
                 strokeLinecap="round"
-                opacity="0.6"
+                opacity="0.7"
               />
             ))}
 
@@ -199,13 +201,13 @@ export default function ShopTabPage() {
                 } ${item.hasContent ? "cursor-pointer" : "cursor-default"}`}
                 style={{ left: `${item.x}%`, top: `${item.y}%`, transform, padding }}
               >
-                <span className={`text-[8px] font-song leading-none ${
-                  item.hasContent ? "text-[#c9a84c]/70" : "text-[#c9a84c]/40"
+                <span className={`text-[10px] font-bold font-song leading-none ${
+                  item.hasContent ? "text-[#c9a84c]/80" : "text-[#c9a84c]/50"
                 }`}>
                   {item.star}
                 </span>
-                <span className={`text-[11px] font-song leading-tight mt-0.5 whitespace-nowrap transition-colors ${
-                  item.hasContent ? "text-[#1a1a1a]" : "text-[#999]"
+                <span className={`text-[14px] font-bold font-song leading-tight mt-1 whitespace-nowrap transition-colors ${
+                  item.hasContent ? "text-[#1a1a1a]" : "text-[#666]"
                 }`}>
                   {item.label}
                 </span>
