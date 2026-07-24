@@ -111,13 +111,9 @@ export default function ShopTabPage() {
 
       {/* ── 北斗七星阵菜单 ── */}
       <div className="px-5 pt-6 pb-2">
-        <div className="text-center mb-4">
-          <div className="flex items-center justify-center gap-2 mb-1">
-            <span className="accent-line" />
-            <h2 className="text-base font-bold font-song text-[#1a1a1a]">香品导览</h2>
-            <span className="accent-line" />
-          </div>
-          <p className="text-[11px] text-[#999]">北斗七星阵 · 点击星点进入</p>
+        <div className="text-center mb-5">
+          <h2 className="text-xl font-black font-song text-[#1a1a1a] tracking-wide">北斗七星阵</h2>
+          <p className="text-xs text-[#999] mt-1.5">点击星点进入</p>
         </div>
 
         {/* 北斗七星图 — 纯 SVG 画线+星点，HTML 标签独立定位 */}
@@ -150,15 +146,15 @@ export default function ShopTabPage() {
                 <circle
                   cx={item.x}
                   cy={item.y}
-                  r="3"
+                  r="5"
                   fill="#c9a84c"
                   opacity={item.hasContent ? 0.2 : 0.1}
                 />
-                {/* 星点本体 — 6px 直径（viewBox 单位 1.5 ≈ 6px @300px容器） */}
+                {/* 星点本体 — 10px 直径 */}
                 <circle
                   cx={item.x}
                   cy={item.y}
-                  r="1.2"
+                  r="2"
                   fill={item.hasContent ? "#c9a84c" : "#c9a84c"}
                   opacity={item.hasContent ? 1 : 0.55}
                 />
@@ -166,7 +162,7 @@ export default function ShopTabPage() {
                 <circle
                   cx={item.x}
                   cy={item.y}
-                  r="0.5"
+                  r="0.8"
                   fill="white"
                   opacity="0.5"
                 />
@@ -174,7 +170,7 @@ export default function ShopTabPage() {
             ))}
           </svg>
 
-          {/* HTML 标签层 — 覆盖喺 SVG 上面，可点击 */}
+          {/* HTML 标签层 — 竖排文字，覆盖喺 SVG 上面，可点击 */}
           {STAR_MENU.map((item) => {
             const isHoriz = item.labelDir === "left" || item.labelDir === "right";
             return (
@@ -183,26 +179,24 @@ export default function ShopTabPage() {
                 onClick={() => {
                   if (!item.hasContent) return;
                 }}
-                className={`absolute z-10 flex ${
-                  isHoriz ? "flex-row items-center" : "flex-col"
-                } ${
-                  isHoriz
-                    ? item.labelDir === "left" ? "items-end" : "items-start"
-                    : "items-center"
-                } ${item.hasContent ? "cursor-pointer" : "cursor-default"}`}
+                className={`absolute z-10 flex flex-col items-center ${
+                  item.hasContent ? "cursor-pointer" : "cursor-default"
+                }`}
                 style={{
                   left: `${item.x}%`,
                   top: `${item.y}%`,
                   transform: TRANSFORM[item.labelDir],
                   padding: PADDING[item.labelDir],
+                  writingMode: "vertical-rl",
+                  textOrientation: "mixed",
                 }}
               >
-                <span className={`text-[10px] font-bold font-song leading-none ${
+                <span className={`text-[11px] font-bold font-song leading-none ${
                   item.hasContent ? "text-[#c9a84c]/80" : "text-[#c9a84c]/50"
                 }`}>
                   {item.star}
                 </span>
-                <span className={`text-[14px] font-bold font-song leading-tight mt-1 whitespace-nowrap transition-colors ${
+                <span className={`text-[15px] font-black font-song leading-tight mt-1 transition-colors ${
                   item.hasContent ? "text-[#1a1a1a]" : "text-[#666]"
                 }`}>
                   {item.label}
