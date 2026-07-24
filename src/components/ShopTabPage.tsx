@@ -4,27 +4,43 @@ import { Sparkles, Leaf, MapPin, Clock } from "lucide-react";
 import BoshanluIcon from "@/components/icons/BoshanluIcon";
 
 /* ── 北斗七星阵菜单 ──
- * 标准北斗七星天文坐标比例（横向，斗杓在右、斗柄向左延伸）：
- *   斗杓（碗）：天枢→天璇→天玑→天权（四星近方形）
- *   斗柄（弧）：天权→玉衡→开阳→摇光（三星弧线延伸）
+ * 标准北斗七星天文坐标比例（垂直版，斗杓在上、斗柄向下弧线延伸）：
+ *   斗杓（碗）：天枢→天璇→天玑→天权（四星近方形，天枢天璇为碗口）
+ *   斗柄（弧）：天权→玉衡→开阳→摇光（三星弧线向下延伸）
  * 连线：天枢→天璇→天玑→天权→玉衡→开阳→摇光
  */
 const STAR_MENU = [
-  // index 0-3: 斗杓（碗）
-  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false, x: 72, y: 28, labelDir: "right" as const },
-  { star: "天璇", label: "金炉飘香", key: "jinlu", hasContent: false, x: 72, y: 58, labelDir: "right" as const },
-  { star: "天玑", label: "烧香良伴", key: "shaoxiang", hasContent: false, x: 56, y: 58, labelDir: "down" as const },
-  { star: "天权", label: "海南琼脂", key: "hainan", hasContent: false, x: 56, y: 28, labelDir: "up" as const },
-  // index 4-6: 斗柄（弧线向左上延伸）
-  { star: "玉衡", label: "香学班", key: "xiangxue", hasContent: false, x: 38, y: 22, labelDir: "up" as const },
-  { star: "开阳", label: "疗愈赋能", key: "liaoyu", hasContent: false, x: 22, y: 18, labelDir: "up" as const },
-  { star: "摇光", label: "拼香", key: "pinxiang", hasContent: false, x: 16, y: 14, labelDir: "left" as const },
+  // index 0-3: 斗杓（碗）— 顶部四星
+  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false, x: 62, y: 12, labelDir: "right" as const },
+  { star: "天璇", label: "金炉飘香", key: "jinlu", hasContent: false, x: 62, y: 32, labelDir: "right" as const },
+  { star: "天玑", label: "烧香良伴", key: "shaoxiang", hasContent: false, x: 38, y: 32, labelDir: "left" as const },
+  { star: "天权", label: "海南琼脂", key: "hainan", hasContent: false, x: 38, y: 12, labelDir: "left" as const },
+  // index 4-6: 斗柄（弧线向下延伸）
+  { star: "玉衡", label: "香学班", key: "xiangxue", hasContent: false, x: 36, y: 50, labelDir: "right" as const },
+  { star: "开阳", label: "疗愈赋能", key: "liaoyu", hasContent: false, x: 26, y: 68, labelDir: "left" as const },
+  { star: "摇光", label: "拼香", key: "pinxiang", hasContent: false, x: 18, y: 86, labelDir: "left" as const },
 ];
 
 // 北斗七星连线顺序：天枢→天璇→天玑→天权→玉衡→开阳→摇光
 const STAR_LINKS = [
   [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6],
 ];
+
+type LabelDir = "up" | "down" | "left" | "right";
+
+const TRANSFORM: Record<LabelDir, string> = {
+  up: "translate(-50%, -100%)",
+  down: "translate(-50%, 8px)",
+  left: "translate(-100%, -50%)",
+  right: "translate(8px, -50%)",
+};
+
+const PADDING: Record<LabelDir, string> = {
+  up: "0 0 12px 0",
+  down: "12px 0 0 0",
+  left: "0 12px 0 0",
+  right: "0 0 0 12px",
+};
 
 /* ── 商品列表（真实商品 + 占位） ── */
 const PRODUCTS = [
@@ -93,23 +109,8 @@ export default function ShopTabPage() {
         </div>
       </div>
 
-      {/* ── 上线预告卡 ── */}
-      <div className="px-5 -mt-4 relative z-10">
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#f0ede5] flex items-start gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[#c9a84c]/10 flex items-center justify-center flex-shrink-0">
-            <Clock size={18} className="text-[#c9a84c]" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-bold text-[#1a1a1a]">香舖正在筹建中</h3>
-            <p className="text-xs text-[#666] mt-1 leading-relaxed">
-              已有 <strong className="text-[#c9a84c]">2 款精选香品</strong> 上架预览，更多香品陆续上架中。
-            </p>
-          </div>
-        </div>
-      </div>
-
       {/* ── 北斗七星阵菜单 ── */}
-      <div className="px-5 pt-8 pb-2">
+      <div className="px-5 pt-6 pb-2">
         <div className="text-center mb-4">
           <div className="flex items-center justify-center gap-2 mb-1">
             <span className="accent-line" />
@@ -120,7 +121,7 @@ export default function ShopTabPage() {
         </div>
 
         {/* 北斗七星图 — 纯 SVG 画线+星点，HTML 标签独立定位 */}
-        <div className="relative w-full max-w-[340px] mx-auto" style={{ aspectRatio: "1 / 1" }}>
+        <div className="relative w-full max-w-[360px] mx-auto" style={{ aspectRatio: "3 / 4" }}>
           {/* SVG: 连线 + 星点（同一坐标系，保证对齐） */}
           <svg
             className="absolute inset-0 w-full h-full"
@@ -176,16 +177,6 @@ export default function ShopTabPage() {
           {/* HTML 标签层 — 覆盖喺 SVG 上面，可点击 */}
           {STAR_MENU.map((item) => {
             const isHoriz = item.labelDir === "left" || item.labelDir === "right";
-            const transform =
-              item.labelDir === "up" ? "translate(-50%, -100%)" :
-              item.labelDir === "down" ? "translate(-50%, 8px)" :
-              item.labelDir === "left" ? "translate(-100%, -50%)" :
-              "translate(8px, -50%)";
-            const padding =
-              item.labelDir === "up" ? "0 0 10px 0" :
-              item.labelDir === "down" ? "10px 0 0 0" :
-              item.labelDir === "left" ? "0 10px 0 0" :
-              "0 0 0 10px";
             return (
               <button
                 key={item.key}
@@ -199,7 +190,12 @@ export default function ShopTabPage() {
                     ? item.labelDir === "left" ? "items-end" : "items-start"
                     : "items-center"
                 } ${item.hasContent ? "cursor-pointer" : "cursor-default"}`}
-                style={{ left: `${item.x}%`, top: `${item.y}%`, transform, padding }}
+                style={{
+                  left: `${item.x}%`,
+                  top: `${item.y}%`,
+                  transform: TRANSFORM[item.labelDir],
+                  padding: PADDING[item.labelDir],
+                }}
               >
                 <span className={`text-[10px] font-bold font-song leading-none ${
                   item.hasContent ? "text-[#c9a84c]/80" : "text-[#c9a84c]/50"
