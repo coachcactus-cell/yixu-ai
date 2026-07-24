@@ -1,6 +1,8 @@
 "use client";
 
 import { Sparkles, Leaf, MapPin, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import BoshanluIcon from "@/components/icons/BoshanluIcon";
 
 /* ── 北斗七星阵菜单 ──
@@ -11,7 +13,7 @@ import BoshanluIcon from "@/components/icons/BoshanluIcon";
  */
 const STAR_MENU = [
   // index 0-3: 斗杓（倾斜如勺）
-  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false, x: 28, y: 8, labelDir: "left" as const },
+  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: true, x: 28, y: 8, labelDir: "left" as const },
   { star: "天璇", label: "金炉飘香", key: "jinlu", hasContent: false, x: 64, y: 12, labelDir: "right" as const },
   { star: "天玑", label: "烧香良伴", key: "shaoxiang", hasContent: false, x: 60, y: 34, labelDir: "right" as const },
   { star: "天权", label: "海南琼脂", key: "hainan", hasContent: false, x: 40, y: 28, labelDir: "left" as const },
@@ -63,6 +65,7 @@ const PRODUCTS = [
 ];
 
 export default function ShopTabPage() {
+  const router = useRouter();
   return (
     <div className="min-h-screen bg-[#fafafa] pb-20">
       {/* ── Hero 头部 ── */}
@@ -177,7 +180,9 @@ export default function ShopTabPage() {
               <button
                 key={item.key}
                 onClick={() => {
-                  if (!item.hasContent) return;
+                  if (item.hasContent) {
+                    router.push(`/shop/${item.key}`);
+                  }
                 }}
                 className={`absolute z-10 flex flex-col items-center ${
                   item.hasContent ? "cursor-pointer" : "cursor-default"
