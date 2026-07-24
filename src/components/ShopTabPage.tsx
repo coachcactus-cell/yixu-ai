@@ -11,7 +11,7 @@ import BoshanluIcon from "@/components/icons/BoshanluIcon";
  */
 const STAR_MENU = [
   // index 0-3: 斗杓（倾斜如勺）
-  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false, x: 28, y: 14, labelDir: "left" as const },
+  { star: "天枢", label: "傅老和香", key: "fulao", hasContent: false, x: 28, y: 8, labelDir: "left" as const },
   { star: "天璇", label: "金炉飘香", key: "jinlu", hasContent: false, x: 64, y: 12, labelDir: "right" as const },
   { star: "天玑", label: "烧香良伴", key: "shaoxiang", hasContent: false, x: 60, y: 34, labelDir: "right" as const },
   { star: "天权", label: "海南琼脂", key: "hainan", hasContent: false, x: 40, y: 28, labelDir: "left" as const },
@@ -110,10 +110,10 @@ export default function ShopTabPage() {
       </div>
 
       {/* ── 北斗七星阵菜单 ── */}
-      <div className="px-5 pt-4 pb-2">
-        <div className="text-center mb-2">
-          <h2 className="text-sm font-bold font-song text-[#1a1a1a] tracking-wide">北斗七星阵</h2>
-          <p className="text-[10px] text-[#999] mt-0.5">点击星点进入</p>
+      <div className="px-5 pt-3 pb-2">
+        <div className="text-center mb-1">
+          <h2 className="text-xs font-bold font-song text-[#1a1a1a] tracking-wide">北斗七星阵</h2>
+          <p className="text-[9px] text-[#999] mt-0.5">点击星点进入</p>
         </div>
 
         {/* 北斗七星图 — 纯 SVG 画线+星点，HTML 标签独立定位 */}
@@ -133,7 +133,7 @@ export default function ShopTabPage() {
                 x2={STAR_MENU[b].x}
                 y2={STAR_MENU[b].y}
                 stroke="#c9a84c"
-                strokeWidth="0.6"
+                strokeWidth="0.4"
                 strokeLinecap="round"
                 opacity="0.7"
               />
