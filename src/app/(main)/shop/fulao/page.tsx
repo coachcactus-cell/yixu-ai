@@ -46,7 +46,6 @@ export default function FulaoPage() {
               <div className="w-8 h-8 rounded-lg bg-[#c9a84c]/15 border border-[#c9a84c]/30 flex items-center justify-center">
                 <BoshanluIcon className="w-5 h-5 text-[#c9a84c]" />
               </div>
-              <span className="text-[11px] text-[#8a9bae] tracking-wider">C Store</span>
             </div>
           </div>
 

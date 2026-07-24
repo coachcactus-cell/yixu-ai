@@ -75,7 +75,6 @@ export default function ShopTabPage() {
               </div>
               <div>
                 <h1 className="text-2xl font-black font-song text-white leading-none">香舖</h1>
-                <p className="text-[11px] text-[#8a9bae] mt-1 tracking-wider">C Store</p>
               </div>
             </div>
 
