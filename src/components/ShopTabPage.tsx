@@ -110,10 +110,10 @@ export default function ShopTabPage() {
       </div>
 
       {/* ── 北斗七星阵菜单 ── */}
-      <div className="px-5 pt-6 pb-2">
-        <div className="text-center mb-5">
-          <h2 className="text-xl font-black font-song text-[#1a1a1a] tracking-wide">北斗七星阵</h2>
-          <p className="text-xs text-[#999] mt-1.5">点击星点进入</p>
+      <div className="px-5 pt-4 pb-2">
+        <div className="text-center mb-2">
+          <h2 className="text-sm font-bold font-song text-[#1a1a1a] tracking-wide">北斗七星阵</h2>
+          <p className="text-[10px] text-[#999] mt-0.5">点击星点进入</p>
         </div>
 
         {/* 北斗七星图 — 纯 SVG 画线+星点，HTML 标签独立定位 */}
@@ -133,7 +133,7 @@ export default function ShopTabPage() {
                 x2={STAR_MENU[b].x}
                 y2={STAR_MENU[b].y}
                 stroke="#c9a84c"
-                strokeWidth="1"
+                strokeWidth="0.6"
                 strokeLinecap="round"
                 opacity="0.7"
               />
