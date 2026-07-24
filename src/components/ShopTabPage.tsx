@@ -20,7 +20,7 @@ const STAR_MENU = [
   // index 4-6: 斗柄（弧线向下延伸）
   { star: "玉衡", label: "香学班", key: "xiangxue", hasContent: false, x: 32, y: 46, labelDir: "right" as const },
   { star: "开阳", label: "疗愈赋能", key: "liaoyu", hasContent: false, x: 22, y: 64, labelDir: "left" as const },
-  { star: "摇光", label: "拼香", key: "pinxiang", hasContent: false, x: 16, y: 84, labelDir: "left" as const },
+  { star: "摇光", label: "拼香", key: "pinxiang", hasContent: true, x: 16, y: 84, labelDir: "left" as const },
 ];
 
 // 北斗七星连线顺序：天枢→天璇→天玑→天权→玉衡→开阳→摇光
