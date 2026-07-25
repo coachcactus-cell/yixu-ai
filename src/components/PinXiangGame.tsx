@@ -153,6 +153,7 @@ export default function PinXiangGame() {
   }, []);
 
   // 檢測消除與香名拼合
+  // (逻辑不变)
   const checkAndClearLines = useCallback(
     (currentGrid: Grid) => {
       const newGrid = currentGrid.map((row) => [...row]);
@@ -615,8 +616,8 @@ export default function PinXiangGame() {
             gridTemplateColumns: `repeat(${GRID_WIDTH}, minmax(0, 1fr))`,
             gap: "1px",
             width: "100%",
-            aspectRatio: "5 / 12",
-            maxWidth: "min(340px, calc((100dvh - 200px) * 5 / 12))",
+            aspectRatio: "5 / 8",
+            maxWidth: "min(360px, calc((100dvh - 180px) * 5 / 8))",
           }}
         >
           {grid.map((row, rIdx) =>

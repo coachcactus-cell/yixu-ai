@@ -19,7 +19,7 @@ export interface Piece {
 }
 
 export const GRID_WIDTH = 5;
-export const GRID_HEIGHT = 15;
+export const GRID_HEIGHT = 8;
 
 export const INITIAL_SPEED = 1200; // 初始下落間隔 (毫秒)
 export const MIN_SPEED = 250; // 最快下落間隔 (毫秒)
