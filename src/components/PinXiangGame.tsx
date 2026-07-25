@@ -615,8 +615,8 @@ export default function PinXiangGame() {
             gridTemplateColumns: `repeat(${GRID_WIDTH}, minmax(0, 1fr))`,
             gap: "1px",
             width: "100%",
-            maxWidth: "340px",
             aspectRatio: "5 / 12",
+            maxWidth: "min(340px, calc((100dvh - 200px) * 5 / 12))",
           }}
         >
           {grid.map((row, rIdx) =>
@@ -651,7 +651,7 @@ export default function PinXiangGame() {
 
           {/* 1.3 開始遮罩畫面 */}
           {!gameStarted && (
-            <div className="absolute inset-0 bg-neutral-950/85 backdrop-blur-sm rounded-lg flex flex-col items-center justify-between p-5 text-center z-20">
+            <div className="absolute inset-0 bg-neutral-950/85 backdrop-blur-sm rounded-lg flex flex-col items-center justify-between p-5 text-center z-20 overflow-y-auto">
               <div className="mt-2">
                 <h2 className="text-2xl font-bold font-song text-[#f0d060] tracking-wider mb-1">
                   拼香小游戏
