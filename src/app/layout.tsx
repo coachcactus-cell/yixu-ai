@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     description: "Sino-NLP 中华身心语言学 × 传统经学 — 随身疗愈修行伙伴",
     images: ["https://yixu-ai.online/og-image.png?v=4"],
   },
-  manifest: "/manifest.json?v=27",
+  manifest: "/manifest.json",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "48x48" },

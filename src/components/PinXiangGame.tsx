@@ -72,8 +72,9 @@ export default function PinXiangGame() {
 
   const lastDropTimeRef = useRef<number>(0);
   const requestRef = useRef<number | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  // 讀取最高分
+  // 讀取最高分 + 視頻自動播放兜底
   useEffect(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -82,6 +83,17 @@ export default function PinXiangGame() {
       }
     } catch {
       // safe fallback
+    }
+    // 視頻播放兜底
+    const video = videoRef.current;
+    if (video) {
+      video.play().catch(() => {
+        const playOnInteraction = () => {
+          video.play().catch(() => {});
+        };
+        document.addEventListener("touchstart", playOnInteraction, { once: true });
+        document.addEventListener("click", playOnInteraction, { once: true });
+      });
     }
   }, []);
 
@@ -480,20 +492,23 @@ export default function PinXiangGame() {
   const currentGridWidth = getGridWidth(level);
 
   return (
-    <div className="relative w-full max-w-[400px] mx-auto min-h-screen bg-gradient-to-b from-neutral-950 via-stone-900 to-neutral-950 flex flex-col justify-between text-stone-100 overflow-hidden font-sans">
+    <div className="relative w-full max-w-[400px] mx-auto h-[100dvh] bg-gradient-to-b from-neutral-950 via-stone-900 to-neutral-950 flex flex-col justify-between text-stone-100 overflow-hidden font-sans">
       {/* 背景第一層：本地視訊煙氣 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <video
+          ref={videoRef}
           autoPlay
           loop
           muted
           playsInline
+          preload="auto"
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ opacity: 0.6 }}
+          style={{ opacity: 0.7 }}
+          {...({ "webkit-playsinline": "true", "x5-playsinline": "true" } as any)}
         >
           <source src="/videos/shop/banner-smoke.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/30 via-stone-900/20 to-neutral-950/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/15 via-transparent to-neutral-950/15" />
       </div>
 
       {/* 背景第二層：CSS 煙氣飄動粒子 */}
@@ -541,7 +556,7 @@ export default function PinXiangGame() {
       `}</style>
 
       {/* 頂部 Header — 按鈕全部放左側，避開右上角 layout 頭像 */}
-      <header className="relative z-10 bg-neutral-950/80 backdrop-blur-sm px-4 py-3 border-b border-stone-800/60 flex items-center justify-between shadow-md">
+      <header className="relative z-10 bg-neutral-950/80 backdrop-blur-sm px-4 py-3 border-b border-stone-800/60 flex items-center justify-between shadow-md flex-shrink-0">
         <div className="flex items-center space-x-2">
           <span className="bg-[#c9a84c] text-neutral-950 font-bold px-2 py-0.5 rounded text-xs">
             香舖
@@ -728,7 +743,7 @@ export default function PinXiangGame() {
       </main>
 
       {/* 底部控制區域 */}
-      <footer className="relative z-10 p-3 pb-6 bg-stone-900/80 backdrop-blur-sm border-t border-stone-800/80">
+      <footer className="relative z-10 p-3 pb-6 bg-stone-900/80 backdrop-blur-sm border-t border-stone-800/80 flex-shrink-0">
         <div className="grid grid-cols-4 gap-2 max-w-[340px] mx-auto">
           <button
             onClick={moveLeft}
