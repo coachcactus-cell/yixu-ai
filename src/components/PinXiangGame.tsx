@@ -727,8 +727,8 @@ export default function PinXiangGame() {
         </div>
       </main>
 
-      {/* 底部控制區域 — pb-32 避開底部 tab bar */}
-      <footer className="relative z-10 p-3 pb-32 bg-stone-900/80 backdrop-blur-sm border-t border-stone-800/80">
+      {/* 底部控制區域 */}
+      <footer className="relative z-10 p-3 pb-6 bg-stone-900/80 backdrop-blur-sm border-t border-stone-800/80">
         <div className="grid grid-cols-4 gap-2 max-w-[340px] mx-auto">
           <button
             onClick={moveLeft}
