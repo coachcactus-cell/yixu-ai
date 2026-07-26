@@ -622,7 +622,7 @@ export default function PinXiangGame() {
 
         {/* 網格容器 — 動態寬度 */}
         <div
-          className={`relative bg-neutral-950/80 rounded-lg p-1 border-2 border-[#c9a84c]/40 shadow-[0_0_20px_rgba(201,168,76,0.15)] touch-none transition-all ${
+          className={`relative rounded-lg p-1 border-2 border-[#c9a84c]/40 shadow-[0_0_20px_rgba(201,168,76,0.15)] touch-none transition-all ${
             isShaking ? "animate-[shake_0.3s_ease-in-out]" : ""
           }`}
           onTouchStart={handleTouchStart}
