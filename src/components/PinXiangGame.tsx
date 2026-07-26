@@ -72,9 +72,8 @@ export default function PinXiangGame() {
 
   const lastDropTimeRef = useRef<number>(0);
   const requestRef = useRef<number | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
-  // 讀取最高分 + 視頻自動播放兜底
+  // 讀取最高分
   useEffect(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -83,17 +82,6 @@ export default function PinXiangGame() {
       }
     } catch {
       // safe fallback
-    }
-    // 視頻播放兜底
-    const video = videoRef.current;
-    if (video) {
-      video.play().catch(() => {
-        const playOnInteraction = () => {
-          video.play().catch(() => {});
-        };
-        document.addEventListener("touchstart", playOnInteraction, { once: true });
-        document.addEventListener("click", playOnInteraction, { once: true });
-      });
     }
   }, []);
 
@@ -492,29 +480,15 @@ export default function PinXiangGame() {
   const currentGridWidth = getGridWidth(level);
 
   return (
-    <div className="relative w-full max-w-[400px] mx-auto h-[100dvh] bg-gradient-to-b from-neutral-950 via-stone-900 to-neutral-950 flex flex-col justify-between text-stone-100 overflow-hidden font-sans">
-      {/* 背景第一層：本地視訊煙氣 */}
+    <div className="relative w-full max-w-[400px] mx-auto h-[100dvh] bg-gradient-to-b from-neutral-950 via-stone-900 to-neutral-950 flex flex-col text-stone-100 overflow-hidden font-sans">
+      {/* 純 CSS 煙氣背景 — 不依賴 video */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ opacity: 0.7 }}
-          {...({ "webkit-playsinline": "true", "x5-playsinline": "true" } as any)}
-        >
-          <source src="/videos/shop/banner-smoke.mp4" type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/15 via-transparent to-neutral-950/15" />
-      </div>
-
-      {/* 背景第二層：CSS 煙氣飄動粒子 */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 1 }}>
-        {[...Array(12)].map((_, i) => {
-          const size = 80 + i * 25;
+        {[...Array(15)].map((_, i) => {
+          const size = 60 + i * 20;
+          const left = (i * 7 + 3) % 90;
+          const delay = (i * 0.8) % 6;
+          const duration = 7 + (i % 5);
+          const opacity = 0.25 - (i % 4) * 0.04;
           return (
             <div
               key={i}
@@ -522,11 +496,11 @@ export default function PinXiangGame() {
               style={{
                 width: `${size}px`,
                 height: `${size}px`,
-                left: `${5 + i * 8}%`,
-                bottom: `-100px`,
-                background: `radial-gradient(circle, rgba(201,168,76,${0.18 - (i % 3) * 0.04}) 0%, transparent 65%)`,
-                filter: "blur(4px)",
-                animation: `smokeRise ${8 + i * 1.5}s ease-in-out ${i * 0.7}s infinite`,
+                left: `${left}%`,
+                bottom: `-80px`,
+                background: `radial-gradient(circle, rgba(201,168,76,${opacity}) 0%, rgba(201,168,76,${opacity * 0.3}) 40%, transparent 70%)`,
+                filter: "blur(6px)",
+                animation: `smokeRise ${duration}s ease-in-out ${delay}s infinite`,
               }}
             />
           );
@@ -602,7 +576,7 @@ export default function PinXiangGame() {
       </div>
 
       {/* 主遊戲區域 */}
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center p-2">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center p-2 pb-24">
         {/* Toast 提示 */}
         {toastMessage && (
           <div className="absolute top-2 z-30 bg-stone-900/90 text-[#f0d060] border border-[#c9a84c]/60 text-xs px-3 py-1.5 rounded-full shadow-lg transition-all animate-bounce text-center max-w-[280px]">
@@ -742,8 +716,8 @@ export default function PinXiangGame() {
         </div>
       </main>
 
-      {/* 底部控制區域 */}
-      <footer className="relative z-10 p-3 pb-6 bg-stone-900/80 backdrop-blur-sm border-t border-stone-800/80 flex-shrink-0">
+      {/* 底部控制區域 — fixed 钉死底部 */}
+      <footer className="fixed bottom-0 left-0 right-0 z-50 p-3 pb-4 bg-stone-900/95 backdrop-blur-md border-t border-stone-800/80 max-w-[400px] mx-auto">
         <div className="grid grid-cols-4 gap-2 max-w-[340px] mx-auto">
           <button
             onClick={moveLeft}
