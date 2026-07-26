@@ -134,27 +134,27 @@ export default function PinXiangGame() {
     }, 2500);
   }, []);
 
-  // 顯示香品知識卡
+  // 顯示香品知識卡（1.5秒快速關閉，唔阻住下個方塊）
   const triggerKnowledgeCard = useCallback((item: IncenseItem) => {
     setActiveCard(item);
     const timer = setTimeout(() => {
       setActiveCard(null);
-    }, 3500);
+    }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
-  // 觸發 Bingo 喜慶特效
+  // 觸發 Bingo 喜慶特效（快速閃過，唔阻塞遊戲）
   const triggerBingoAnimation = useCallback((scorePlus: number) => {
     setBingoEffect({ active: true, scoreText: `+${scorePlus}` });
     setIsShaking(true);
 
     setTimeout(() => {
       setIsShaking(false);
-    }, 300);
+    }, 200);
 
     setTimeout(() => {
       setBingoEffect({ active: false, scoreText: "" });
-    }, 800);
+    }, 500);
   }, []);
 
   // 檢測消除：只有拼出完整香名才消除，拼錯不消除
@@ -481,25 +481,26 @@ export default function PinXiangGame() {
 
   return (
     <div className="relative w-full max-w-[400px] mx-auto h-[100dvh] bg-gradient-to-b from-neutral-950 via-stone-900 to-neutral-950 flex flex-col text-stone-100 overflow-hidden font-sans">
-      {/* 純 CSS 煙氣背景 — 不依賴 video */}
+      {/* 純 CSS 縷煙背景 — 細長條上升 + 左右扭曲 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        {[...Array(15)].map((_, i) => {
-          const size = 60 + i * 20;
-          const left = (i * 7 + 3) % 90;
-          const delay = (i * 0.8) % 6;
-          const duration = 7 + (i % 5);
-          const opacity = 0.25 - (i % 4) * 0.04;
+        {[...Array(7)].map((_, i) => {
+          const width = 20 + i * 6;
+          const height = 120 + i * 30;
+          const left = 10 + i * 12;
+          const delay = i * 1.2;
+          const duration = 6 + (i % 3) * 2;
           return (
             <div
               key={i}
-              className="absolute rounded-full"
+              className="absolute"
               style={{
-                width: `${size}px`,
-                height: `${size}px`,
+                width: `${width}px`,
+                height: `${height}px`,
                 left: `${left}%`,
-                bottom: `-80px`,
-                background: `radial-gradient(circle, rgba(201,168,76,${opacity}) 0%, rgba(201,168,76,${opacity * 0.3}) 40%, transparent 70%)`,
-                filter: "blur(6px)",
+                bottom: `-${height}px`,
+                background: `linear-gradient(to top, rgba(201,168,76,0.35) 0%, rgba(201,168,76,0.15) 40%, transparent 100%)`,
+                borderRadius: "50% 50% 30% 30%",
+                filter: "blur(3px)",
                 animation: `smokeRise ${duration}s ease-in-out ${delay}s infinite`,
               }}
             />
@@ -510,9 +511,11 @@ export default function PinXiangGame() {
       {/* 動畫 keyframes 樣式 */}
       <style>{`
         @keyframes smokeRise {
-          0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.7; }
-          50% { transform: translateY(-220px) translateX(25px) scale(1.3); opacity: 0.4; }
-          100% { transform: translateY(-450px) translateX(-15px) scale(1.6); opacity: 0; }
+          0% { transform: translateY(0) translateX(0) scaleX(1); opacity: 0; }
+          10% { opacity: 0.8; }
+          30% { transform: translateY(-120px) translateX(15px) scaleX(1.3); opacity: 0.6; }
+          60% { transform: translateY(-300px) translateX(-12px) scaleX(1.6); opacity: 0.4; }
+          100% { transform: translateY(-500px) translateX(8px) scaleX(2); opacity: 0; }
         }
         @keyframes particleBurst {
           0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
@@ -860,7 +863,7 @@ export default function PinXiangGame() {
               {activeCard.desc}
             </p>
             <div className="text-[10px] text-stone-500 text-center border-t border-stone-800/80 pt-2">
-              (3秒后自动关闭)
+              (自动关闭)
             </div>
           </div>
         </div>
