@@ -498,20 +498,24 @@ export default function PinXiangGame() {
 
       {/* 背景第二層：CSS 煙氣飄動粒子 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 1 }}>
-        {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              width: `${60 + i * 20}px`,
-              height: `${60 + i * 20}px`,
-              left: `${10 + i * 15}%`,
-              bottom: `-80px`,
-              background: `radial-gradient(circle, rgba(201,168,76,${0.1 - i * 0.01}) 0%, transparent 70%)`,
-              animation: `smokeRise ${10 + i * 2}s ease-in-out ${i * 1.5}s infinite`,
-            }}
-          />
-        ))}
+        {[...Array(12)].map((_, i) => {
+          const size = 80 + i * 25;
+          return (
+            <div
+              key={i}
+              className="absolute rounded-full"
+              style={{
+                width: `${size}px`,
+                height: `${size}px`,
+                left: `${5 + i * 8}%`,
+                bottom: `-100px`,
+                background: `radial-gradient(circle, rgba(201,168,76,${0.18 - (i % 3) * 0.04}) 0%, transparent 65%)`,
+                filter: "blur(4px)",
+                animation: `smokeRise ${8 + i * 1.5}s ease-in-out ${i * 0.7}s infinite`,
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* 動畫 keyframes 樣式 */}
@@ -723,8 +727,8 @@ export default function PinXiangGame() {
         </div>
       </main>
 
-      {/* 底部控制區域 */}
-      <footer className="relative z-10 p-3 bg-stone-900/80 backdrop-blur-sm border-t border-stone-800/80">
+      {/* 底部控制區域 — pb-20 避開底部 tab bar */}
+      <footer className="relative z-10 p-3 pb-20 bg-stone-900/80 backdrop-blur-sm border-t border-stone-800/80">
         <div className="grid grid-cols-4 gap-2 max-w-[340px] mx-auto">
           <button
             onClick={moveLeft}
