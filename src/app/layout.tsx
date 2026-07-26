@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     description: "Sino-NLP 中华身心语言学 × 传统经学 — 随身疗愈修行伙伴",
     images: ["https://yixu-ai.online/og-image.png?v=4"],
   },
-  manifest: "/manifest.json",
+  manifest: "/manifest.json?v=27",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "48x48" },
@@ -62,6 +62,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN">
+      <head>
+        <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta httpEquiv="Pragma" content="no-cache" />
+        <meta httpEquiv="Expires" content="0" />
+      </head>
       <body className="min-h-screen bg-white text-[#1a1a1a] antialiased">
         {children}
       </body>
