@@ -489,11 +489,11 @@ export default function PinXiangGame() {
           muted
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ opacity: 0.35 }}
+          style={{ opacity: 0.6 }}
         >
           <source src="/videos/shop/banner-smoke.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/50 via-stone-900/40 to-neutral-950/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/30 via-stone-900/20 to-neutral-950/30" />
       </div>
 
       {/* 背景第二層：CSS 煙氣飄動粒子 */}
@@ -674,18 +674,18 @@ export default function PinXiangGame() {
 
           {/* 開始遮罩畫面 */}
           {!gameStarted && (
-            <div className="absolute inset-0 bg-neutral-950/85 backdrop-blur-sm rounded-lg flex flex-col items-center justify-between p-5 text-center z-20 overflow-y-auto">
-              <div className="mt-2">
-                <h2 className="text-2xl font-bold font-song text-[#f0d060] tracking-wider mb-1">
+            <div className="absolute inset-0 bg-neutral-950/85 backdrop-blur-sm rounded-lg flex flex-col items-center justify-start p-4 text-center z-20 overflow-y-auto">
+              <div className="mt-1 mb-3">
+                <h2 className="text-xl font-bold font-song text-[#f0d060] tracking-wider mb-0.5">
                   拼香小游戏
                 </h2>
-                <p className="text-[#c9a84c] text-xs font-song italic tracking-widest">
+                <p className="text-[#c9a84c] text-[10px] font-song italic tracking-widest">
                   「一炉初爇，静心拼香」
                 </p>
               </div>
 
               {/* 開始畫面遊戲規則 */}
-              <div className="bg-stone-900/80 border border-stone-800 rounded-lg p-3 text-left w-full my-2">
+              <div className="bg-stone-900/80 border border-stone-800 rounded-lg p-3 text-left w-full mb-3">
                 <div className="text-[#c9a84c] font-semibold text-xs mb-1.5 flex items-center">
                   <span>✦ 游戏规则</span>
                 </div>
@@ -701,7 +701,7 @@ export default function PinXiangGame() {
 
               <button
                 onClick={startGame}
-                className="w-full bg-gradient-to-r from-[#c9a84c] to-[#f0d060] hover:brightness-110 active:scale-95 text-neutral-950 font-bold py-2.5 rounded-full shadow-lg transition text-sm mb-1"
+                className="w-full bg-gradient-to-r from-[#c9a84c] to-[#f0d060] hover:brightness-110 active:scale-95 text-neutral-950 font-bold py-3 rounded-full shadow-lg transition text-sm"
               >
                 开始游戏
               </button>
