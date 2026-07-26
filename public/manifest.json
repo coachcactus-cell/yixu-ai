@@ -2,7 +2,7 @@
   "name": "亦须AI — Cactus AI",
   "short_name": "亦须AI",
   "description": "Sino-NLP 中华身心语言学 × 传统经学 × 行为心理学 — 你的随身疗愈修行伙伴",
-  "start_url": "/",
+  "start_url": "/?v=26",
   "scope": "/",
   "display": "standalone",
   "background_color": "#faf7f0",
