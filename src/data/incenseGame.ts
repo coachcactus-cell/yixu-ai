@@ -18,14 +18,29 @@ export interface Piece {
   color: string;
 }
 
-export const GRID_WIDTH = 5;
+// Grid 高度固定，寬度隨關卡變化
 export const GRID_HEIGHT = 8;
+export const BINGO_SCORE = 20; // 拼香成功得分
+export const LEVEL_UP_SCORE = 40; // 每升一級所需分數
 
 export const INITIAL_SPEED = 1200; // 初始下落間隔 (毫秒)
 export const MIN_SPEED = 250; // 最快下落間隔 (毫秒)
 export const SPEED_STEP = 30; // 每升一級減少的毫秒數
 
 export const COLOR_PRIMARY = "#c9a84c"; // 金色
+
+// 根據關卡返回 Grid 寬度（3字香名=3格，4字=4格，5字=5格）
+export function getGridWidth(currentLevel: number): number {
+  if (currentLevel <= 2) return 3;
+  if (currentLevel <= 3) return 4;
+  return 5;
+}
+
+// 根據當前 Grid 寬度生成空 Grid
+export function createEmptyGrid(currentLevel: number): Grid {
+  const width = getGridWidth(currentLevel);
+  return Array.from({ length: GRID_HEIGHT }, () => Array(width).fill(null));
+}
 
 export const INCENSE_NAMES: IncenseItem[] = [
   { name: "愈疾香", desc: "心平能愈三千疾，心静能平万事理。古方养生，祛疾扶正。", unlockLevel: 1 },
@@ -49,4 +64,9 @@ export function getUnlockedIncense(currentLevel: number): IncenseItem[] {
 export function getCharacterPool(currentLevel: number): string[] {
   const unlocked = getUnlockedIncense(currentLevel);
   return Array.from(new Set(unlocked.map((item) => item.name).join("").split("")));
+}
+
+// 根據分數計算當前關卡
+export function getLevelFromScore(currentScore: number): number {
+  return Math.min(5, Math.floor(currentScore / LEVEL_UP_SCORE) + 1);
 }

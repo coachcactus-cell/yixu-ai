@@ -3,15 +3,19 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { HelpCircle } from "lucide-react";
 import {
-  GRID_WIDTH,
   GRID_HEIGHT,
   INITIAL_SPEED,
   MIN_SPEED,
   SPEED_STEP,
   COLOR_PRIMARY,
   INCENSE_NAMES,
+  BINGO_SCORE,
+  LEVEL_UP_SCORE,
+  getGridWidth,
+  createEmptyGrid,
   getUnlockedIncense,
   getCharacterPool,
+  getLevelFromScore,
   IncenseItem,
   Grid,
   Piece,
@@ -20,15 +24,11 @@ import {
 const LOCAL_STORAGE_KEY = "pinxiang_high_score";
 
 export default function PinXiangGame() {
-  const [grid, setGrid] = useState<Grid>(() =>
-    Array.from({ length: GRID_HEIGHT }, () => Array(GRID_WIDTH).fill(null))
-  );
-
+  const [grid, setGrid] = useState<Grid>(() => createEmptyGrid(1));
   const [currentPiece, setCurrentPiece] = useState<Piece | null>(null);
   const [score, setScore] = useState<number>(0);
   const [highScore, setHighScore] = useState<number>(0);
   const [level, setLevel] = useState<number>(1);
-  const [totalLinesCleared, setTotalLinesCleared] = useState<number>(0);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
@@ -37,6 +37,8 @@ export default function PinXiangGame() {
   const [activeCard, setActiveCard] = useState<IncenseItem | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showRulesModal, setShowRulesModal] = useState<boolean>(false);
+  const [showLevelUpModal, setShowLevelUpModal] = useState<boolean>(false);
+  const [levelUpInfo, setLevelUpInfo] = useState<{ level: number; newNames: string }>({ level: 1, newNames: "" });
 
   // 特效 State
   const [bingoEffect, setBingoEffect] = useState<{ active: boolean; scoreText: string }>({
@@ -44,6 +46,7 @@ export default function PinXiangGame() {
     scoreText: "+20",
   });
   const [isShaking, setIsShaking] = useState<boolean>(false);
+  const [failedRows, setFailedRows] = useState<Set<number>>(new Set());
 
   // Refs 防止閉包陷阱
   const gridRef = useRef<Grid>(grid);
@@ -66,9 +69,6 @@ export default function PinXiangGame() {
 
   const levelRef = useRef<number>(level);
   levelRef.current = level;
-
-  const totalLinesClearedRef = useRef<number>(totalLinesCleared);
-  totalLinesClearedRef.current = totalLinesCleared;
 
   const lastDropTimeRef = useRef<number>(0);
   const requestRef = useRef<number | null>(null);
@@ -95,8 +95,9 @@ export default function PinXiangGame() {
   // 生成新方塊
   const createNewPiece = useCallback(
     (curLevel: number): Piece => {
+      const width = getGridWidth(curLevel);
       return {
-        x: Math.floor(GRID_WIDTH / 2),
+        x: Math.floor(width / 2),
         y: 0,
         char: getRandomChar(curLevel),
         color: COLOR_PRIMARY,
@@ -105,21 +106,25 @@ export default function PinXiangGame() {
     [getRandomChar]
   );
 
-  // 碰撞檢測
-  const checkCollision = useCallback((p: Piece, g: Grid, offsetX = 0, offsetY = 0): boolean => {
-    const newX = p.x + offsetX;
-    const newY = p.y + offsetY;
+  // 碰撞檢測（寬度動態）
+  const checkCollision = useCallback(
+    (p: Piece, g: Grid, offsetX = 0, offsetY = 0): boolean => {
+      const width = getGridWidth(levelRef.current);
+      const newX = p.x + offsetX;
+      const newY = p.y + offsetY;
 
-    if (newX < 0 || newX >= GRID_WIDTH || newY >= GRID_HEIGHT) {
-      return true;
-    }
+      if (newX < 0 || newX >= width || newY >= GRID_HEIGHT) {
+        return true;
+      }
 
-    if (newY >= 0 && g[newY][newX] !== null) {
-      return true;
-    }
+      if (newY >= 0 && g[newY] && g[newY][newX] !== null && g[newY][newX] !== undefined) {
+        return true;
+      }
 
-    return false;
-  }, []);
+      return false;
+    },
+    []
+  );
 
   // 顯示提示訊息
   const showToast = useCallback((msg: string) => {
@@ -152,73 +157,58 @@ export default function PinXiangGame() {
     }, 800);
   }, []);
 
-  // 檢測消除與香名拼合
-  // (逻辑不变)
+  // 檢測消除：只有拼出完整香名才消除，拼錯不消除
   const checkAndClearLines = useCallback(
     (currentGrid: Grid) => {
       const newGrid = currentGrid.map((row) => [...row]);
       let linesCleared = 0;
       let addedScore = 0;
       let matchedCard: IncenseItem | null = null;
-      let halfMatchName: string | null = null;
+      const newFailedRows = new Set<number>();
 
       const currentUnlocked = getUnlockedIncense(levelRef.current);
+      const width = getGridWidth(levelRef.current);
 
       for (let r = GRID_HEIGHT - 1; r >= 0; r--) {
-        const isFull = newGrid[r].every((cell) => cell !== null);
+        // 確保行長度匹配當前寬度
+        const rowCells = newGrid[r] || [];
+        const isFull = rowCells.length >= width && rowCells.slice(0, width).every((cell) => cell !== null);
+
         if (isFull) {
-          linesCleared++;
-          const rowText = newGrid[r].map((cell) => cell?.char || "").join("");
+          const rowText = rowCells.slice(0, width).map((cell) => cell?.char || "").join("");
 
+          // 檢測完整香名匹配 (Bingo)
           let lineMatched = false;
-
-          // 1. 檢測完整香名匹配 (Bingo)
           for (const incense of currentUnlocked) {
-            if (rowText.includes(incense.name)) {
-              addedScore += 20;
+            if (rowText === incense.name) {
+              addedScore += BINGO_SCORE;
               matchedCard = incense;
               lineMatched = true;
               break;
             }
           }
 
-          // 2. 若無完整匹配，檢測連續 2 字半拼
-          if (!lineMatched) {
-            for (const incense of currentUnlocked) {
-              if (incense.name.length >= 2) {
-                for (let i = 0; i <= incense.name.length - 2; i++) {
-                  const subStr = incense.name.substring(i, i + 2);
-                  if (rowText.includes(subStr)) {
-                    addedScore += 10;
-                    halfMatchName = incense.name;
-                    lineMatched = true;
-                    break;
-                  }
-                }
-              }
-              if (lineMatched) break;
-            }
+          if (lineMatched) {
+            // 拼對了 → 消除該行
+            linesCleared++;
+            newGrid.splice(r, 1);
+            newGrid.unshift(Array(width).fill(null));
+          } else {
+            // 拼錯了 → 不消除，標記為失敗行
+            newFailedRows.add(r);
           }
-
-          // 3. 普通消除
-          if (!lineMatched) {
-            addedScore += 1;
-          }
-
-          // 移除行並補頂部空行
-          newGrid.splice(r, 1);
-          newGrid.unshift(Array(GRID_WIDTH).fill(null));
-          r++; // 重新檢測該列
         }
+      }
+
+      // 更新失敗行標記（用於閃紅提示）
+      setFailedRows(newFailedRows);
+      if (newFailedRows.size > 0) {
+        setTimeout(() => setFailedRows(new Set()), 800);
       }
 
       if (linesCleared > 0) {
         setGrid(newGrid);
         gridRef.current = newGrid;
-
-        const newTotalLines = totalLinesClearedRef.current + linesCleared;
-        setTotalLinesCleared(newTotalLines);
-        totalLinesClearedRef.current = newTotalLines;
 
         const newScore = scoreRef.current + addedScore;
         setScore(newScore);
@@ -237,32 +227,40 @@ export default function PinXiangGame() {
           return prev;
         });
 
-        // 升級機制：每 5 行升 1 級
-        const newLevel = Math.floor(newTotalLines / 5) + 1;
+        // 升級檢測：分數達標且不超過 Level 5
+        const newLevel = getLevelFromScore(newScore);
         if (newLevel > levelRef.current) {
+          const oldLevel = levelRef.current;
           setLevel(newLevel);
           levelRef.current = newLevel;
 
-          // 檢測是否有新解鎖香名
-          const newlyUnlocked = INCENSE_NAMES.filter((item) => item.unlockLevel === newLevel);
-          if (newlyUnlocked.length > 0) {
-            const namesStr = newlyUnlocked.map((i) => i.name).join("、");
-            showToast(`🎉 升至 Level ${newLevel}！解锁新香名：${namesStr}`);
-          }
+          // 升級時清空 Grid，用新寬度重新開始
+          const freshGrid = createEmptyGrid(newLevel);
+          setGrid(freshGrid);
+          gridRef.current = freshGrid;
+
+          // 檢測新解鎖的香名
+          const newlyUnlocked = INCENSE_NAMES.filter((item) => item.unlockLevel > oldLevel && item.unlockLevel <= newLevel);
+          const namesStr = newlyUnlocked.map((i) => i.name).join("、");
+
+          // 彈出升級慶祝彈窗
+          setLevelUpInfo({ level: newLevel, newNames: namesStr });
+          setShowLevelUpModal(true);
+
+          // 生成新方塊（用新關卡）
+          const newPiece = createNewPiece(newLevel);
+          setCurrentPiece(newPiece);
+          currentPieceRef.current = newPiece;
         }
 
-        // 觸發反饋與動畫
+        // 觸發 Bingo 動畫
         if (matchedCard) {
-          triggerBingoAnimation(20);
+          triggerBingoAnimation(BINGO_SCORE);
           triggerKnowledgeCard(matchedCard);
-        } else if (halfMatchName) {
-          showToast(`半拼成功！含有「${halfMatchName}」香意 +10分`);
-        } else {
-          showToast(`普通消除 +${linesCleared}分`);
         }
       }
     },
-    [showToast, triggerKnowledgeCard, triggerBingoAnimation]
+    [showToast, triggerKnowledgeCard, triggerBingoAnimation, createNewPiece]
   );
 
   // 固定方塊
@@ -275,11 +273,19 @@ export default function PinXiangGame() {
         return;
       }
 
+      // 確保行存在
+      if (!newGrid[p.y]) {
+        newGrid[p.y] = Array(getGridWidth(levelRef.current)).fill(null);
+      }
+
       newGrid[p.y][p.x] = { char: p.char, color: p.color };
       setGrid(newGrid);
       gridRef.current = newGrid;
 
       checkAndClearLines(newGrid);
+
+      // 升級時不生成新方塊（已經在 checkAndClearLines 中處理）
+      if (showLevelUpModal) return;
 
       const next = createNewPiece(levelRef.current);
       if (checkCollision(next, newGrid)) {
@@ -288,7 +294,7 @@ export default function PinXiangGame() {
         setCurrentPiece(next);
       }
     },
-    [checkAndClearLines, createNewPiece, checkCollision]
+    [checkAndClearLines, createNewPiece, checkCollision, showLevelUpModal]
   );
 
   // 下落一步
@@ -324,7 +330,7 @@ export default function PinXiangGame() {
     }
   }, [checkCollision]);
 
-  // 輪換字體
+  // 輪換字
   const rotateChar = useCallback(() => {
     const p = currentPieceRef.current;
     if (!p || gameOverRef.current || isPausedRef.current) return;
@@ -343,16 +349,11 @@ export default function PinXiangGame() {
   // 遊戲主循環
   const gameLoop = useCallback(
     (time: number) => {
-      if (gameStartedRef.current && !gameOverRef.current && !isPausedRef.current) {
-        let currentSpeed = Math.max(
+      if (gameStartedRef.current && !gameOverRef.current && !isPausedRef.current && !showLevelUpModal) {
+        const currentSpeed = Math.max(
           MIN_SPEED,
           INITIAL_SPEED - (levelRef.current - 1) * SPEED_STEP
         );
-
-        // 新手保護：前 3 行消除前維持初始速度
-        if (totalLinesClearedRef.current < 3) {
-          currentSpeed = INITIAL_SPEED;
-        }
 
         if (time - lastDropTimeRef.current > currentSpeed) {
           dropPiece();
@@ -361,7 +362,7 @@ export default function PinXiangGame() {
       }
       requestRef.current = requestAnimationFrame(gameLoop);
     },
-    [dropPiece]
+    [dropPiece, showLevelUpModal]
   );
 
   useEffect(() => {
@@ -373,9 +374,7 @@ export default function PinXiangGame() {
 
   // 開始遊戲
   const startGame = () => {
-    const emptyGrid: Grid = Array.from({ length: GRID_HEIGHT }, () =>
-      Array(GRID_WIDTH).fill(null)
-    );
+    const emptyGrid = createEmptyGrid(1);
     setGrid(emptyGrid);
     gridRef.current = emptyGrid;
 
@@ -383,23 +382,34 @@ export default function PinXiangGame() {
     scoreRef.current = 0;
     setLevel(1);
     levelRef.current = 1;
-    setTotalLinesCleared(0);
-    totalLinesClearedRef.current = 0;
 
     setGameOver(false);
     setIsPaused(false);
     setGameStarted(true);
     setActiveCard(null);
     setToastMessage(null);
+    setShowLevelUpModal(false);
+    setFailedRows(new Set());
 
     const firstPiece = createNewPiece(1);
     setCurrentPiece(firstPiece);
+    currentPieceRef.current = firstPiece;
   };
 
-  // 鍵盤操作監聽
+  // 關閉升級彈窗，繼續遊戲
+  const closeLevelUpModal = () => {
+    setShowLevelUpModal(false);
+    // 生成新方塊繼續
+    const newPiece = createNewPiece(levelRef.current);
+    setCurrentPiece(newPiece);
+    currentPieceRef.current = newPiece;
+    lastDropTimeRef.current = 0;
+  };
+
+  // 鍵盤操作監聯
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!gameStarted || gameOver || isPaused) return;
+      if (!gameStarted || gameOver || isPaused || showLevelUpModal) return;
 
       switch (e.key) {
         case "ArrowLeft":
@@ -420,7 +430,7 @@ export default function PinXiangGame() {
           break;
         case " ":
           e.preventDefault();
-          let p = currentPieceRef.current;
+          const p = currentPieceRef.current;
           const g = gridRef.current;
           if (p) {
             let dropDist = 0;
@@ -437,7 +447,7 @@ export default function PinXiangGame() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [gameStarted, gameOver, isPaused, moveLeft, moveRight, rotateChar, moveDown, checkCollision, lockPiece]);
+  }, [gameStarted, gameOver, isPaused, showLevelUpModal, moveLeft, moveRight, rotateChar, moveDown, checkCollision, lockPiece]);
 
   // 手勢操作
   const touchStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -448,7 +458,7 @@ export default function PinXiangGame() {
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!gameStarted || gameOver || isPaused) return;
+    if (!gameStarted || gameOver || isPaused || showLevelUpModal) return;
 
     const touch = e.changedTouches[0];
     const dx = touch.clientX - touchStartRef.current.x;
@@ -466,9 +476,12 @@ export default function PinXiangGame() {
     }
   };
 
+  // 當前 Grid 寬度
+  const currentGridWidth = getGridWidth(level);
+
   return (
     <div className="relative w-full max-w-[400px] mx-auto min-h-screen bg-gradient-to-b from-neutral-950 via-stone-900 to-neutral-950 flex flex-col justify-between text-stone-100 overflow-hidden font-sans">
-      {/* 1.2 背景第一層：本地視訊煙氣 */}
+      {/* 背景第一層：本地視訊煙氣 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <video
           autoPlay
@@ -480,11 +493,11 @@ export default function PinXiangGame() {
         >
           <source src="/videos/shop/banner-smoke.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/60 via-stone-900/50 to-neutral-950/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/50 via-stone-900/40 to-neutral-950/60" />
       </div>
 
-      {/* 1.2 背景第二層：CSS 煙氣飄動粒子 */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-1">
+      {/* 背景第二層：CSS 煙氣飄動粒子 */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 1 }}>
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
@@ -494,9 +507,7 @@ export default function PinXiangGame() {
               height: `${60 + i * 20}px`,
               left: `${10 + i * 15}%`,
               bottom: `-80px`,
-              background: `radial-gradient(circle, rgba(201,168,76,${
-                0.08 - i * 0.008
-              }) 0%, transparent 70%)`,
+              background: `radial-gradient(circle, rgba(201,168,76,${0.1 - i * 0.01}) 0%, transparent 70%)`,
               animation: `smokeRise ${10 + i * 2}s ease-in-out ${i * 1.5}s infinite`,
             }}
           />
@@ -506,7 +517,7 @@ export default function PinXiangGame() {
       {/* 動畫 keyframes 樣式 */}
       <style>{`
         @keyframes smokeRise {
-          0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.6; }
+          0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.7; }
           50% { transform: translateY(-220px) translateX(25px) scale(1.3); opacity: 0.4; }
           100% { transform: translateY(-450px) translateX(-15px) scale(1.6); opacity: 0; }
         }
@@ -519,9 +530,13 @@ export default function PinXiangGame() {
           25% { transform: translateX(-3px); }
           75% { transform: translateX(3px); }
         }
+        @keyframes failFlash {
+          0%, 100% { background-color: rgba(220,38,38,0.4); }
+          50% { background-color: rgba(220,38,38,0.15); }
+        }
       `}</style>
 
-      {/* 頂部 Header */}
+      {/* 頂部 Header — 按鈕全部放左側，避開右上角 layout 頭像 */}
       <header className="relative z-10 bg-neutral-950/80 backdrop-blur-sm px-4 py-3 border-b border-stone-800/60 flex items-center justify-between shadow-md">
         <div className="flex items-center space-x-2">
           <span className="bg-[#c9a84c] text-neutral-950 font-bold px-2 py-0.5 rounded text-xs">
@@ -531,7 +546,8 @@ export default function PinXiangGame() {
             拼香
           </h1>
         </div>
-        <div className="flex items-center space-x-2">
+        {/* 按鈕放左側，遠離右上角頭像 */}
+        <div className="flex items-center space-x-1.5 pr-16">
           <button
             onClick={() => setShowRulesModal(true)}
             className="p-1 text-stone-400 hover:text-[#c9a84c] transition"
@@ -557,7 +573,7 @@ export default function PinXiangGame() {
           <span className="text-xl font-bold text-[#f0d060]">{score}</span>
         </div>
         <div className="text-center">
-          <span className="text-stone-400 text-xs block">关卡 (已消除 {totalLinesCleared} 行)</span>
+          <span className="text-stone-400 text-xs block">关卡 ({currentGridWidth}格宽)</span>
           <span className="text-base font-semibold text-stone-200">Lv. {level}</span>
         </div>
         <div className="text-right">
@@ -575,7 +591,7 @@ export default function PinXiangGame() {
           </div>
         )}
 
-        {/* 5.2 Bingo 喜慶特效 (粒子 + 飄字) */}
+        {/* Bingo 喜慶特效 (粒子 + 飄字) */}
         {bingoEffect.active && (
           <div className="absolute inset-0 pointer-events-none z-30 flex items-center justify-center">
             <div className="relative w-full h-full">
@@ -597,41 +613,45 @@ export default function PinXiangGame() {
                   />
                 );
               })}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl font-extrabold text-[#f0d060] drop-shadow-[0_0_10px_rgba(240,208,96,0.8)] animate-bounce">
-                {bingoEffect.scoreText} Bingo!
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl font-extrabold text-[#f0d060] drop-shadow-[0_0_10px_rgba(240,208,96,0.8)] animate-bounce whitespace-nowrap">
+                {bingoEffect.scoreText} 拼香成功!
               </div>
             </div>
           </div>
         )}
 
-        {/* 網格容器 */}
+        {/* 網格容器 — 動態寬度 */}
         <div
-          className={`relative bg-neutral-950/80 rounded-lg p-1 border-2 border-[#c9a84c]/40 shadow-[0_0_20px_rgba(201,168,76,0.15)] touch-none transition-transform ${
+          className={`relative bg-neutral-950/80 rounded-lg p-1 border-2 border-[#c9a84c]/40 shadow-[0_0_20px_rgba(201,168,76,0.15)] touch-none transition-all ${
             isShaking ? "animate-[shake_0.3s_ease-in-out]" : ""
           }`}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           style={{
             display: "grid",
-            gridTemplateColumns: `repeat(${GRID_WIDTH}, minmax(0, 1fr))`,
+            gridTemplateColumns: `repeat(${currentGridWidth}, minmax(0, 1fr))`,
             gap: "1px",
             width: "100%",
-            aspectRatio: "5 / 8",
-            maxWidth: "min(360px, calc((100dvh - 180px) * 5 / 8))",
+            aspectRatio: `${currentGridWidth} / ${GRID_HEIGHT}`,
+            maxWidth: `${currentGridWidth === 3 ? "270px" : currentGridWidth === 4 ? "320px" : "360px"}`,
           }}
         >
           {grid.map((row, rIdx) =>
             row.map((cell, cIdx) => {
+              // 補齊行寬度
+              const safeCell = cIdx < row.length ? cell : null;
               const isCurrent =
                 currentPiece &&
                 currentPiece.x === cIdx &&
                 currentPiece.y === rIdx;
 
               const displayChar = isCurrent
-                ? currentPiece.char
-                : cell
-                ? cell.char
+                ? currentPiece!.char
+                : safeCell
+                ? safeCell.char
                 : "";
+
+              const isFailedRow = failedRows.has(rIdx);
 
               return (
                 <div
@@ -639,8 +659,10 @@ export default function PinXiangGame() {
                   className={`flex items-center justify-center rounded-sm text-2xl font-bold select-none aspect-square transition-all duration-75 ${
                     isCurrent
                       ? "bg-gradient-to-br from-[#f0d060] to-[#c9a84c] text-white shadow-[0_0_12px_rgba(201,168,76,0.5)] border border-amber-100"
-                      : cell
-                      ? "bg-gradient-to-br from-[#d4af37] to-[#a88a3e] text-white border border-amber-200/40 drop-shadow-sm"
+                      : safeCell
+                      ? isFailedRow
+                        ? "bg-gradient-to-br from-red-700 to-red-900 text-white border border-red-400/50"
+                        : "bg-gradient-to-br from-[#d4af37] to-[#a88a3e] text-white border border-amber-200/40 drop-shadow-sm"
                       : "bg-neutral-800/40"
                   }`}
                 >
@@ -650,7 +672,7 @@ export default function PinXiangGame() {
             })
           )}
 
-          {/* 1.3 開始遮罩畫面 */}
+          {/* 開始遮罩畫面 */}
           {!gameStarted && (
             <div className="absolute inset-0 bg-neutral-950/85 backdrop-blur-sm rounded-lg flex flex-col items-center justify-between p-5 text-center z-20 overflow-y-auto">
               <div className="mt-2">
@@ -662,17 +684,18 @@ export default function PinXiangGame() {
                 </p>
               </div>
 
-              {/* 2.1 開始畫面遊戲規則 */}
+              {/* 開始畫面遊戲規則 */}
               <div className="bg-stone-900/80 border border-stone-800 rounded-lg p-3 text-left w-full my-2">
                 <div className="text-[#c9a84c] font-semibold text-xs mb-1.5 flex items-center">
                   <span>✦ 游戏规则</span>
                 </div>
                 <ul className="text-stone-300 text-[11px] leading-relaxed space-y-1">
                   <li>• 方块带字落下，点击「换字」可切换字</li>
-                  <li>• 填满一整行即可消除得分</li>
-                  <li>• 包含完整香名 → <b>拼香成功！+20分</b> + 香卡</li>
-                  <li>• 包含香名部分字 → <b>半拼奖励 +10分</b></li>
-                  <li>• 普通消除 → <b>+1分</b>，堆到顶则结束</li>
+                  <li>• 横向填满一行，正好拼出完整香名 → <b>拼香成功！+20分</b></li>
+                  <li>• 填满但拼不对 → <b>不消除</b>，方块继续堆积</li>
+                  <li>• 每 40 分升一级，Grid 变宽，香名变长</li>
+                  <li>• L1-L2：3字香名（3格）→ L3：4字（4格）→ L4-L5：5字（5格）</li>
+                  <li>• 方块堆到顶部则游戏结束</li>
                 </ul>
               </div>
 
@@ -700,12 +723,12 @@ export default function PinXiangGame() {
         </div>
       </main>
 
-      {/* 底部控制區域 (深色系) */}
+      {/* 底部控制區域 */}
       <footer className="relative z-10 p-3 bg-stone-900/80 backdrop-blur-sm border-t border-stone-800/80">
         <div className="grid grid-cols-4 gap-2 max-w-[340px] mx-auto">
           <button
             onClick={moveLeft}
-            disabled={!gameStarted || gameOver || isPaused}
+            disabled={!gameStarted || gameOver || isPaused || showLevelUpModal}
             className="bg-stone-800 hover:bg-stone-700 active:bg-stone-600 disabled:opacity-30 text-stone-100 font-bold py-3 rounded-lg border border-stone-700 shadow-sm text-xl flex items-center justify-center transition"
             aria-label="向左移动"
           >
@@ -713,7 +736,7 @@ export default function PinXiangGame() {
           </button>
           <button
             onClick={rotateChar}
-            disabled={!gameStarted || gameOver || isPaused}
+            disabled={!gameStarted || gameOver || isPaused || showLevelUpModal}
             className="bg-[#c9a84c]/20 hover:bg-[#c9a84c]/30 active:bg-[#c9a84c]/40 disabled:opacity-30 text-[#f0d060] font-bold py-3 rounded-lg border border-[#c9a84c]/40 shadow-sm text-xs flex flex-col items-center justify-center transition"
             aria-label="旋转换字"
           >
@@ -722,7 +745,7 @@ export default function PinXiangGame() {
           </button>
           <button
             onClick={moveRight}
-            disabled={!gameStarted || gameOver || isPaused}
+            disabled={!gameStarted || gameOver || isPaused || showLevelUpModal}
             className="bg-stone-800 hover:bg-stone-700 active:bg-stone-600 disabled:opacity-30 text-stone-100 font-bold py-3 rounded-lg border border-stone-700 shadow-sm text-xl flex items-center justify-center transition"
             aria-label="向右移动"
           >
@@ -730,7 +753,7 @@ export default function PinXiangGame() {
           </button>
           <button
             onClick={moveDown}
-            disabled={!gameStarted || gameOver || isPaused}
+            disabled={!gameStarted || gameOver || isPaused || showLevelUpModal}
             className="bg-stone-800 hover:bg-stone-700 active:bg-stone-600 disabled:opacity-30 text-stone-100 font-bold py-3 rounded-lg border border-stone-700 shadow-sm text-xl flex items-center justify-center transition"
             aria-label="加速下落"
           >
@@ -739,7 +762,7 @@ export default function PinXiangGame() {
         </div>
       </footer>
 
-      {/* 2.2 獨立規則說明彈窗 */}
+      {/* 獨立規則說明彈窗 */}
       {showRulesModal && (
         <div className="fixed inset-0 bg-neutral-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-stone-900 border border-[#c9a84c]/50 rounded-xl max-w-xs w-full p-5 text-stone-200 shadow-2xl relative">
@@ -748,11 +771,12 @@ export default function PinXiangGame() {
             </h3>
             <ul className="text-xs text-stone-300 leading-relaxed space-y-2 mb-5">
               <li>• 方块从顶部落下，按底部按键或滑动操作。</li>
-              <li>• 点击<b>「换字」</b>可在当前解锁的字池中随机切换。</li>
-              <li>• 填满一整行（5格）即可消除。</li>
-              <li>• 一行中包含完整香名：<b>+20分</b> 并在卡片中展示香品知识。</li>
-              <li>• 一行中包含香名连续2字：<b>+10分</b> 半拼奖励。</li>
-              <li>• 普通消除：<b>+1分</b>。每消除 5 行提升 1 级并解锁新香名！</li>
+              <li>• 点击<b>「换字」</b>可在当前字池中随机切换。</li>
+              <li>• 横向填满一行，正好拼出完整香名 → <b>+20分</b> + 香品知识卡。</li>
+              <li>• 填满但拼不对 → <b>不消除</b>，方块继续堆积。</li>
+              <li>• 每 40 分升一级，Grid 变宽，解锁更长香名。</li>
+              <li>• L1-L2：3格(3字香名) → L3：4格(4字) → L4-L5：5格(5字)</li>
+              <li>• 方块堆到顶部则<b>游戏结束</b>。</li>
             </ul>
             <button
               onClick={() => setShowRulesModal(false)}
@@ -760,6 +784,42 @@ export default function PinXiangGame() {
             >
               我知道了
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* 升級慶祝彈窗 — 紅底反白大字 */}
+      {showLevelUpModal && (
+        <div className="fixed inset-0 bg-neutral-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="rounded-xl max-w-xs w-full p-6 text-center shadow-2xl border-2 border-yellow-400 relative overflow-hidden"
+               style={{ background: "linear-gradient(135deg, #c41e3a 0%, #8b0000 50%, #c41e3a 100%)" }}>
+            {/* 裝飾光斑 */}
+            <div className="absolute -top-8 -left-8 w-24 h-24 rounded-full bg-yellow-400/20 blur-2xl" />
+            <div className="absolute -bottom-8 -right-8 w-24 h-24 rounded-full bg-yellow-400/20 blur-2xl" />
+
+            <div className="relative">
+              <div className="text-yellow-300 text-xs font-bold tracking-widest mb-2">
+                ✦ 恭喜晋升 ✦
+              </div>
+              <h3 className="text-4xl font-black font-song text-white mb-2 drop-shadow-lg">
+                Level {levelUpInfo.level}
+              </h3>
+              {levelUpInfo.newNames && (
+                <p className="text-yellow-100 text-sm mb-4 leading-relaxed">
+                  解锁新香名<br/>
+                  <span className="text-yellow-300 font-bold text-lg">{levelUpInfo.newNames}</span>
+                </p>
+              )}
+              <div className="text-white/80 text-[11px] mb-5">
+                Grid 变宽至 {getGridWidth(levelUpInfo.level)} 格，挑战升级！
+              </div>
+              <button
+                onClick={closeLevelUpModal}
+                className="w-full bg-yellow-400 hover:bg-yellow-300 text-red-800 font-black py-2.5 rounded-lg shadow-lg transition text-sm active:scale-95"
+              >
+                继续挑战
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -782,7 +842,7 @@ export default function PinXiangGame() {
               onClick={startGame}
               className="w-full bg-gradient-to-r from-[#c9a84c] to-[#f0d060] text-neutral-950 font-bold py-2.5 rounded-lg shadow transition text-sm"
             >
-              重新开始
+              再来一局
             </button>
           </div>
         </div>
@@ -793,7 +853,7 @@ export default function PinXiangGame() {
         <div className="fixed inset-0 bg-neutral-950/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-stone-900 text-white rounded-xl max-w-xs w-full p-5 shadow-2xl border-2 border-[#c9a84c] relative">
             <div className="absolute top-2 right-2 text-[10px] text-[#f0d060] bg-[#c9a84c]/20 border border-[#c9a84c]/40 px-1.5 py-0.5 rounded">
-              拼香成功 +20
+              拼香成功 +{BINGO_SCORE}
             </div>
             <div className="text-xs text-stone-400 font-semibold mb-1">
               ✦ 香品知识卡 ✦
