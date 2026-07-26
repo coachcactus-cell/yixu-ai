@@ -623,10 +623,12 @@ export default function PinXiangGame() {
           style={{
             display: "grid",
             gridTemplateColumns: `repeat(${currentGridWidth}, minmax(0, 1fr))`,
+            gridTemplateRows: `repeat(${GRID_HEIGHT}, 1fr)`,
             gap: "1px",
             width: "100%",
-            aspectRatio: `${currentGridWidth} / ${GRID_HEIGHT}`,
             maxWidth: `${currentGridWidth === 3 ? "270px" : currentGridWidth === 4 ? "320px" : "360px"}`,
+            flex: "1 1 0",
+            minHeight: "0",
           }}
         >
           {grid.map((row, rIdx) =>
@@ -649,7 +651,7 @@ export default function PinXiangGame() {
               return (
                 <div
                   key={`${rIdx}-${cIdx}`}
-                  className={`flex items-center justify-center rounded-sm text-2xl font-bold select-none aspect-square transition-all duration-75 ${
+                  className={`flex items-center justify-center rounded-sm text-2xl font-bold select-none transition-all duration-75 ${
                     isCurrent
                       ? "bg-gradient-to-br from-[#f0d060] to-[#c9a84c] text-white shadow-[0_0_12px_rgba(201,168,76,0.5)] border border-amber-100"
                       : safeCell
