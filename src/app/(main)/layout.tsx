@@ -31,7 +31,7 @@ function MainLayoutInner({ children }: { children: React.ReactNode }) {
   const { isFullscreen } = useFullscreen();
 
   return (
-    <div className={`page-container ${isFullscreen ? "fullscreen-mode" : ""}`}>
+    <div className="page-container">
       {/* 右上角「我的」入口按钮 */}
       {!isFullscreen && (
         <Link

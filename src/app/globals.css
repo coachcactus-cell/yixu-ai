@@ -122,9 +122,6 @@ body {
   padding-bottom: calc(80px + var(--safe-bottom));
   min-height: 100vh;
 }
-.page-container.fullscreen-mode {
-  padding-bottom: 0;
-}
 
 /* Cards */
 .card {
