@@ -46,6 +46,8 @@ body {
   color: var(--color-text);
   overscroll-behavior: none;
   font-size: 18px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* 宋體用於標題和裝飾性文字 */
@@ -121,6 +123,9 @@ body {
 .page-container {
   padding-bottom: calc(80px + var(--safe-bottom));
   min-height: 100vh;
+}
+.page-container.fullscreen-mode {
+  padding-bottom: 0;
 }
 
 /* Cards */
