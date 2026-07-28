@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
 import { HelpCircle } from "lucide-react";
 import {
   GRID_HEIGHT,
@@ -535,9 +536,12 @@ export default function PinXiangGame() {
       {/* 頂部 Header — 按鈕全部放左側，避開右上角 layout 頭像 */}
       <header className="relative z-10 bg-neutral-950/80 backdrop-blur-sm px-4 py-3 border-b border-stone-800/60 flex items-center justify-between shadow-md flex-shrink-0">
         <div className="flex items-center space-x-2">
-          <span className="bg-[#c9a84c] text-neutral-950 font-bold px-2 py-0.5 rounded text-xs">
-            香舖
-          </span>
+          <Link
+            href="/shop"
+            className="bg-[#c9a84c] text-neutral-950 font-bold px-2 py-0.5 rounded text-xs hover:bg-[#d4b85e] active:scale-95 transition"
+          >
+            回香舖
+          </Link>
           <h1 className="text-lg font-bold font-song tracking-widest text-[#c9a84c]">
             拼香
           </h1>

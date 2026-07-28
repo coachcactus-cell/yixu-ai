@@ -584,12 +584,12 @@ export default function ChatPage() {
             {/* 博山炉入口 — 汉代香器 icon，点入香舖 */}
             <Link
               href="/shop"
-              className="absolute -right-2 bottom-6 flex flex-col items-center gap-0.5 active:scale-95 transition-transform"
+              className="absolute -right-1 bottom-4 flex flex-col items-center gap-1 active:scale-95 transition-transform"
             >
-              <div className="w-12 h-12 rounded-full bg-white/95 border border-[#c9a84c]/30 shadow-md shadow-[#c9a84c]/15 flex items-center justify-center">
-                <BoshanluIcon className="w-7 h-7 text-[#c9a84c]" />
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#fdf8ed] to-[#f5eed9] border-2 border-[#c9a84c]/50 shadow-lg shadow-[#c9a84c]/25 flex items-center justify-center">
+                <BoshanluIcon className="w-9 h-9 text-[#c9a84c]" />
               </div>
-              <span className="text-[10px] text-[#c9a84c] font-medium whitespace-nowrap">进入香舖</span>
+              <span className="text-sm text-[#c9a84c] font-bold whitespace-nowrap bg-white/80 px-2 py-0.5 rounded-full">进入香舖 →</span>
             </Link>
           </div>
 
@@ -637,7 +637,13 @@ export default function ChatPage() {
               <p className="text-sm text-[#666666]">Sino-NLP 疗愈对话</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mr-10">
+            <Link
+              href="/shop"
+              className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#c9a84c]/15 border border-[#c9a84c]/40 text-[#a88830] text-xs font-bold active:scale-95 transition whitespace-nowrap"
+            >
+              🪔 香舖
+            </Link>
             {messages.length > 1 && (
               <button
                 onClick={clearHistory}
