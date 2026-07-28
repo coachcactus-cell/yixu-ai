@@ -61,9 +61,13 @@ export function getUnlockedIncense(currentLevel: number): IncenseItem[] {
 }
 
 // 根據已解鎖香名動態生成字池
+// 只從當前 grid 寬度對應的香名提取字符，避免低關卡字符污染高關卡
 export function getCharacterPool(currentLevel: number): string[] {
+  const gridWidth = getGridWidth(currentLevel);
   const unlocked = getUnlockedIncense(currentLevel);
-  return Array.from(new Set(unlocked.map((item) => item.name).join("").split("")));
+  // 只取名字長度 = grid 寬度的香名（確保跌落的字符都能拼成當前關卡的香名）
+  const matchingNames = unlocked.filter((item) => item.name.length === gridWidth);
+  return Array.from(new Set(matchingNames.map((item) => item.name).join("").split("")));
 }
 
 // 根據分數計算當前關卡
