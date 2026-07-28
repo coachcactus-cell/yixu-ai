@@ -481,6 +481,8 @@ export default function ChatPage() {
 
   // Auto scroll
   useEffect(() => {
+    // 只有歡迎訊息時不要自動滾到底，讓用戶看到歡迎語
+    if (messages.length <= 1) return;
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     // 每次有新消息，重设 dead air 计时器
     lastMsgTimeRef.current = Date.now();
@@ -643,17 +645,18 @@ export default function ChatPage() {
             </button>
           )}
         </div>
-        {/* 第二行：Sino-NLP療愈對話 + 進入香舖 + 計時器 */}
-        <div className="flex items-center justify-between mt-2 gap-2">
-          <div className="flex items-center gap-2 overflow-hidden">
-            <p className="text-sm text-[#666666] whitespace-nowrap">Sino-NLP 疗愈对话</p>
-            <Link
-              href="/shop"
-              className="px-2.5 py-1 rounded-full bg-[#c9a84c]/15 border border-[#c9a84c]/40 text-[#a88830] text-xs font-bold active:scale-95 transition whitespace-nowrap shrink-0"
-            >
-              进入香舖
-            </Link>
-          </div>
+        {/* 第二行：Sino-NLP療愈對話 */}
+        <div className="flex items-center mt-1.5">
+          <p className="text-sm text-[#666666] whitespace-nowrap">Sino-NLP 疗愈对话</p>
+        </div>
+        {/* 第三行：進入香舖 + 計時器 */}
+        <div className="flex items-center justify-between mt-1.5 gap-2">
+          <Link
+            href="/shop"
+            className="px-2.5 py-1 rounded-full bg-[#c9a84c]/15 border border-[#c9a84c]/40 text-[#a88830] text-xs font-bold active:scale-95 transition whitespace-nowrap shrink-0"
+          >
+            进入香舖
+          </Link>
           <div className="timer-badge whitespace-nowrap shrink-0">
             <Clock size={14} />
             <span className="whitespace-nowrap">{timerLeft > 0 ? `今天剩余 ${formatTime(timerLeft)}` : "今天限额已用完"}</span>
