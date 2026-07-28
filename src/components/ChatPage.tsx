@@ -21,7 +21,7 @@ const WELCOME_MESSAGE: Message = {
   id: "welcome",
   role: "assistant",
   content:
-    "你好，我是亦须AI 🙏\n\n修行路上，有什么困扰你？\n\n我们有 10 分钟免费对话时间，之后要等明日重置，或者你升级 VIP。",
+    "你好，我是亦须AI 🙏 修行路上，有什么困扰你？我们有 10 分钟免费对话时间，之后要等明日重置，或者你升级 VIP。",
 };
 
 /* ── 智慧建议轮替：按时段动態切換 ── */
@@ -619,6 +619,7 @@ export default function ChatPage() {
     <div className="flex flex-col h-screen">
       {/* Header */}
       <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
+        {/* 第一行：頭像 + 亦须AI + 清除按鈕 */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#c9a84c]/40 flex-shrink-0 bg-[#fdf8ed]">
@@ -628,39 +629,40 @@ export default function ChatPage() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="whitespace-nowrap">
-              <h1 className="text-lg font-black font-song tracking-wide">
-                <span className="text-[#c9a84c]">亦须</span><span className="text-[#8a9bae]">AI</span>
-              </h1>
-              <p className="text-sm text-[#666666] whitespace-nowrap">Sino-NLP 疗愈对话</p>
-            </div>
+            <h1 className="text-lg font-black font-song tracking-wide whitespace-nowrap">
+              <span className="text-[#c9a84c]">亦须</span><span className="text-[#8a9bae]">AI</span>
+            </h1>
+          </div>
+          {messages.length > 1 && (
+            <button
+              onClick={clearHistory}
+              className="w-7 h-7 rounded-full flex items-center justify-center text-[#999999] hover:text-[#666666] active:bg-[#f5f5f5] transition-colors shrink-0"
+              title="清除对话记录"
+            >
+              <Trash2 size={15} />
+            </button>
+          )}
+        </div>
+        {/* 第二行：Sino-NLP療愈對話 + 進入香舖 + 計時器 */}
+        <div className="flex items-center justify-between mt-2 gap-2">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <p className="text-sm text-[#666666] whitespace-nowrap">Sino-NLP 疗愈对话</p>
             <Link
               href="/shop"
-              className="ml-1 px-2.5 py-1 rounded-full bg-[#c9a84c]/15 border border-[#c9a84c]/40 text-[#a88830] text-xs font-bold active:scale-95 transition whitespace-nowrap shrink-0"
+              className="px-2.5 py-1 rounded-full bg-[#c9a84c]/15 border border-[#c9a84c]/40 text-[#a88830] text-xs font-bold active:scale-95 transition whitespace-nowrap shrink-0"
             >
-              香舖
+              进入香舖
             </Link>
           </div>
-          <div className="flex items-center gap-2 mr-10 shrink-0">
-            {messages.length > 1 && (
-              <button
-                onClick={clearHistory}
-                className="w-7 h-7 rounded-full flex items-center justify-center text-[#999999] hover:text-[#666666] active:bg-[#f5f5f5] transition-colors shrink-0"
-                title="清除对话记录"
-              >
-                <Trash2 size={15} />
-              </button>
-            )}
-            <div className="timer-badge whitespace-nowrap">
-              <Clock size={14} />
-              <span className="whitespace-nowrap">{timerLeft > 0 ? `今天剩余 ${formatTime(timerLeft)}` : "今天限额已用完"}</span>
-            </div>
+          <div className="timer-badge whitespace-nowrap shrink-0">
+            <Clock size={14} />
+            <span className="whitespace-nowrap">{timerLeft > 0 ? `今天剩余 ${formatTime(timerLeft)}` : "今天限额已用完"}</span>
           </div>
         </div>
       </header>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-4 content-below-header">
+      <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-4">
         {messages.map((msg) => (
           <div
             key={msg.id}
