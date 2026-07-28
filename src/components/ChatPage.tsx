@@ -586,10 +586,8 @@ export default function ChatPage() {
               href="/shop"
               className="absolute -right-1 bottom-4 flex flex-col items-center gap-1 active:scale-95 transition-transform"
             >
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#fdf8ed] to-[#f5eed9] border-2 border-[#c9a84c]/50 shadow-lg shadow-[#c9a84c]/25 flex items-center justify-center">
-                <BoshanluIcon className="w-9 h-9 text-[#c9a84c]" />
-              </div>
-              <span className="text-sm text-[#c9a84c] font-bold whitespace-nowrap bg-white/80 px-2 py-0.5 rounded-full">进入香舖 →</span>
+              <BoshanluIcon className="w-12 h-12 text-[#c9a84c] drop-shadow-md" />
+              <span className="text-xs text-[#c9a84c] font-bold whitespace-nowrap">点击进入香舖</span>
             </Link>
           </div>
 
@@ -630,32 +628,32 @@ export default function ChatPage() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div>
+            <div className="whitespace-nowrap">
               <h1 className="text-lg font-black font-song tracking-wide">
                 <span className="text-[#c9a84c]">亦须</span><span className="text-[#8a9bae]">AI</span>
               </h1>
-              <p className="text-sm text-[#666666]">Sino-NLP 疗愈对话</p>
+              <p className="text-sm text-[#666666] whitespace-nowrap">Sino-NLP 疗愈对话</p>
             </div>
-          </div>
-          <div className="flex items-center gap-2 mr-10">
             <Link
               href="/shop"
-              className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#c9a84c]/15 border border-[#c9a84c]/40 text-[#a88830] text-xs font-bold active:scale-95 transition whitespace-nowrap"
+              className="ml-1 px-2.5 py-1 rounded-full bg-[#c9a84c]/15 border border-[#c9a84c]/40 text-[#a88830] text-xs font-bold active:scale-95 transition whitespace-nowrap shrink-0"
             >
-              🪔 香舖
+              香舖
             </Link>
+          </div>
+          <div className="flex items-center gap-2 mr-10 shrink-0">
             {messages.length > 1 && (
               <button
                 onClick={clearHistory}
-                className="w-7 h-7 rounded-full flex items-center justify-center text-[#999999] hover:text-[#666666] active:bg-[#f5f5f5] transition-colors"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[#999999] hover:text-[#666666] active:bg-[#f5f5f5] transition-colors shrink-0"
                 title="清除对话记录"
               >
                 <Trash2 size={15} />
               </button>
             )}
-            <div className="timer-badge">
+            <div className="timer-badge whitespace-nowrap">
               <Clock size={14} />
-              <span>{timerLeft > 0 ? `今天剩余 ${formatTime(timerLeft)}` : "今天限额已用完"}</span>
+              <span className="whitespace-nowrap">{timerLeft > 0 ? `今天剩余 ${formatTime(timerLeft)}` : "今天限额已用完"}</span>
             </div>
           </div>
         </div>
