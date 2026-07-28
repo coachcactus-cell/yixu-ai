@@ -45,9 +45,9 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   overscroll-behavior: none;
-  font-size: 18px;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
+  font-size: 20px;
+  -webkit-text-size-adjust: auto;
+  text-size-adjust: auto;
 }
 
 /* 宋體用於標題和裝飾性文字 */

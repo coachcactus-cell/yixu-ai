@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import SplashScreen from "@/components/SplashScreen";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://yixu-ai.online"),
@@ -63,6 +64,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className="min-h-screen bg-white text-[#1a1a1a] antialiased">
+        <SplashScreen />
         {children}
       </body>
     </html>
