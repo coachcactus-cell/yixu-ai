@@ -523,11 +523,11 @@ export default function DianXinTabPage() {
       {/* ── 底部 ── */}
       <div className="px-5 pt-4 pb-2 text-center">
         <p className="text-sm text-[#c9a84c] font-song font-bold">
-          一个自2004年起持续举办了迈向三十届的读书会
+          一个自2004年起持续举办的完整课程，老学员的持续跟随先生共学进修
         </p>
         <p className="text-sm text-[#666] mt-1.5 font-medium leading-relaxed">
           没有更改过名称、没有特别的宣传手法<br/>
-          这样一个只靠口碑的课程，信誉自然是无需怀疑的了
+          <span className="font-bold text-[#444]">这样一个只靠口碑的课程，信誉自然是无需怀疑的了</span>
         </p>
         <p className="text-sm text-[#8a9bae] font-song mt-4">
           亦须（Cactus Yixu）· 生命教育哲学博士
