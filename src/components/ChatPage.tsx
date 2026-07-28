@@ -546,7 +546,7 @@ export default function ChatPage() {
   // ─── LANDING SCREEN ────────────────────────────────
   if (!started) {
     return (
-      <div className="flex flex-col h-screen bg-white">
+      <div className="flex flex-col h-[calc(100vh-80px-var(--safe-bottom))] bg-white">
         {/* Header */}
         <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
           <div className="flex items-center justify-between">
@@ -618,7 +618,7 @@ export default function ChatPage() {
 
   // ─── CHAT SCREEN ────────────────────────────────────
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-[calc(100vh-80px-var(--safe-bottom))]">
       {/* Header */}
       <header className="sticky-header bg-white/95 backdrop-blur-md px-4 py-3 border-b border-[#e8e8e8]">
         {/* 第一行：頭像 + 亦须AI + 清除按鈕 */}
@@ -665,7 +665,7 @@ export default function ChatPage() {
       </header>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-4">
+      <div className="flex-1 overflow-y-auto min-h-0 px-4 pb-4 space-y-4">
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -751,7 +751,7 @@ export default function ChatPage() {
       </div>
 
       {/* Input Area */}
-      <div className="sticky bottom-0 bg-white/95 backdrop-blur-md px-4 py-3 border-t border-[#e8e8e8]">
+      <div className="shrink-0 bg-white/95 backdrop-blur-md px-4 py-3 border-t border-[#e8e8e8]">
         <div className="flex items-center gap-2">
           <input
             type="text"
