@@ -1023,7 +1023,7 @@ export default function ProfilePage() {
               <p className="text-xs text-[#999] mb-4">扫描下方二维码，添加微信</p>
               <div className="rounded-xl overflow-hidden border-2 border-[#c9a84c]/20 mb-4">
                 <img
-                  src="/images/wechat-qr.png"
+                  src="/images/wechat-qr-cactus.jpg"
                   alt="微信二维码"
                   className="w-full"
                   onError={(e) => {
@@ -1040,8 +1040,8 @@ export default function ProfilePage() {
                   关闭
                 </button>
                 <a
-                  href="/images/wechat-qr.png"
-                  download="亦须先生微信二维码.png"
+                  href="/images/wechat-qr-cactus.jpg"
+                  download="亦须先生微信二维码.jpg"
                   className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#c9a84c] to-[#b89430] text-white text-sm font-bold active:scale-[0.98] transition-transform inline-flex items-center justify-center gap-1.5"
                 >
                   <Download size={14} />
