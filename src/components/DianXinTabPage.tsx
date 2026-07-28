@@ -601,7 +601,7 @@ export default function DianXinTabPage() {
 
               {/* WhatsApp */}
               <a
-                href="https://wa.me/85293103003"
+                href="https://api.whatsapp.com/send?phone=85293103003&text=%E4%BA%A6%E9%A1%BBAI%E5%92%A8%E8%AF%A2"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#25D366] text-white text-xs font-medium active:scale-95 transition-transform"

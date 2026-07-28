@@ -993,7 +993,7 @@ export default function ProfilePage() {
 
               {/* WhatsApp按钮 */}
               <a
-                href="https://wa.me/85293103003"
+                href="https://api.whatsapp.com/send?phone=85293103003&text=%E4%BA%A6%E9%A1%BBAI%E5%92%A8%E8%AF%A2"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex flex-col items-center gap-1.5 active:scale-[0.96] transition-transform"
