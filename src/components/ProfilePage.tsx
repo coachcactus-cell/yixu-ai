@@ -974,6 +974,130 @@ export default function ProfilePage() {
           </p>
         </div>
 
+        {/* ── 充值与付款指南 ── */}
+        <div className="mt-3 card bg-gradient-to-br from-[#fdf8ed] to-[#fefaf0] border border-[#c9a84c]/20 overflow-hidden">
+          <div className="px-4 py-3">
+            <h3 className="text-sm font-bold text-[#c9a84c] font-song mb-3 flex items-center gap-1.5">
+              📖 充值与付款指南
+            </h3>
+
+            {/* 流程一：新学员红包 */}
+            <div className="mb-4">
+              <p className="text-xs font-bold text-[#8a9bae] mb-2 border-l-2 border-[#c9a84c] pl-2">流程一 · 新学员红包</p>
+              <div className="flex items-center gap-1.5 text-xs text-[#444] flex-wrap">
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#c9a84c] text-white text-[10px] font-bold shrink-0">1</span>
+                <span>注册账号</span>
+                <span className="text-[#c9a84c]">→</span>
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#c9a84c] text-white text-[10px] font-bold shrink-0">2</span>
+                <span>自动弹出红包</span>
+                <span className="text-[#c9a84c]">→</span>
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#c9a84c] text-white text-[10px] font-bold shrink-0">3</span>
+                <span>点击「领取红包」获得 <b className="text-[#c9a84c]">¥12.30</b></span>
+              </div>
+              {/* 示意圖：紅包彈窗 */}
+              <div className="mt-2 flex justify-center">
+                <div className="bg-white rounded-xl border-2 border-[#c9a84c]/30 p-3 w-48 text-center shadow-sm">
+                  <div className="text-2xl mb-0.5">🧧</div>
+                  <p className="text-[10px] font-bold text-[#1a1a1a]">新学员红包</p>
+                  <p className="text-lg font-black text-[#c0392b] leading-tight">¥12.30</p>
+                  <p className="text-[9px] text-[#999]">可抵扣任意测评解锁</p>
+                  <div className="flex gap-1.5 mt-1.5">
+                    <div className="flex-1 py-0.5 rounded-md bg-[#f0f0f0] text-[9px] text-[#666]">不用了</div>
+                    <div className="flex-1 py-0.5 rounded-md bg-[#c0392b] text-[9px] text-white font-bold">🧧 领取</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 分隔线 */}
+            <div className="border-t border-[#c9a84c]/15 mb-4" />
+
+            {/* 流程二：余额充值 */}
+            <div className="mb-4">
+              <p className="text-xs font-bold text-[#8a9bae] mb-2 border-l-2 border-[#c9a84c] pl-2">流程二 · 余额充值</p>
+              <div className="flex items-center gap-1.5 text-xs text-[#444] flex-wrap mb-1.5">
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#c9a84c] text-white text-[10px] font-bold shrink-0">1</span>
+                <span>点击「充值」选金额</span>
+                <span className="text-[#c9a84c]">→</span>
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#c9a84c] text-white text-[10px] font-bold shrink-0">2</span>
+                <span>生成专属充值码</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-[#444] flex-wrap mb-1.5">
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#c9a84c] text-white text-[10px] font-bold shrink-0">3</span>
+                <span>加微信 <b className="text-[#07c160]">859022196</b> 转账，备注充值码</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-[#444] flex-wrap mb-2">
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#c9a84c] text-white text-[10px] font-bold shrink-0">4</span>
+                <span>先生确认收款</span>
+                <span className="text-[#c9a84c]">→</span>
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#c9a84c] text-white text-[10px] font-bold shrink-0">5</span>
+                <span>返回APP兑换充值码，余额到账</span>
+              </div>
+              {/* 示意圖：充值碼 */}
+              <div className="flex justify-center gap-2">
+                <div className="bg-white rounded-lg border border-[#e8e8e8] p-2 w-32 text-center shadow-sm">
+                  <p className="text-[9px] text-[#999] mb-0.5">你的专属充值码</p>
+                  <p className="text-sm font-bold text-[#c9a84c] tracking-wider">YX50-ABCD</p>
+                  <p className="text-[8px] text-[#aaa] mt-0.5">付款时备注此码</p>
+                </div>
+                <div className="bg-white rounded-lg border border-[#e8e8e8] p-2 w-32 text-center shadow-sm">
+                  <p className="text-[9px] text-[#999] mb-0.5">微信转账</p>
+                  <p className="text-[10px] text-[#07c160] font-bold">💬 859022196</p>
+                  <p className="text-[8px] text-[#aaa] mt-0.5">转账 ¥50，备注充值码</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 分隔线 */}
+            <div className="border-t border-[#c9a84c]/15 mb-4" />
+
+            {/* 流程三：升级VIP */}
+            <div className="mb-2">
+              <p className="text-xs font-bold text-[#8a9bae] mb-2 border-l-2 border-[#c9a84c] pl-2">流程三 · 升级VIP会员</p>
+              <div className="flex items-center gap-1.5 text-xs text-[#444] flex-wrap mb-1.5">
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#c9a84c] text-white text-[10px] font-bold shrink-0">1</span>
+                <span>选择套餐（月卡¥68 / 年卡¥198）</span>
+                <span className="text-[#c9a84c]">→</span>
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#c9a84c] text-white text-[10px] font-bold shrink-0">2</span>
+                <span>扫码付款（微信/支付宝）</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-[#444] flex-wrap mb-2">
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#c9a84c] text-white text-[10px] font-bold shrink-0">3</span>
+                <span>先生确认收款</span>
+                <span className="text-[#c9a84c]">→</span>
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#c9a84c] text-white text-[10px] font-bold shrink-0">4</span>
+                <span>VIP自动激活</span>
+              </div>
+              {/* 示意圖：二維碼掃碼 */}
+              <div className="flex justify-center gap-2">
+                <div className="bg-white rounded-lg border border-[#e8e8e8] p-2 w-28 text-center shadow-sm">
+                  <div className="w-16 h-16 mx-auto bg-[#f5f5f5] rounded flex items-center justify-center">
+                    <div className="grid grid-cols-4 gap-px">
+                      {[...Array(16)].map((_,i) => (
+                        <div key={i} className={`w-1.5 h-1.5 ${[0,1,2,3,4,7,8,11,12,13,14,15,5,6,9,10].includes(i) ? 'bg-[#1a1a1a]' : 'bg-transparent'}`} />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-[8px] text-[#999] mt-0.5">扫码付款</p>
+                </div>
+                <div className="bg-white rounded-lg border border-[#e8e8e8] p-2 w-28 text-center shadow-sm flex flex-col justify-center">
+                  <p className="text-[9px] text-[#999]">年卡</p>
+                  <p className="text-base font-black text-[#c9a84c]">¥198</p>
+                  <p className="text-[8px] text-[#c0392b] font-bold">省¥204！</p>
+                  <p className="text-[8px] text-[#999]">月均¥16.5</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 温馨提示 */}
+            <div className="mt-3 p-2 rounded-lg bg-[#c9a84c]/8 border border-[#c9a84c]/15">
+              <p className="text-[10px] text-[#a88830] leading-relaxed">
+                💡 先生确认收款后通常 <b>30分钟内</b> 完成激活。如超过1小时未处理，请加微信 <b>859022196</b> 联系。
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* 联系方式卡片 */}
         <div className="mt-3 card bg-gradient-to-br from-[#fdf8ed] to-[#fefaf0] border border-[#c9a84c]/20">
           <div className="text-center py-2">
