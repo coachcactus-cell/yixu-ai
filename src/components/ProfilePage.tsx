@@ -675,9 +675,15 @@ export default function ProfilePage() {
                   ))}
                 </div>
               )}
+              {/* 查看充值流程说明 */}
+              <button
+                onClick={() => document.getElementById("payment-guide")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                className="mt-2 w-full py-1.5 rounded-lg bg-[#c9a84c]/10 border border-[#c9a84c]/25 text-[#a88830] text-xs font-medium active:scale-[0.98] transition-transform flex items-center justify-center gap-1"
+              >
+                📖 查看充值与付款指南
+                <span className="text-[10px]">↓</span>
+              </button>
             </div>
-
-            {/* ── 已解锁测评 ── */}
             {unlockedList.length > 0 && (
               <div className="mt-4">
                 <h3 className="section-header">已解锁测评</h3>
@@ -975,7 +981,7 @@ export default function ProfilePage() {
         </div>
 
         {/* ── 充值与付款指南 ── */}
-        <div className="mt-3 card bg-gradient-to-br from-[#fdf8ed] to-[#fefaf0] border border-[#c9a84c]/20 overflow-hidden">
+        <div id="payment-guide" className="mt-3 card bg-gradient-to-br from-[#fdf8ed] to-[#fefaf0] border border-[#c9a84c]/20 overflow-hidden scroll-mt-4">
           <div className="px-4 py-3">
             <h3 className="text-sm font-bold text-[#c9a84c] font-song mb-3 flex items-center gap-1.5">
               📖 充值与付款指南
